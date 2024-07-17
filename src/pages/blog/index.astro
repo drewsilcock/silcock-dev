@@ -4,16 +4,21 @@ import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 import { BLOG } from "@consts";
+import Link from "@components/Link.astro";
 
-const data = (await getCollection("blog"))
+const posts = (await getCollection("blog"))
   .filter((post) => !post.data.draft && !post.data.archive)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const tags = posts
+  .flatMap((post) => post.data.tags ?? [])
+  .filter((tag, index, self) => self.indexOf(tag) === index);
 
 type Acc = {
   [year: string]: CollectionEntry<"blog">[];
 };
 
-const posts = data.reduce((acc: Acc, post) => {
+const postsMap = posts.reduce((acc: Acc, post) => {
   const year = post.data.date.getFullYear().toString();
   if (!acc[year]) {
     acc[year] = [];
@@ -22,12 +27,29 @@ const posts = data.reduce((acc: Acc, post) => {
   return acc;
 }, {});
 
-const years = Object.keys(posts).sort((a, b) => parseInt(b) - parseInt(a));
+const years = Object.keys(postsMap).sort((a, b) => parseInt(b) - parseInt(a));
 ---
 
 <Layout title={BLOG.TITLE} description={BLOG.DESCRIPTION} route="blog">
   <Container>
     <div class="space-y-10">
+      <h1 class="animate text-3xl font-semibold text-black dark:text-white">
+        Posts
+      </h1>
+
+      <nav class="animate flex gap-4">
+        {
+          tags.map((tag) => (
+            <Link
+              href={`/blog/tags/${tag}`}
+              className="text-xl text-gray-500 dark:text-gray-400"
+            >
+              #{tag}
+            </Link>
+          ))
+        }
+      </nav>
+
       <div class="space-y-4">
         {
           years.map((year) => (
@@ -35,7 +57,7 @@ const years = Object.keys(posts).sort((a, b) => parseInt(b) - parseInt(a));
               <div class="font-semibold text-black dark:text-white">{year}</div>
               <div>
                 <ul class="not-prose flex flex-col gap-4">
-                  {posts[year].map((post) => (
+                  {postsMap[year].map((post) => (
                     <li>
                       <ArrowCard entry={post} />
                     </li>

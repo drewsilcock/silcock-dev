@@ -17,6 +17,7 @@ export async function getStaticPaths() {
     props: project,
   }));
 }
+
 type Props = CollectionEntry<"projects">;
 
 const project = Astro.props;
@@ -35,6 +36,8 @@ const links = [
     text: "package",
   },
 ].filter(Boolean) as { href: string; text: string }[];
+
+const tags = project.data.tags ?? [];
 ---
 
 <Layout
@@ -60,7 +63,18 @@ const links = [
         {project.data.title}
       </h1>
 
-      <nav class="flex gap-1">
+      <nav class="flex gap-2">
+        {
+          tags.map((tag) => (
+            <Link
+              href={`/projects/tags/${tag}`}
+              className="font-semibold text-gray-500 dark:text-gray-400"
+            >
+              #{tag}
+            </Link>
+          ))
+        }
+        {tags.length > 0 && links.length > 0 && " / "}
         {
           links.length > 0 &&
             links

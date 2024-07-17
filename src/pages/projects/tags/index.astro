@@ -2,12 +2,12 @@
 import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
-import ArrowCard from "@components/ArrowCard.astro";
 import Link from "@components/Link.astro";
-import { PROJECTS } from "@consts";
+import BackToPrevious from "@components/BackToPrevious.astro";
+import { PROJECT_TAGS } from "@consts";
 
 const projects = (await getCollection("projects"))
-  .filter((project) => !project.data.draft)
+  .filter((post) => !post.data.draft)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const tags = projects
@@ -16,34 +16,30 @@ const tags = projects
 ---
 
 <Layout
-  title={PROJECTS.TITLE}
-  description={PROJECTS.DESCRIPTION}
-  route="projects"
+  title={PROJECT_TAGS.TITLE}
+  description={PROJECT_TAGS.DESCRIPTION}
+  route="projects/tags"
 >
   <Container>
-    <div class="space-y-10">
-      <h1 class="animate text-3xl font-semibold text-black dark:text-white">
-        Projects
-      </h1>
+    <div class="animate">
+      <BackToPrevious href="/projects">Back to projects</BackToPrevious>
+    </div>
 
-      <nav class="animate flex gap-4">
-        {
-          tags.map((tag) => (
-            <Link
-              href={`/projects/tags/${tag}`}
-              className="text-xl text-gray-500 dark:text-gray-400"
-            >
-              #{tag}
-            </Link>
-          ))
-        }
-      </nav>
+    <div class="animate my-10 space-y-10">
+      <h1 class="animate text-3xl font-semibold text-black dark:text-white">
+        Projects Tags
+      </h1>
 
       <ul class="animate not-prose flex flex-col gap-4">
         {
-          projects.map((project) => (
+          tags.map((tag) => (
             <li>
-              <ArrowCard entry={project} />
+              <Link
+                href={`./${tag}`}
+                className="text-xl font-semibold text-gray-500 dark:text-gray-400"
+              >
+                #{tag}
+              </Link>
             </li>
           ))
         }

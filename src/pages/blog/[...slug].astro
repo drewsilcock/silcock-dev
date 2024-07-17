@@ -7,6 +7,7 @@ import { readingTime } from "@lib/utils";
 import BackToPrevious from "@components/BackToPrevious.astro";
 import PostNavigation from "@components/PostNavigation.astro";
 import TableOfContents from "@components/TableOfContents.astro";
+import Link from "@components/Link.astro";
 import Giscus from "@components/Giscus.astro";
 
 export async function getStaticPaths() {
@@ -52,9 +53,14 @@ const prevPost = getPrevPost();
 
 const post = Astro.props;
 const { Content, headings } = await post.render();
+const tags = post.data.tags ?? [];
 ---
 
-<Layout title={post.data.title} description={post.data.description} route={`${post.collection}/${post.slug}`}>
+<Layout
+  title={post.data.title}
+  description={post.data.description}
+  route={`${post.collection}/${post.slug}`}
+>
   <Container>
     <div class="animate">
       <BackToPrevious href="/blog">Back to blog</BackToPrevious>
@@ -72,6 +78,19 @@ const { Content, headings } = await post.render();
       <h1 class="animate text-3xl font-semibold text-black dark:text-white">
         {post.data.title}
       </h1>
+
+      <nav class="animate flex gap-2">
+        {
+          tags.map((tag) => (
+            <Link
+              href={`/blog/tags/${tag}`}
+              className="font-semibold text-gray-500 dark:text-gray-400"
+            >
+              #{tag}
+            </Link>
+          ))
+        }
+      </nav>
     </div>
     {headings.length > 0 && <TableOfContents headings={headings} />}
     <article class="animate">

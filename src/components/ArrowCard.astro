@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import Link from "@components/Link.astro";
 
 type Props = {
   entry: CollectionEntry<"blog"> | CollectionEntry<"projects">;
@@ -8,6 +9,8 @@ type Props = {
 const { entry } = Astro.props as {
   entry: CollectionEntry<"blog"> | CollectionEntry<"projects">;
 };
+
+const tags = entry.data.tags ?? [];
 ---
 
 <a
@@ -20,6 +23,16 @@ const { entry } = Astro.props as {
     </div>
     <div class="text-sm">
       {entry.data.description}
+
+      {tags.length > 0 && (
+        <div class="flex flex-wrap gap-1 mt-1">
+          {tags.map((tag) => (
+            <span class="text-xs mt-1 bg-black/10 text-black dark:bg-white/10 dark:text-white px-1.5 py-0.5 rounded">
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   </div>
   <svg

@@ -19,11 +19,21 @@ export const BLOG: Metadata = {
   DESCRIPTION: "A collection of articles on topics I'm interested in.",
 };
 
+export const BLOG_TAGS: Metadata = {
+  TITLE: "Blog Tags",
+  DESCRIPTION: "A collection of tags for my blog posts.",
+}
+
 export const PROJECTS: Metadata = {
   TITLE: "Projects",
   DESCRIPTION:
     "A collection of my projects with links to repositories and live demos.",
 };
+
+export const PROJECT_TAGS: Metadata = {
+  TITLE: "Project Tags",
+  DESCRIPTION: "A collection of tags for my projects.",
+}
 
 export const SOCIALS: Socials = [
   {

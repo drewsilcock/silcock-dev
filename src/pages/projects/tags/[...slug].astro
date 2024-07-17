@@ -1,0 +1,63 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/Container.astro";
+import ArrowCard from "@components/ArrowCard.astro";
+import BackToPrevious from "@components/BackToPrevious.astro";
+import { PROJECTS } from "@consts";
+
+type Props = {
+  tag: string;
+};
+
+const { tag } = Astro.props;
+
+const taggedProjects = (await getCollection("projects"))
+  .filter((post) => !post.data.draft)
+  .filter((post) => post.data.tags?.includes(tag))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+export async function getStaticPaths() {
+  const projects = (await getCollection("projects"))
+    .filter((post) => !post.data.draft)
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+  const tags = projects
+    .flatMap((p) => p.data.tags ?? [])
+    .filter((tag, index, self) => self.indexOf(tag) === index);
+
+  return tags.map((tag) => ({
+    params: { slug: tag },
+    props: { tag },
+  }));
+}
+---
+
+<Layout
+  title={`${PROJECTS.TITLE} tagged with #${tag}`}
+  description={`Explore some of the projects I've worked on that are tagged with #${tag}`}
+  route={`projects/tags/${tag}`}
+>
+  <Container>
+    <div class="animate">
+      <BackToPrevious href="..">Back to projects</BackToPrevious>
+    </div>
+
+    <div class="mb-2 mt-10 space-y-10">
+      <h1 class="animate text-3xl font-semibold text-black dark:text-white">
+        Projects tagged with
+        <span class="text-gray-500 dark:text-gray-400">#{tag}</span>
+      </h1>
+
+      <ul class="animate not-prose flex flex-col gap-4">
+        {
+          taggedProjects.map((project) => (
+            <li>
+              <ArrowCard entry={project} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </Container>
+</Layout>
