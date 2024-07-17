@@ -38,9 +38,9 @@ export default defineConfig({
   schema: {
     collections: [
       {
-        name: "post",
-        label: "Posts",
-        path: "src/content/posts",
+        name: "blog",
+        label: "Blog",
+        path: "src/content/blog",
         ui: {
           filename: {
             readonly: false,
@@ -92,8 +92,8 @@ export default defineConfig({
         ],
       },
       {
-        name: "project",
-        label: "Project",
+        name: "projects",
+        label: "Projects",
         path: "src/content/projects",
         ui: {
           filename: {
