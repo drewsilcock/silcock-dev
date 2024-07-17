@@ -1,14 +1,15 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
-import { SITE, HOME, SOCIALS } from "@consts";
+import { SITE, HOME } from "@consts";
 import ArrowCard from "@components/ArrowCard.astro";
 import Link from "@components/Link.astro";
+import Socials from "@components/Socials.astro";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 
 const blog = (await getCollection("blog"))
-  .filter((post) => !post.data.draft)
+  .filter((post) => !post.data.draft && !post.data.archive)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 
@@ -20,46 +21,62 @@ const projects: CollectionEntry<"projects">[] = (
   .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
 ---
 
-<Layout title={HOME.TITLE} description={HOME.DESCRIPTION}>
+<Layout title={HOME.TITLE} description={HOME.DESCRIPTION} route="index">
   <Container>
     <h1 class="animate font-semibold text-black dark:text-white">
-      Introducing Astro Micro 🔬
+      👋🏻 Welcome to drew's dev blog
     </h1>
     <div class="space-y-16">
       <section>
         <article class="space-y-4">
           <span class="animate">
             <p>
-              Astro Micro is an accessible theme for <Link
-                href="https://astro.build/">Astro</Link
-              >. It's a fork of
-              <Link href="https://github.com/markhorn-dev"> Mark Horn's </Link> popular
-              theme <Link href="https://astro.build/themes/details/astronano/"
-                >Astro Nano</Link
-              >. Like Nano, Micro comes with zero frameworks installed.
+              Hi, I'm Drew! I'm a software engineer living in Liverpool in the
+              UK 🇬🇧
             </p>
-            <p>
-              Micro adds features like <Link href="https://pagefind.app/"
-                >Pagefind</Link
-              > for search, <Link href="https://giscus.app">Giscus</Link> for comments,
-              and more. For a full list of changes, see this <Link
-                href="/blog/00-micro-changelog">blog post</Link
-              >.
-            </p>
+            <p>I like talking and writing about technical things.</p>
           </span>
           <span class="animate">
             <p>
-              Micro still comes with everything great about Nano — full type
-              safety, a sitemap, an RSS feed, and Markdown + MDX support. Styled
-              with TailwindCSS and preconfigured with system, light, and dark
-              themes.
+              Here's some things I like to write about:
+
+              <ul class="columns-2">
+                <li>🐭 Go</li>
+                <li>🦀 Rust</li>
+                <li>⚛ React</li>
+                <li>
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/1/1b/Svelte_Logo.svg"
+                    alt="Svelte Logo"
+                    width="18"
+                    class="inline"
+                  /> Svelte
+                </li>
+                <li>
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Typescript_logo_2020.svg/240px-Typescript_logo_2020.svg.png"
+                    alt="TypeScript Logo"
+                    width="18"
+                    class="inline"
+                  /> TypeScript
+                </li>
+                <li>🐍 Python</li>
+                <li>💬 Programming languages</li>
+                <li>🙌 Best practices</li>
+                <li>🚀 Continuous integration & deployment</li>
+                <li>🎮 Game development</li>
+                <li>⋯ Lots of other things!</li>
+              </ul>
             </p>
             <p>
-              Visit
-              <Link href="https://github.com/trevortylerlee/astro-micro">
-                Astro Micro on GitHub
-              </Link>
-              to fork the repository to get started.
+              If you like reading about any of these things, <Link href="/blog"
+                >check out some of my posts</Link
+              >.
+            </p>
+
+            <p>
+              You can also <Link href="/rss.xml">subscribe to my RSS feed</Link>
+              or <Link href="/about">read more about me</Link>.
             </p>
           </span>
         </article>
@@ -100,37 +117,14 @@ const projects: CollectionEntry<"projects">[] = (
       </section>
 
       <section class="animate space-y-4">
-        <h2 class="font-semibold text-black dark:text-white">Let's Connect</h2>
+        <h2 class="font-semibold text-black dark:text-white">Say hi 😎</h2>
         <article>
           <p>
             If you want to get in touch with me about something or just to say
             hi, reach out on social media or send me an email.
           </p>
         </article>
-        <ul class="not-prose flex flex-wrap gap-2">
-          {
-            SOCIALS.map((SOCIAL) => (
-              <li class="flex gap-x-2 text-nowrap">
-                <Link
-                  href={SOCIAL.HREF}
-                  external
-                  aria-label={`${SITE.TITLE} on ${SOCIAL.NAME}`}
-                >
-                  {SOCIAL.NAME}
-                </Link>
-                {"/"}
-              </li>
-            ))
-          }
-          <li class="line-clamp-1">
-            <Link
-              href={`mailto:${SITE.EMAIL}`}
-              aria-label={`Email ${SITE.TITLE}`}
-            >
-              {SITE.EMAIL}
-            </Link>
-          </li>
-        </ul>
+        <Socials />
       </section>
     </div>
   </Container>

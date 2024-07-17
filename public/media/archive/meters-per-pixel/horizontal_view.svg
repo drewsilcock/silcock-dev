@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="504.14001"
+   height="431.52042"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="horizontal_view.svg">
+  <title
+     id="title3006">Horizontal Camera View</title>
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lend"
+       style="overflow:visible">
+      <path
+         id="path3822"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart"
+       style="overflow:visible">
+      <path
+         id="path3819"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="326.84906"
+     inkscape:cy="197.74439"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="699"
+     inkscape:window-x="0"
+     inkscape:window-y="-3"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Horizontal Camera View</dc:title>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/by/3.0/" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Drew Silcock</dc:title>
+          </cc:Agent>
+        </dc:creator>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/by/3.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Notice" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Attribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-82.357143,-140.68345)">
+    <g
+       id="g5824">
+      <path
+         inkscape:connector-curvature="0"
+         id="path2985"
+         d="m 82.857143,505.21933 503.564977,0"
+         style="fill:none;stroke:#000000;stroke-width:1.00643826px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path2987"
+         d="m 338.57143,179.50504 -174.64286,325"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path2987-6"
+         d="M 511.65827,504.57004 337.72207,179.1913"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <rect
+         y="160.21933"
+         x="307.14285"
+         height="20"
+         width="61.42857"
+         id="rect3025"
+         style="fill:#ff0000;fill-opacity:1;stroke:#2b0000;stroke-width:4;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text3027"
+         y="156.35202"
+         x="304.53082"
+         style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#515151;fill-opacity:1;stroke:none;font-family:PT Sans;-inkscape-font-specification:PT Sans"
+         xml:space="preserve"><tspan
+           style="font-size:20px;fill:#515151;fill-opacity:1"
+           y="156.35202"
+           x="304.53082"
+           id="tspan3029"
+           sodipodi:role="line">Camera</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text3031"
+         y="502.15915"
+         x="522.48071"
+         style="font-size:14px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#515151;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#515151;fill-opacity:1;font-family:PT Sans;-inkscape-font-specification:PT Sans"
+           y="502.15915"
+           x="522.48071"
+           id="tspan3033"
+           sodipodi:role="line">Ground</tspan></text>
+      <path
+         inkscape:connector-curvature="0"
+         id="path3035"
+         d="m 337.85714,180.93361 0,324.28571"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2, 1;stroke-dashoffset:0" />
+      <text
+         transform="matrix(0,-1,1,0,0,0)"
+         sodipodi:linespacing="125%"
+         id="text3805"
+         y="331.56604"
+         x="-418.1427"
+         style="font-size:14px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#515151;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#515151;fill-opacity:1;font-family:PT Sans;-inkscape-font-specification:PT Sans"
+           y="331.56604"
+           x="-418.1427"
+           id="tspan3807"
+           sodipodi:role="line">Height, h</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text3809"
+         y="529.08661"
+         x="230.73531"
+         style="font-size:14px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#515151;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#515151;fill-opacity:1;font-family:PT Sans;-inkscape-font-specification:PT Sans"
+           id="tspan4461"
+           y="529.08661"
+           x="230.73531"
+           sodipodi:role="line">Distance photographed, x</tspan></text>
+      <path
+         inkscape:connector-curvature="0"
+         id="path3813"
+         d="m 164.28571,512.36218 347.85715,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:url(#Arrow1Lend)" />
+      <path
+         transform="matrix(0.75639242,0.65411811,-0.65411811,0.75639242,243.24518,-216.27405)"
+         sodipodi:end="1.3501744"
+         sodipodi:start="0.37052926"
+         d="m 397.31966,263.45492 a 71.071426,71.071426 0 0 1 -50.69519,43.61317 l -15.55303,-69.34876 z"
+         sodipodi:ry="71.071426"
+         sodipodi:rx="71.071426"
+         sodipodi:cy="237.71933"
+         sodipodi:cx="331.07144"
+         id="path4447"
+         style="opacity:0.5;color:#000000;fill:#00ffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         sodipodi:type="arc" />
+      <text
+         style="fill:#515151;fill-opacity:1"
+         id="text4451"
+         y="264.6731"
+         x="345.90338"
+         xml:space="preserve"><tspan
+           style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#515151;fill-opacity:1;font-family:PT Sans;-inkscape-font-specification:PT Sans"
+           y="264.6731"
+           x="345.90338"
+           id="tspan4453"
+           sodipodi:role="line">α<tspan
+   id="tspan4455"
+   style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;baseline-shift:sub;fill:#515151;fill-opacity:1;font-family:PT Sans;-inkscape-font-specification:PT Sans">x</tspan></tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4457"
+         y="568.1524"
+         x="223.55444"
+         style="font-size:14px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#515151;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#515151;fill-opacity:1;font-family:PT Sans;-inkscape-font-specification:PT Sans"
+           y="568.1524"
+           x="223.55444"
+           id="tspan4459"
+           sodipodi:role="line">HORIZONTAL</tspan></text>
+    </g>
+  </g>
+</svg>

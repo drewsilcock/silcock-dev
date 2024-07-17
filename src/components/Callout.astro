@@ -1,9 +1,10 @@
 ---
-interface Component {
-  type: "default" | "info" | "warning" | "error";
-}
+type Props = {
+  type?: "default" | "info" | "warning" | "error";
+  className?: string;
+};
 
-const { type = "default" } = Astro.props;
+const { type = "default", className } = Astro.props;
 
 let emoji = "💡";
 
@@ -16,9 +17,11 @@ if (type === "info") {
 }
 ---
 
-<div class={`not-prose callout callout-${type}`}>
+<div class={`not-prose callout callout-${type} ${className ?? ""}`}>
   <span class="emoji pointer-events-none select-none">{emoji}</span>
-  <slot />
+  <span class="callout-content">
+    <slot />
+  </span>
 </div>
 
 <style>
@@ -40,5 +43,9 @@ if (type === "info") {
 
   .callout-error {
     @apply border-red-800 bg-red-100 text-red-950 dark:border-red-200/20 dark:bg-red-950/20 dark:text-red-200;
+  }
+
+  .callout .callout-content {
+    @apply flex flex-col gap-4;
   }
 </style>

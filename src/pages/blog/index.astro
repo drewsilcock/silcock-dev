@@ -6,7 +6,7 @@ import ArrowCard from "@components/ArrowCard.astro";
 import { BLOG } from "@consts";
 
 const data = (await getCollection("blog"))
-  .filter((post) => !post.data.draft)
+  .filter((post) => !post.data.draft && !post.data.archive)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 type Acc = {
@@ -25,7 +25,7 @@ const posts = data.reduce((acc: Acc, post) => {
 const years = Object.keys(posts).sort((a, b) => parseInt(b) - parseInt(a));
 ---
 
-<Layout title={BLOG.TITLE} description={BLOG.DESCRIPTION}>
+<Layout title={BLOG.TITLE} description={BLOG.DESCRIPTION} route="blog">
   <Container>
     <div class="space-y-10">
       <div class="space-y-4">

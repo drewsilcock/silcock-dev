@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   data-v-0dd9719b=""
+   version="1.0"
+   width="113.14502"
+   height="111.60418"
+   viewBox="0 0 113.14502 111.60418"
+   preserveAspectRatio="xMidYMid"
+   color-interpolation-filters="sRGB"
+   id="svg16"
+   sodipodi:docname="logo.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview16"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="4.1351045"
+     inkscape:cx="39.781341"
+     inkscape:cy="37.000274"
+     inkscape:window-width="1392"
+     inkscape:window-height="1027"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg16" />
+  <rect
+     data-v-0dd9719b=""
+     x="0.57250977"
+     y="0.30208588"
+     width="98.988007%"
+     height="99.458641%"
+     fill="#171717"
+     fill-opacity="1"
+     class="background"
+     id="rect1"
+     style="stroke-width:0.992232"
+     ry="13.448074" />
+  <g
+     data-v-0dd9719b=""
+     fill="#eab308"
+     class="icon-text-wrapper icon-svg-group iconsvg"
+     transform="matrix(1.0002998,0,0,0.99053817,6.5586495,6.2751812)"
+     id="g16">
+    <g
+       fill="#eab308"
+       class="iconsvg-imagesvg icon_container"
+       id="g11">
+      <rect
+         fill="#eab308"
+         fill-opacity="0"
+         stroke-width="2"
+         x="0"
+         y="0"
+         width="100"
+         height="100"
+         class="image-rect"
+         id="rect2" />
+      <svg
+         viewBox="0 0 60 60"
+         x="0"
+         y="0"
+         width="100"
+         height="100"
+         class="image-svg-svg bn"
+         style="overflow:visible"
+         version="1.1"
+         id="svg9">
+        <g
+           hollow-target="iconBnFill"
+           mask="url(#6916334c-ee3b-420e-a7fd-24aa65994e05)"
+           id="g6">
+          <g
+             id="g4">
+            <svg
+               viewBox="0 0 100 100"
+               style="overflow:visible"
+               width="60"
+               height="60"
+               x="0"
+               y="0"
+               filtersec="colorsf5429326836"
+               filter="url(#FQkLvb7NCv94Z-JhYXjl7)"
+               version="1.1"
+               id="svg3">
+              <g
+                 id="g3">
+                <rect
+                   x="277"
+                   y="3121"
+                   width="100"
+                   height="100"
+                   rx="10"
+                   transform="translate(-277,-3121)"
+                   fill-rule="evenodd"
+                   id="rect3" />
+              </g>
+              <defs
+                 id="defs3">
+                <filter
+                   id="FQkLvb7NCv94Z-JhYXjl7"
+                   x="0"
+                   y="0"
+                   width="1"
+                   height="1">
+                  <feColorMatrix
+                     type="matrix"
+                     values="0 0 0 0 0.97265625  0 0 0 0 0.74609375  0 0 0 0 0.29296875  0 0 0 1 0"
+                     id="feColorMatrix3" />
+                </filter>
+              </defs>
+            </svg>
+          </g>
+          <g
+             filter="url(#colors5196958228)"
+             id="g5">
+            <svg
+               viewBox="0 0 77.704425 51.408"
+               width="45"
+               height="45"
+               x="7.5"
+               y="7.5"
+               class="image-svg-letter"
+               version="1.1"
+               id="svg4">
+              <path
+                 transform="translate(-5.0089689,50.832)"
+                 d="m 5.54,-18.65 c -2.3,12.39 3.03,19.23 12.32,19.23 5.11,0 9.36,-1.88 12.74,-5.26 0.58,3.46 3.38,5.18 6.84,5.18 2.59,0 4.61,-0.5 6.7,-1.58 l 1.65,-8.35 c -1.01,0.43 -1.87,0.65 -2.59,0.65 -1.66,0 -2.45,-1.23 -1.87,-4.18 l 7.34,-37.87 H 34.13 l -1.37,7.27 h 4.75 l -2.09,10.51 c -2.08,-3.02 -5.4,-4.53 -10.08,-4.53 -9.21,0 -17.49,6.84 -19.8,18.93 z m 10.08,0.22 c 1.37,-6.63 5.76,-10.44 10.95,-10.44 3.96,0 6.55,2.3 6.84,6.26 l -1.66,8.57 c -1.94,3.96 -5.47,6.19 -9.29,6.19 -5.18,0 -8.2,-3.96 -6.84,-10.58 z m 36.94,-8.28 c -2.3,12.38 18.5,10.87 17.35,16.56 -0.57,2.88 -3.09,3.67 -6.77,3.67 -2.23,0 -4.03,-0.36 -6.12,-0.86 l 0.51,-5.4 H 50.11 L 48.1,-2.09 c 3.81,1.37 9.07,2.67 14.9,2.67 10.58,0 15.48,-3.96 16.85,-10.59 2.3,-12.6 -18.36,-10.94 -17.21,-17.35 0.5,-2.52 3.17,-3.6 7.2,-3.6 4.97,0 4.9,1.94 3.53,5.62 h 7.92 c 3.81,-8.79 -0.15,-12.24 -10.51,-12.24 -10.73,0 -16.85,4.17 -18.22,10.87 z"
+                 id="path4" />
+            </svg>
+          </g>
+        </g>
+        <mask
+           id="6916334c-ee3b-420e-a7fd-24aa65994e05">
+          <g
+             fill="#ffffff"
+             id="g8">
+            <svg
+               viewBox="0 0 100 100"
+               style="overflow:visible"
+               width="60"
+               height="60"
+               x="0"
+               y="0"
+               filtersec="colorsf5429326836"
+               version="1.1"
+               id="svg7">
+              <g
+                 id="g7">
+                <rect
+                   x="277"
+                   y="3121"
+                   width="100"
+                   height="100"
+                   rx="10"
+                   transform="translate(-277,-3121)"
+                   fill-rule="evenodd"
+                   id="rect6" />
+              </g>
+              <defs
+                 id="defs7" />
+            </svg>
+          </g>
+          <g
+             fill="#000000"
+             id="g9">
+            <svg
+               viewBox="0 0 77.704425 51.408"
+               width="45"
+               height="45"
+               x="7.5"
+               y="7.5"
+               class="image-svg-letter"
+               version="1.1"
+               id="svg8">
+              <path
+                 transform="translate(-5.0089689,50.832)"
+                 d="m 5.54,-18.65 c -2.3,12.39 3.03,19.23 12.32,19.23 5.11,0 9.36,-1.88 12.74,-5.26 0.58,3.46 3.38,5.18 6.84,5.18 2.59,0 4.61,-0.5 6.7,-1.58 l 1.65,-8.35 c -1.01,0.43 -1.87,0.65 -2.59,0.65 -1.66,0 -2.45,-1.23 -1.87,-4.18 l 7.34,-37.87 H 34.13 l -1.37,7.27 h 4.75 l -2.09,10.51 c -2.08,-3.02 -5.4,-4.53 -10.08,-4.53 -9.21,0 -17.49,6.84 -19.8,18.93 z m 10.08,0.22 c 1.37,-6.63 5.76,-10.44 10.95,-10.44 3.96,0 6.55,2.3 6.84,6.26 l -1.66,8.57 c -1.94,3.96 -5.47,6.19 -9.29,6.19 -5.18,0 -8.2,-3.96 -6.84,-10.58 z m 36.94,-8.28 c -2.3,12.38 18.5,10.87 17.35,16.56 -0.57,2.88 -3.09,3.67 -6.77,3.67 -2.23,0 -4.03,-0.36 -6.12,-0.86 l 0.51,-5.4 H 50.11 L 48.1,-2.09 c 3.81,1.37 9.07,2.67 14.9,2.67 10.58,0 15.48,-3.96 16.85,-10.59 2.3,-12.6 -18.36,-10.94 -17.21,-17.35 0.5,-2.52 3.17,-3.6 7.2,-3.6 4.97,0 4.9,1.94 3.53,5.62 h 7.92 c 3.81,-8.79 -0.15,-12.24 -10.51,-12.24 -10.73,0 -16.85,4.17 -18.22,10.87 z"
+                 id="path8" />
+            </svg>
+          </g>
+        </mask>
+      </svg>
+      <defs
+         id="defs11">
+        <filter
+           id="colors5196958228"
+           x="0"
+           y="0"
+           width="1"
+           height="1">
+          <feColorMatrix
+             type="matrix"
+             values="0 0 0 0 0.97265625  0 0 0 0 0.74609375  0 0 0 0 0.29296875  0 0 0 1 0"
+             class="icon-fecolormatrix"
+             id="feColorMatrix9" />
+        </filter>
+        <filter
+           id="colorsf5429326836">
+          <feColorMatrix
+             type="matrix"
+             values="0 0 0 0 0.99609375  0 0 0 0 0.99609375  0 0 0 0 0.99609375  0 0 0 1 0"
+             class="icon-fecolormatrix"
+             id="feColorMatrix10" />
+        </filter>
+        <filter
+           id="colorsb4280969358">
+          <feColorMatrix
+             type="matrix"
+             values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"
+             class="icon-fecolormatrix"
+             id="feColorMatrix11" />
+        </filter>
+      </defs>
+    </g>
+    <g
+       transform="translate(50,107)"
+       id="g15">
+      <g
+         data-gra="path-name"
+         fill-rule=""
+         class="tp-name iconsvg-namesvg"
+         id="g14">
+        <g
+           id="g13">
+          <g
+             id="g12">
+            <path
+               d=""
+               id="path11" />
+          </g>
+          <!---->
+          <!---->
+          <!---->
+          <!---->
+          <!---->
+          <!---->
+          <!---->
+        </g>
+      </g>
+      <!---->
+    </g>
+  </g>
+  <defs
+     v-gra="od"
+     id="defs16" />
+</svg>

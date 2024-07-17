@@ -8,26 +8,27 @@ import "@fontsource/geist-mono";
 interface Props {
   title: string;
   description: string;
-  image?: string;
+  imageUrl?: string;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, image = "/blog-placeholder-1.jpg" } = Astro.props;
+const { title, description, imageUrl } = Astro.props;
 ---
 
 <!-- Global Metadata -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link
-  rel="icon"
-  href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>"
-/>
 <meta name="generator" content={Astro.generator} />
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
+
+<!-- Favicon -->
+<link
+  rel="icon"
+  href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨🏻‍💻</text></svg>"
+/>
 
 <!-- Primary Meta Tags -->
 <title>{title}</title>
@@ -39,18 +40,28 @@ const { title, description, image = "/blog-placeholder-1.jpg" } = Astro.props;
 <meta property="og:url" content={Astro.url} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image, Astro.url)} />
+{imageUrl && <meta property="og:image" content={new URL(imageUrl, Astro.url)} />}
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:url" content={Astro.url} />
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={new URL(image, Astro.url)} />
+{imageUrl && <meta property="twitter:image" content={new URL(imageUrl, Astro.url)} />}
 
 <!-- PageFind -->
 <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
 <script is:inline src="/pagefind/pagefind-ui.js"></script>
+
+<!-- Get the latest one from: https://katex.org/docs/browser -->
+<link
+  rel="preload"
+  as="style"
+  onload="this.onload=null;this.rel='stylesheet'"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+  integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+"
+  crossorigin="anonymous"
+/>
 
 <ViewTransitions />
 
@@ -60,8 +71,9 @@ const { title, description, image = "/blog-placeholder-1.jpg" } = Astro.props;
     onScroll();
     animate();
     updateThemeButtons();
-    addCopyCodeButtons();
+    //addCopyCodeButtons();
     setGiscusTheme();
+    decodeEmails();
 
     const backToTop = document.getElementById("back-to-top");
     backToTop?.addEventListener("click", (event) => scrollToTop(event));
@@ -168,8 +180,8 @@ const { title, description, image = "/blog-placeholder-1.jpg" } = Astro.props;
              -ms-transition: none !important;
              transition: none !important;
           }
-        `
-      )
+        `,
+      ),
     );
 
     document.head.appendChild(css);
@@ -233,7 +245,7 @@ const { title, description, image = "/blog-placeholder-1.jpg" } = Astro.props;
     }
   }
 
-  const setGiscusTheme = () => {
+  function setGiscusTheme() {
     const giscus = document.querySelector(".giscus-frame");
 
     const isDark = document.documentElement.classList.contains("dark");
@@ -242,6 +254,87 @@ const { title, description, image = "/blog-placeholder-1.jpg" } = Astro.props;
       const url = new URL(giscus.src);
       url.searchParams.set("theme", isDark ? "dark" : "light");
       giscus.src = url.toString();
+    }
+  }
+
+  // Inspired by https://spencermortensen.com/articles/email-obfuscation/#link-xor
+
+  // 0 <= baseXorDecodeKey <= 255
+  const baseXorDecodeKey = 103;
+
+  /**
+   * Convert numeric character code to hexadecimal string.
+   * @param {number} charCode Numeric representation of a character.
+   */
+  function charCodeToHex(charCode) {
+    let hex = charCode.toString(16);
+
+    if (charCode < 16) {
+      hex = "0" + hex;
+    }
+
+    return hex;
+  }
+
+  /**
+   * Convert hexadecimal string to numeric character code.
+   * @param {string} hex
+   */
+  function hexToCharCode(hex) {
+    return parseInt(hex, 16);
+  }
+
+  /**
+   * Decode text encoded with a simple XOR-based cipher.
+   * @param {string} encodedText Xor-encoded text to decode.
+   */
+  function xorDecode(encodedText) {
+    let decoded = "";
+
+    for (let i = 0; i < encodedText.length; i += 2) {
+      const decodeKey = (baseXorDecodeKey + i / 2) % 255;
+      const hexInput = encodedText.substring(i, i + 2);
+      const charCodeInput = hexToCharCode(hexInput);
+      const charCodeOutput = charCodeInput ^ decodeKey;
+      decoded += String.fromCharCode(charCodeOutput);
+    }
+
+    return decoded;
+  }
+
+  /**
+   * This function encodes an email address using a simple XOR cipher. It's not needed
+   * for the site's runtime, but it's useful to generate the encoded emails to put into
+   * the site.
+   * @param {string} textToEncode Email address to xor encode.
+   */
+  window.xorEncode = function (textToEncode) {
+    let encoded = "";
+
+    for (let i = 0; i < textToEncode.length; i++) {
+      const decodeKey = (baseXorDecodeKey + i) % 255;
+      const charCode = textToEncode.charCodeAt(i);
+      const encodedCharCode = charCode ^ decodeKey;
+      encoded += charCodeToHex(encodedCharCode);
+    }
+
+    return encoded;
+  };
+
+  const decodeEmails = () => {
+    const emailElements = document.querySelectorAll(".email.protect-me");
+    console.log("Email elements:", emailElements);
+
+    for (const emailElement of emailElements) {
+      const encodedEmail = emailElement.getAttribute("href");
+
+      if (encodedEmail === null) {
+        continue;
+      }
+
+      const decodedEmail = xorDecode(encodedEmail);
+      emailElement.setAttribute("href", `mailto:${decodedEmail}`);
+      emailElement.textContent = decodedEmail;
     }
   };
 

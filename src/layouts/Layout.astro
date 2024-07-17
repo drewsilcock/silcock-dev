@@ -8,15 +8,20 @@ import { SITE } from "@consts";
 type Props = {
   title: string;
   description: string;
+  route: string;
 };
 
-const { title, description } = Astro.props;
+const { title, description, route } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <Head title={`${title} | ${SITE.TITLE}`} description={description} />
+    <Head
+      title={`${title} | ${SITE.TITLE}`}
+      description={description}
+      imageUrl={`/open-graph/${route}.png`}
+    />
   </head>
   <body>
     <Header />

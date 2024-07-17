@@ -21,9 +21,27 @@ type Props = CollectionEntry<"projects">;
 
 const project = Astro.props;
 const { Content, headings } = await project.render();
+const links = [
+  project.data.demoURL && {
+    href: project.data.demoURL,
+    text: "demo",
+  },
+  project.data.repoURL && {
+    href: project.data.repoURL,
+    text: "repo",
+  },
+  project.data.packageURL && {
+    href: project.data.packageURL,
+    text: "package",
+  },
+].filter(Boolean) as { href: string; text: string }[];
 ---
 
-<Layout title={project.data.title} description={project.data.description}>
+<Layout
+  title={project.data.title}
+  description={project.data.description}
+  route={`${project.collection}/${project.slug}`}
+>
   <Container>
     <div class="animate">
       <BackToPrevious href="/projects">Back to projects</BackToPrevious>
@@ -41,23 +59,19 @@ const { Content, headings } = await project.render();
       <h1 class="text-3xl font-semibold text-black dark:text-white">
         {project.data.title}
       </h1>
-      {
-        (project.data.demoURL || project.data.repoURL) && (
-          <nav class="flex gap-1">
-            {project.data.demoURL && (
-              <Link href={project.data.demoURL} external>
-                demo
-              </Link>
-            )}
-            {project.data.demoURL && project.data.repoURL && <span>/</span>}
-            {project.data.repoURL && (
-              <Link href={project.data.repoURL} external>
-                repo
-              </Link>
-            )}
-          </nav>
-        )
-      }
+
+      <nav class="flex gap-1">
+        {
+          links.length > 0 &&
+            links
+              .map(({ href, text }) => (
+                <Link href={href} external>
+                  {text}
+                </Link>
+              ))
+              .reduce((prev, curr) => [prev, " / ", curr])
+        }
+      </nav>
     </div>
     <TableOfContents headings={headings} />
     <article class="animate">
