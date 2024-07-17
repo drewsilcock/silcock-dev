@@ -2,7 +2,8 @@
 title: Using make and latexmk for easy LaTeX compilation
 description: Guide to using make and latexmk for easy LaTeX compilation
 date: 2014-09-23
-tags: [coding]
+tags:
+  - latex
 ---
 
 Still running `pdflatex` (or equivalent) every time you want to recompile your $$ \LaTeX $$ document? There's a simpler way using `make` and `latexmk`. All you need is a simple `Makefile` and you can tell $$ \LaTeX $$ to automatically recompile your document every time you change a file, and run `pdflatex` the sufficient number of times to get cross-references right.
@@ -15,7 +16,7 @@ For the purposes of this article, I assume that you're using `pdflatex`, but all
 
 The basic syntax of `latexmk` is as follows:
 
-```bash showLineNumbers
+```bash
 $ latexmk $OPTIONS -pdflatex="$COMPILATION_COMMAND $PDFLATEX_OPTIONS %O %S" yourtexfile.tex
 ```
 
@@ -31,7 +32,7 @@ Finally, we can wrap all this in a `Makefile` so we don't have to type the long 
 
 Here's a basic template for using `make` to simply this whole thing:
 
-```makefile showLineNumbers
+```makefile
 LATEX=pdflatex
 LATEXOPT=--shell-escape
 NONSTOP=--interaction=nonstopmode

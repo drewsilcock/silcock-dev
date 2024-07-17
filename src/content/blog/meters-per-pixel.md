@@ -1,8 +1,11 @@
 ---
 title: Calculating meters per pixel from aerial photographs
-description: Calculate the meters per pixel of a camera from its resolution, height, and angle of view.
+description: >-
+  Calculate the meters per pixel of a camera from its resolution, height, and
+  angle of view.
 date: 2014-07-21
-tags: [science]
+tags:
+  - photogrammetry
 ---
 
 ## Aim
@@ -22,54 +25,54 @@ Firstly, let's look at how we can go from the information we have to the informa
 Then let us parametrise the situation as follows:
 
 * Ground distances photographed in horizontal and vertical, respectively: $$x$$ and $$y$$
-* Resolution of camera: $$r_x$$ and $$r_y$$
+* Resolution of camera: $$r\_x$$ and $$r\_y$$
 * Height from which photo was taken: $$h$$
-* Angle of view of the camera: $$\alpha_x$$ and $$\alpha_y$$
-* MMP: $$\mu_x$$ and $$\mu_y$$
+* Angle of view of the camera: $$\alpha\_x$$ and $$\alpha\_y$$
+* MMP: $$\mu\_x$$ and $$\mu\_y$$
 
 The following diagrams illustrate the horizontal and vertical views that the camera sees:
 
 ![horizontal view](/media/archive/meters-per-pixel/horizontal_view.svg)
 
------
+***
 
 ![vertical view](/media/archive/meters-per-pixel/vertical_view.svg)
 
 It is clear by basic trigonometry that the tangent of half the angle of view is equal to half the ratio of the ground distance and the height. As parametrised:
 
 $$
-\tan\left(\frac{\alpha_x}{2}\right) = \frac{x}{2h}
+\tan\left(\frac{\alpha\_x}{2}\right) = \frac{x}{2h}
 $$
 
 $$
-\tan\left(\frac{\alpha_y}{2}\right) = \frac{y}{2h}
+\tan\left(\frac{\alpha\_y}{2}\right) = \frac{y}{2h}
 $$
 
 Rearranging this for $$x$$ and $$y$$:
 
 $$
-x = 2h\tan\left(\frac{\alpha_x}{2}\right)
+x = 2h\tan\left(\frac{\alpha\_x}{2}\right)
 $$
 
 $$
-y = 2h\tan\left(\frac{\alpha_y}{2}\right)
+y = 2h\tan\left(\frac{\alpha\_y}{2}\right)
 $$
 
 Then the MMP is given by:
 
 $$
-\mu_x = \frac{x}{r_x} = \frac{2h\tan\left(\frac{\alpha_x}{2}\right)}{r_x}
+\mu\_x = \frac{x}{r\_x} = \frac{2h\tan\left(\frac{\alpha\_x}{2}\right)}{r\_x}
 $$
 
 $$
-\mu_y = \frac{y}{r_y} = \frac{2h\tan\left(\frac{\alpha_y}{2}\right)}{r_y}
+\mu\_y = \frac{y}{r\_y} = \frac{2h\tan\left(\frac{\alpha\_y}{2}\right)}{r\_y}
 $$
 
 ## Finding camera resolution
 
 The camera resolution should be displayed on the camera specifications, or in the camera settings dialogue. If you don't have access to this information, it can also be read directly from the EXIF metadata using [`exiftool`](http://www.sno.phy.queensu.ca/~phil/exiftool/):
 
-```bash showLineNumbers
+```bash
 > exiftool photo.jpg
 ...
 Image Size: 4608x3456 # This is the camera resolution
@@ -99,11 +102,11 @@ For instance, my camera has a 1/2.3" CCD, meaning it has dimensions 6.17 mm by 4
 Thus, plugging these values into the equation above, my camera has angles of view of:
 
 $$
-\alpha_x = 63.3^{\circ}
+\alpha\_x = 63.3^{\circ}
 $$
 
 $$
-\alpha_y = 48.9^{\circ}
+\alpha\_y = 48.9^{\circ}
 $$
 
 ## Conclusion
@@ -111,11 +114,11 @@ $$
 Then plugging these values into the formula given above, the MMP as a function of height is:
 
 $$
-\mu_x = 0.2675h ~\text{mm/pixel}
+\mu\_x = 0.2675h \~\text{mm/pixel}
 $$
 
 $$
-\mu_y = 0.2631h ~\text{mm/pixel}
+\mu\_y = 0.2631h \~\text{mm/pixel}
 $$
 
-Where $$h$$ is in meters. Thus at a typical UAV flight height of $$h = 100~\text{m}$$ , the MMP is 2.68 cm per pixel in the horizontal and 2.63 cm per pixel in the vertical.
+Where $$h$$ is in meters. Thus at a typical UAV flight height of $$h = 100\~\text{m}$$ , the MMP is 2.68 cm per pixel in the horizontal and 2.63 cm per pixel in the vertical.

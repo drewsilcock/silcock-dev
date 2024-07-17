@@ -1,8 +1,9 @@
 ---
 title: Proper line numbers with Jekyll
 description: How to get beautiful line numbers in Jekyll code blocks.
-date: "2014-07-18"
-tags: [coding]
+date: 2014-07-18
+tags:
+  - jekyll
 archive: true
 ---
 
@@ -13,6 +14,7 @@ Here's the default `lineno` option, `inline`:
 ![lineno=inline](/media/archive/proper-linenumbers/lineno_w_inline.png)
 
 This works, but has two main visual and practical problems:
+
 1. There is no visual separation between the line numbers and the code, causing them to visually become indistinct, and
 2. When trying to copy code from the codeblocks, the line numbers are included, annoyingly.
 
@@ -23,6 +25,7 @@ Well, Pygments has inbuilt the `table` option, which separates the code from the
 ![lineno=table](/media/archive/proper-linenumbers/lineno_w_table.png)
 
 Well, as you can see, this doesn't really look good either. The main problems are:
+
 1. The size of the line number table is inconsistent between codeblocks, and
 2. The line numbers don't align with the actual lines of code
 
@@ -32,7 +35,7 @@ So let's get rid of the `lineno` option altogether, and get our beautiful but fu
 
 Alex's CSS is as follows:
 
-```c lineanchorsss showLineNumbers
+```c
 pre {
     counter-reset: line-numbering;
     border: solid 1px #d9d9d9;
@@ -87,7 +90,7 @@ Here's what it produces after adding it to your `syntax.css`:
 
 Note those important lines at the end of `pre a::before`:
 
-```c lineanchorsss showLineNumbers
+```c
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -112,7 +115,7 @@ To solve this, you can either just put `lineanchors` in every `highlight` Liquid
 
 Using this plugin, you can simply specify as follows in your `_config.yml`:
 
-```yaml showLineNumbers
+```yaml
 pygments_options: ['lineanchors']
 ```
 
@@ -128,7 +131,7 @@ Another problem I had, although I am unsure whether this problem is universal/re
 
 Now, I haven't come all this way just to be bested by an annoying y-scroll bar, so I added in this bit of CSS to Alex's code to get rid of it:
 
-```c lineanchorsss showLineNumbers
+```c
 /* In pre { .. } */
 overflow-y: hidden;
 ```
@@ -143,7 +146,7 @@ Dana's global configs Jekyll plugin is incompatible with the new Jekyll 2.2.0 re
 
 I always forget to do this, and could not be bothered to go through each codeblock in each blog post I've written, so here's a simple bash script to replace all instances of the `highlight lang` Liquid tag with its `lineanchors` equivalent:
 
-```bash showLineNumbers
+```bash
 #!/bin/bash
 
 # Adds lineanchors option to all codeblock Liquid tags
@@ -159,4 +162,3 @@ done
 ```
 
 Change `$posts` to correspond to the location of your blog posts, the contents of which you wish to replace. If you're using more lexers, just add them into the languages array.
-

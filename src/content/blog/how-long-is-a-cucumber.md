@@ -1,8 +1,11 @@
 ---
-title: How long is a cucumber? 🥒
-description: A deep dive into how JavaScript handles Unicode, and what this means for string indexing.
-date: "2018-12-20"
-tags: [coding]
+title: "How long is a cucumber? \U0001F952"
+description: >-
+  A deep dive into how JavaScript handles Unicode, and what this means for
+  string indexing.
+date: 2018-12-20
+tags:
+  - unicode
 ---
 
 *Or: UTF-16 handling of astral planes and implications for JavaScript string indexing*
@@ -23,7 +26,7 @@ Past this continent of common characters lies the vast, largely uninhabited and 
 
 The BMP takes up the first 2<sup>16</sup> code points in the range `0x0000` to `0xffff`. This means that all BMP code points can be represented using only 16 bits or 2 bytes (some fewer). The astral planes, extending from `0x10000` to the full `0x10ffff`, need between 3 and 4 bytes to represent them.
 
-![The 14<sup>th</sup> Century philosopher Nicole Oresmo's astral planes.](/media/archive/how-long-is-a-cucumber/astral_planes.jpg)
+![The 14\<sup>th\</sup> Century philosopher Nicole Oresmo's astral planes.](/media/archive/how-long-is-a-cucumber/astral_planes.jpg)
 
 > The 14<sup>th</sup> Century philosopher Nicole Oresmo demonstrates some astral plane characters. Images such as these would be distributed to the monks of the monasteries to aid their copying of Unicode manuscripts.
 
@@ -35,7 +38,7 @@ The truth is that UTF-16 essentially uses two separate code points to represent 
 
 Each astral code point is represented in UTF-16 as one Low Surrogate and one High Surrogate by the following equation:
 
-```js showLineNumbers
+```js
 0x1000016 + (high_surrogate − 0xd80016) × 0x40016 + (low_surrogate − 0xdc0016)
 ```
 
@@ -45,7 +48,7 @@ What this means is that, in JavaScript, the cucumber character `0x1f952` is repr
 
 The astute reader may wonder what these surrogate pair representations of single characters means for the indexing of strings in JavaScript. When you have a string like `var s = "hello there"`, you expect `s[0]` to give you the first character, `s[3]` to give you the fourth character and `s[7]` to give you the eight character. But what about the following code:
 
-```js showLineNumbers
+```js
 var cucumber = "🥒";
 console.log(cucumber.length);
 // -> 2
@@ -53,7 +56,7 @@ console.log(cucumber.length);
 
 So, even though it contains only a single character, JavaScript thinks that the cucumber string has a length of 2! We can delve a bit further:
 
-```js showLineNumbers
+```js
 var highSurrogate = cucumber[0];
 var lowSurrogate = cucumber[1];
 
@@ -67,7 +70,7 @@ What this shows is that string indexing works by assuming that all characters ar
 
 This means that the string indexing works the same way as classical C-like array indexing, where `s[4]` just means getting the address of `s` and skipping forward `4 * sizeof s[0]` bytes.
 
-This maintains the O(1) speed of normal BMP string indexing, but is clearly bound to cause bugs when users are able to input astral characters into a script not expecting it! In fact, as I type out this article on http://dillinger.io, trying to remove an astral character with the ''Delete'' or ''Backspace'' buttons on a character like ''😊'' deletes not the character, but one of the *surrogates*, leaving the other surrogate as a weird question mark (�) which really confuses the cursor positioning...
+This maintains the O(1) speed of normal BMP string indexing, but is clearly bound to cause bugs when users are able to input astral characters into a script not expecting it! In fact, as I type out this article on [http://dillinger.io](http://dillinger.io), trying to remove an astral character with the ''Delete'' or ''Backspace'' buttons on a character like ''😊'' deletes not the character, but one of the *surrogates*, leaving the other surrogate as a weird question mark (�) which really confuses the cursor positioning...
 
 It's also a fun way to trick password forms into accepting fewer characters than they were asking for, like ''😂😼😊✌️'' which will trick JavaScript minimum character checks looking for a minimum of 8 characters. (This string does have a length of 8, but not quite for the reason you might think - [see note X](#note-3) for why this is.)
 
@@ -85,16 +88,16 @@ Another benefit of UTF-8 (and this applies to UTF-32 as well) is that because yo
 
 Well, JavaScript isn't on its own:
 
-- **C** - The standard types used are `char` which is generally used as an 8-bit character for ASCII (and sometimes for other purposes where `uint8_t` should *really* be used instead) and `wchar_t` (introduced in C90) for handling any Unicode code point. In truth, the standard does not specify the size of either `char` or `wchar_t` [See note 3 for more information about this](#note-4).
-- **C++** - natively uses 8-bit `std::string` much like pure C. There is `std::wstring` analogous to C's `wchar_t` with corresponding `std::wcout`, `std::wcerr`, etc.
-- **Python** - I'm not going to open this can of worms. To summarise, Python supports the full Unicode range via either UTF-16 (as per JavaScript) or UCS-4 which is where each character is 32-bits long and you don't have to deal with any of this surrogate nonsense (although all your strings end of being *much* larger than they need to be). As per usual with Python, all of these details are handles under the hood without the programmer needing to know any of the details. There are differences relating to Python 2.x vs 3.x and compile-time flags and all this confusing mess, but you can happily code away without worrying about it.
-- **Java** - Java's `char` type is 16-bit length able to store the BMP characters only. The `String` type uses UTF-16 to enable the full Unicode range as per JavaScript.
+* **C** - The standard types used are `char` which is generally used as an 8-bit character for ASCII (and sometimes for other purposes where `uint8_t` should *really* be used instead) and `wchar_t` (introduced in C90) for handling any Unicode code point. In truth, the standard does not specify the size of either `char` or `wchar_t` [See note 3 for more information about this](#note-4).
+* **C++** - natively uses 8-bit `std::string` much like pure C. There is `std::wstring` analogous to C's `wchar_t` with corresponding `std::wcout`, `std::wcerr`, etc.
+* **Python** - I'm not going to open this can of worms. To summarise, Python supports the full Unicode range via either UTF-16 (as per JavaScript) or UCS-4 which is where each character is 32-bits long and you don't have to deal with any of this surrogate nonsense (although all your strings end of being *much* larger than they need to be). As per usual with Python, all of these details are handles under the hood without the programmer needing to know any of the details. There are differences relating to Python 2.x vs 3.x and compile-time flags and all this confusing mess, but you can happily code away without worrying about it.
+* **Java** - Java's `char` type is 16-bit length able to store the BMP characters only. The `String` type uses UTF-16 to enable the full Unicode range as per JavaScript.
 
 Then again, some of the newer languages seem to have seen the errors of the past and are adapting UTF-8 for strings natively:
 
-- **Go** - Go source code is formatted as UTF-8. Strings are actually encoding-independent slices of bytes, however as Go source code is UTF-8 this practically means that almost all string literals are UTF-8. Indexing does *not*, however, index into the *codepoints* but the *bytes*. Bit weird, but there you go! See [golang.org](https://blog.golang.org/strings) for more information on strings in Go.
-- **D** - has standard library support for UTF-8, UTF-16 *and* UTF-32 via `string`, `wstring` and `dstring` respectively, so you're spoilt for choice!
-- **Rust** - uses UTF-8 strings as standard - Rust source code is UTF-8, string literals are UTF-8, the `std::string::String` encapsulates a UTF-8 string and primitive type `str` (the borrowed counterpart to `std::string::String`) is always valid UTF-8. Nice!
+* **Go** - Go source code is formatted as UTF-8. Strings are actually encoding-independent slices of bytes, however as Go source code is UTF-8 this practically means that almost all string literals are UTF-8. Indexing does *not*, however, index into the *codepoints* but the *bytes*. Bit weird, but there you go! See [golang.org](https://blog.golang.org/strings) for more information on strings in Go.
+* **D** - has standard library support for UTF-8, UTF-16 *and* UTF-32 via `string`, `wstring` and `dstring` respectively, so you're spoilt for choice!
+* **Rust** - uses UTF-8 strings as standard - Rust source code is UTF-8, string literals are UTF-8, the `std::string::String` encapsulates a UTF-8 string and primitive type `str` (the borrowed counterpart to `std::string::String`) is always valid UTF-8. Nice!
 
 Check [this link](https://unicodebook.readthedocs.io/programming_languages.html) out for more information about how different programming languages handle Unicode.
 
@@ -102,14 +105,15 @@ Check [this link](https://unicodebook.readthedocs.io/programming_languages.html)
 
 While languages like Go embrace UTF-8 but maintain indexing into bytes as the default, Rust goes even further in enforcing a UTF-8 treatment of all strings. So what happens when you try to index strings in Rust?
 
-```rust showLineNumbers
+```rust
   |
 5 |     println!("Normal[5]: '{}'", normal_string[5]);
   |                                 ^^^^^^^^^^^^^^^^ `std::string::String` cannot be indexed by `{integer}`
   |
   = help: the trait `std::ops::Index<{integer}>` is not implemented for `std::string::String`
 ```
-[(Try it out)](https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=25af3779c35a7dfc4a147e943015c9f3)
+
+[(Try it out)](https://play.rust-lang.org)
 
 In fact, Rust prevent indexing into strings using the normal `[idx]` syntax *entirely* on the basis that
 
@@ -118,10 +122,10 @@ b. Using the `[idx]` indexing syntax mentally implies O(1) execution, which won'
 
 Instead, Rust forces you to choose which to index into by providing two iterators:
 
-- `my_string.bytes()` for iterating over raw bytes - each item is given as a `u8`.
-- `my_string.chars()` for iterating over code points (technically it is for iterating over [Unicode Scalar Values](http://www.unicode.org/glossary/#unicode_scalar_value) which is basically a Unicode code point excluding the low and high surrogates discussed earlier) - each item is given as a `char`, which is a 32-bit long representation of a single codepoint.
+* `my_string.bytes()` for iterating over raw bytes - each item is given as a `u8`.
+* `my_string.chars()` for iterating over code points (technically it is for iterating over [Unicode Scalar Values](http://www.unicode.org/glossary/#unicode_scalar_value) which is basically a Unicode code point excluding the low and high surrogates discussed earlier) - each item is given as a `char`, which is a 32-bit long representation of a single codepoint.
 
-```rust showLineNumbers
+```rust
 fn main() {
     let normal_string = String::from("UTF-8! 🥒");
 
@@ -167,7 +171,8 @@ fn main() {
 // byte at index 9: 165 (¥)
 // byte at index 10: 146 ()
 ```
-[(Try it out)](https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=ac4dfbe2ebd3788954a7cce5e278ca5e)
+
+[(Try it out)](https://play.rust-lang.org)
 
 You might notice that Rust doesn't provide a standard library way of iterating through grapheme clusters, although there are [crates that do exactly this](https://crates.io/crates/unicode-segmentation). This might give you an idea of just how complicated this Unicode malarkey can get if you keep digging.
 
@@ -215,7 +220,7 @@ As you can see, they've still got a lot of possible codepoints to choose from!
 
 In fact, the last symbol in that array - ✌️ - also known as "victory hand", is within the BMP. So why does it appear as an emoji with length 2? Why, that's an excellent question. To see what's going on here, let's break down how JavaScript sees the character:
 
-```js showLineNumbers
+```js
 const victory_hand = "✌️";
 
 let i = 0;
@@ -251,16 +256,15 @@ This is a classic example of C specifications not really giving away enough deta
 
 **2018-12-27** - Several points updated, rephrased and explanations clarified followed some interesting comments on [Lobsters](https://lobste.rs/s/dxfgql/how_long_is_cucumber).
 
-- The number of code points in a simple Unicode plane is 65,536 not 65,535 as stated previously (thanks to /u/Nayuki for pointing this mistake out).
-- Explanation of Rust indexing was updated to clarify that both byte-indexing and codepoint-indexing is possible, but neither using the native indexing syntax (thanks to /u/Nayuki and /u/Kyrias for clarifying this).
-- CJK characters are in the 3-byte range in UTF-8, not the 2-byte range as previously stated (thanks to /u/Nayuki for pointing this mistake out).
-- The C standard is far more vague than I initially understood in defining `char` and `wchar_t`. Post updated to reflect this (thanks to /u/tedu and /u/notriddle for explaining this).
-- Added graph depicting assignment of codepoints by the Unicode Consortium.
-- Lots of minor rephrasing and refactoring.
+* The number of code points in a simple Unicode plane is 65,536 not 65,535 as stated previously (thanks to /u/Nayuki for pointing this mistake out).
+* Explanation of Rust indexing was updated to clarify that both byte-indexing and codepoint-indexing is possible, but neither using the native indexing syntax (thanks to /u/Nayuki and /u/Kyrias for clarifying this).
+* CJK characters are in the 3-byte range in UTF-8, not the 2-byte range as previously stated (thanks to /u/Nayuki for pointing this mistake out).
+* The C standard is far more vague than I initially understood in defining `char` and `wchar_t`. Post updated to reflect this (thanks to /u/tedu and /u/notriddle for explaining this).
+* Added graph depicting assignment of codepoints by the Unicode Consortium.
+* Lots of minor rephrasing and refactoring.
 
 **2018-12-30** - Minor correction, additional explanation and note.
 
-- Added note on victory hand emoji and grapheme clusters (thanks to [Lars Dieckow](https://stackoverflow.com/users/46395/daxim) for explaining this, and for providing the code snippet and link included in the added note).
-- The cucumber emoji is represented as two separate *codepoints*, not two separate *characters* as previously stated (thanks to [Lars Dieckow](https://stackoverflow.com/users/46395/daxim) for pointing this mistake out).
-- Added additional note complaining about why string indexing giving UTF-16 codepoints is unhelpful.
-
+* Added note on victory hand emoji and grapheme clusters (thanks to [Lars Dieckow](https://stackoverflow.com/users/46395/daxim) for explaining this, and for providing the code snippet and link included in the added note).
+* The cucumber emoji is represented as two separate *codepoints*, not two separate *characters* as previously stated (thanks to [Lars Dieckow](https://stackoverflow.com/users/46395/daxim) for pointing this mistake out).
+* Added additional note complaining about why string indexing giving UTF-16 codepoints is unhelpful.

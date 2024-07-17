@@ -4,6 +4,9 @@ description: "Parser for COMTRADE signal file format written in pure Rust."
 date: "2024-07-15"
 repoURL: "https://github.com/drewsilcock/comtrade"
 packageURL: "https://crates.io/crates/comtrade"
+tags:
+  - rust
+  - parsing
 ---
 
 ## About

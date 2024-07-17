@@ -2,6 +2,9 @@
 title: "Bumper"
 description: "Another version bumper, but this one is mine."
 date: "2024-07-15"
+tags:
+  - go
+  - git
 repoURL: "https://github.com/drewsilcock/bumper"
 ---
 
