@@ -1,11 +1,15 @@
 {
   "name": "astro-micro",
   "type": "module",
+  "private": true,
   "version": "0.0.1",
   "scripts": {
     "dev": "tinacms dev -c 'astro dev'",
-    "start": "tinacms dev -c 'astro dev'",
-    "build": "astro check && tinacms build && astro build",
+    "start": "astro dev",
+    "format": "prettier --write .",
+    "lint": "prettier --check .",
+    "check": "astro check",
+    "build": "tinacms build && astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -18,7 +22,6 @@
     "@expressive-code/plugin-line-numbers": "^0.35.3",
     "@fontsource/geist-mono": "^5.0.3",
     "@fontsource/geist-sans": "^5.0.3",
-    "@vercel/og": "^0.6.2",
     "astro": "^4.11.3",
     "astro-expressive-code": "^0.35.3",
     "astro-og-canvas": "^0.5.3",
