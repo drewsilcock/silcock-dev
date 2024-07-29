@@ -4,7 +4,8 @@
   "private": true,
   "version": "0.0.1",
   "scripts": {
-    "dev": "tinacms dev -c 'astro dev'",
+    "dev": "astro dev",
+    "dev-tina": "tinacms dev -c 'astro dev'",
     "start": "astro dev",
     "format": "prettier --write .",
     "lint": "prettier --check .",
