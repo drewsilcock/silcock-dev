@@ -8,13 +8,13 @@ import { SITE } from "@consts";
   <Container>
     <div class="flex flex-wrap justify-between gap-y-2">
       <Link href="/" underline={false} group>
-        <div class="text-lg font-bold relative">
-          ‍👨🏻‍💻
-          {SITE.TITLE}&nbsp;
-          <div
-            class="absolute top-[24px] left-[24px] h-1 w-[135px] border-r-2 border-none bg-yellow-500 group-hover:h-1.5"
+        <div class="relative text-lg font-bold">
+          <span class="text-2xl align-sub">‍👨🏻‍💻</span>
+          <span
+            class="underline decoration-yellow-500 decoration-4 underline-offset-4 group-hover:decoration-[6px]"
           >
-          </div>
+            {SITE.TITLE}
+          </span>
         </div>
       </Link>
       <nav class="flex items-center gap-1 text-sm">
