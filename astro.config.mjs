@@ -7,11 +7,24 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import expressiveCode from "astro-expressive-code";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
+import defaultTheme from "tailwindcss/defaultTheme";
 
 // https://astro.build/config
 export default defineConfig({
   site: "https://drew.silcock.dev",
-  integrations: [tailwind(), sitemap(), pagefind(), expressiveCode({ plugins: [pluginLineNumbers()] }), mdx()],
+  // The order of integrations is important here.
+  integrations: [
+    tailwind(),
+    sitemap(),
+    pagefind(),
+    expressiveCode({
+      plugins: [pluginLineNumbers()],
+      styleOverrides: {
+        codeFontFamily: ['"Ubuntu Mono"', ...defaultTheme.fontFamily.mono]
+      }
+    }),
+    mdx(),
+  ],
   markdown: {
     remarkPlugins: [remarkMath],
     rehypePlugins: [rehypeKatex],

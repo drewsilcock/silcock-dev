@@ -3,7 +3,7 @@ import { type CollectionEntry, getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
 import FormattedDate from "@components/FormattedDate.astro";
-import { readingTime } from "@lib/utils";
+import { readingTime, shouldRenderPage, shouldListPage } from "@lib/utils";
 import BackToPrevious from "@components/BackToPrevious.astro";
 import PostNavigation from "@components/PostNavigation.astro";
 import TableOfContents from "@components/TableOfContents.astro";
@@ -14,7 +14,7 @@ export async function getStaticPaths() {
   // Draft posts are excluded, but archived posts are included - they're just not
   // listed.
   const posts = (await getCollection("blog"))
-    .filter((post) => !post.data.draft)
+    .filter(shouldRenderPage)
     .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
   return posts.map((post) => ({
     params: { slug: post.slug },
@@ -23,9 +23,8 @@ export async function getStaticPaths() {
 }
 type Props = CollectionEntry<"blog">;
 
-// Don't include archived posts when paginating through posts.
 const posts = (await getCollection("blog"))
-  .filter((post) => !post.data.draft && !post.data.archive)
+  .filter(shouldListPage)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 function getNextPost() {

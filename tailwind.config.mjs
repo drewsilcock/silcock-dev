@@ -1,4 +1,5 @@
 import defaultTheme from "tailwindcss/defaultTheme";
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: "class",
@@ -6,8 +7,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Geist Sans", ...defaultTheme.fontFamily.sans],
-        mono: ["Geist Mono", ...defaultTheme.fontFamily.mono],
+        sans: ['"Geist Sans"', ...defaultTheme.fontFamily.sans],
+        // This value is overridden for code blocks by the expressiveCode plugin - see
+        // astro.config.mjs
+        mono: ['"Ubuntu Mono"', ...defaultTheme.fontFamily.mono],
       },
     },
   },

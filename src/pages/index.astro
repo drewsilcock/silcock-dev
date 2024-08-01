@@ -2,6 +2,7 @@
 import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
 import { SITE, HOME } from "@consts";
+import { shouldListPage } from "@lib/utils";
 import ArrowCard from "@components/ArrowCard.astro";
 import Link from "@components/Link.astro";
 import Socials from "@components/Socials.astro";
@@ -9,14 +10,14 @@ import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 
 const blog = (await getCollection("blog"))
-  .filter((post) => !post.data.draft && !post.data.archive)
+  .filter(shouldListPage)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 
 const projects: CollectionEntry<"projects">[] = (
   await getCollection("projects")
 )
-  .filter((project) => !project.data.draft)
+  .filter(shouldListPage)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
 ---

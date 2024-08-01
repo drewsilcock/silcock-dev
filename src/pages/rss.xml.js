@@ -1,13 +1,13 @@
 import rss from "@astrojs/rss";
 import { SITE } from "@consts";
+import { shouldRenderPage } from "@lib/utils";
 import { getCollection } from "astro:content";
 
 export async function GET(context) {
-  const blog = (await getCollection("blog")).filter((post) => !post.data.draft && !post.data.archive);
+  // Archived pages get listed in the RSS even if they're not listed on the site itself.
 
-  const projects = (await getCollection("projects")).filter(
-    (project) => !project.data.draft,
-  );
+  const blog = (await getCollection("blog")).filter(shouldRenderPage);
+  const projects = (await getCollection("projects")).filter(shouldRenderPage);
 
   const items = [...blog, ...projects].sort(
     (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),

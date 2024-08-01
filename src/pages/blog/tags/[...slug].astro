@@ -4,7 +4,8 @@ import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 import BackToPrevious from "@components/BackToPrevious.astro";
-import { BLOG, PROJECTS } from "@consts";
+import { BLOG } from "@consts";
+import { shouldListPage, shouldRenderPage } from "@lib/utils";
 
 type Props = {
   tag: string;
@@ -13,13 +14,13 @@ type Props = {
 const { tag } = Astro.props;
 
 const taggedPosts = (await getCollection("blog"))
-  .filter((post) => !post.data.draft && !post.data.archive)
+  .filter(shouldListPage)
   .filter((post) => post.data.tags?.includes(tag))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 export async function getStaticPaths() {
   const posts = (await getCollection("blog"))
-    .filter((post) => !post.data.draft && !post.data.archive)
+    .filter(shouldRenderPage)
     .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
   const tags = posts

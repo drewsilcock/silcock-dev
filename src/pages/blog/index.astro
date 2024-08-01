@@ -5,9 +5,10 @@ import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 import { BLOG } from "@consts";
 import Link from "@components/Link.astro";
+import { shouldListPage } from "@lib/utils";
 
 const posts = (await getCollection("blog"))
-  .filter((post) => !post.data.draft && !post.data.archive)
+  .filter(shouldListPage)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const tags = posts

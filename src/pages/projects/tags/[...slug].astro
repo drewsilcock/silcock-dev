@@ -5,6 +5,7 @@ import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 import BackToPrevious from "@components/BackToPrevious.astro";
 import { PROJECTS } from "@consts";
+import { shouldListPage, shouldRenderPage } from "@lib/utils";
 
 type Props = {
   tag: string;
@@ -13,13 +14,13 @@ type Props = {
 const { tag } = Astro.props;
 
 const taggedProjects = (await getCollection("projects"))
-  .filter((post) => !post.data.draft)
-  .filter((post) => post.data.tags?.includes(tag))
+  .filter(shouldListPage)
+  .filter((project) => project.data.tags?.includes(tag))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 export async function getStaticPaths() {
   const projects = (await getCollection("projects"))
-    .filter((post) => !post.data.draft)
+    .filter(shouldRenderPage)
     .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
   const tags = projects

@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Ubuntu Mono";
+  src:
+    url("/fonts/UbuntuMonoNerdFont-Regular.woff2") format("woff2"),
+    url("/fonts/UbuntuMonoNerdFont-Regular.woff") format("woff"),
+    url("/fonts/UbuntuMonoNerdFont-Regular.ttf") format("truetype");
+}
+
 html {
   overflow-y: auto;
   color-scheme: light;
