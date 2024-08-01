@@ -1,11 +1,11 @@
 ---
 title: How Postgres stores data on disk – this one's a page turner
 description: A high-level overview of how PostgreSQL stores data on disk, covering segments, pages and more.
-date: 2024-07-18T00:00:00.000Z
+date: 2024-08-01T00:00:00.000Z
 tags:
   - postgres
   - databases
-draft: true
+draft: false
 ---
 
 I remember when I first started on server-side applications – the kind that need to persist data – and not getting what the big deal about databases was. Why are databases such a big thing? Can't we just store some data on disk and read / write from it when we need to? (**Spoiler:** no.)
@@ -283,7 +283,7 @@ blogdb=# select to_regnamespace('public')::oid;
 
 -- Now let's list all the tables, indexes, etc. that live in this namespace.
 blogdb=# select * from pg_class
-blogdb=# where relnamespace = to_regnamespace('public')::oid;
+blogdb-# where relnamespace = to_regnamespace('public')::oid;
   oid  |      relname       | relnamespace | reltype | reloftype | relowner | relam | relfilenode | reltablespace | relpages | reltuples | relallvisible | reltoastrelid | relhasindex | relisshared | relpersistence | relkind | relnatts | relchecks | relhasrules | relhastriggers | relhassubclass | relrowsecurity | relforcerowsecurity | relispopulated | relreplident | relispartition | relrewrite | relfrozenxid | relminmxid | relacl | reloptions | relpartbound
 -------+--------------------+--------------+---------+-----------+----------+-------+-------------+---------------+----------+-----------+---------------+---------------+-------------+-------------+----------------+---------+----------+-----------+-------------+----------------+----------------+----------------+---------------------+----------------+--------------+----------------+------------+--------------+------------+--------+------------+--------------
  16389 | countries_id_seq   |         2200 |       0 |         0 |       10 |     0 |       16389 |             0 |        1 |         1 |             0 |             0 | f           | f           | p              | S       |        3 |         0 | f           | f              | f              | f              | f                   | t              | n            | f              |          0 |            0 |          0 |        |            |
@@ -318,19 +318,240 @@ For a general object, you're likely to see three or more files: [^3]
 
 ## What's the heap?
 
-All these segment data files together (excluding the FSM and VM) are called the *heap*.
+All these main segment data files (excluding the FSM and VM) are called the _heap_.
 
-Something really important about tables which isn't obvious at first is that, even though they might have sequential primary keys, tables are *not ordered*. (Hence why we need a separate sequence object to be able to produce the sequential ID values.) For this reason tables are sometimes called a "bag" of rows
+Something really important about tables which isn't obvious at first is that, even though they might have sequential primary keys, tables are _not ordered_. (Hence why we need a separate sequence object to be able to produce the sequential ID values.) For this reason tables are sometimes called a _bag_ of rows. Postgres calls it a _heap_. For any real-life table that's being added to and updated and vacuumed, the rows in the heap will _not_ be in sequential order of their primary key.
 
-## Next page please
+Importantly, the heap in Postgres is very different to the heap in system memory (as opposed to the stack). They are related concepts and if you're familiar with the structure of the stack vs. heap in memory you might find the page diagram in the next section very familiar, but it's important to remember that they are very much separate concepts.
 
-Todo
+The object heap consists of many different pages (also known as blocks) sequentially stored in the file.
 
-Diagram
+## So what's a page?
+
+Within a single segment file, you will find multiple pages of fixed size stitched together. By default, a page is 8 KB in size so we'd expect all our object files to be multiple of 8 KB. In this case, our table file is 32 KB which means there must be 4 pages in it.
+
+You might be thinking – why use pages? Why not just have one page per segment? The answer is that each page is written in one atomic operation and the larger the size of the page, the more likely there will be a write failure during the write. The higher the page size, the more performant the database will be while the higher the page size, the higher the likelihood of write failures. The Postgres maintainers chose 8 KB as the default and they know what they're doing so there's generally no reason to change this.
+
+This diagram shows what the structure of a page is, and how it relates to the segment and whole object.
+
+<img class="image-dark" alt="Postgres database layout" src="/media/how-postgres-stores-data-on-disk/database-layout-dark.png">
+<img class="image-light" alt="Postgres database layout" src="/media/how-postgres-stores-data-on-disk/database-layout-light.png">
+
+<style>
+  html.dark img.image-light {
+    display: none;
+  }
+
+  html:not(.dark) img.image-dark {
+    display: none;
+  }
+</style>
+
+In our example here, our main table is 2.7 GiB which requires 3 separate segments of 1 GiB each. 131,072 pages of size 8 KiB into 1 GiB and each page consists of around 40 items (based on each item taking up about 200 bytes).
+
+## Page layout
+
+Let's dive down into our page layout.
+
+You can see that there are two areas of the page: the header & line pointers which grow upwards and the special data & items which grow downwards.
+
+The page header itself contains things like:
+
+- A checksum of the page
+- The offset to the end of the line pointers (a.k.a. "lower")
+- The offset to the end of the free space (i.e. to the start of the items, a.k.a. "upper")
+- The offset to the start of the special space
+- Version information
+
+There's actually an in-built extension called [`pageinspect`](https://www.postgresql.org/docs/current/pageinspect.html) which we can use to look at our page header information:
+
+```sql
+blogdb=# create extension pageinspect;
+CREATE EXTENSION
+
+blogdb=# select * from page_header(get_raw_page('countries', 0));
+    lsn    | checksum | flags | lower | upper | special | pagesize | version | prune_xid
+-----------+----------+-------+-------+-------+---------+----------+---------+-----------
+ 0/1983F70 |        0 |     0 |   292 |   376 |    8192 |     8192 |       4 |         0
+(1 row)
+
+blogdb=# select * from page_header(get_raw_page('countries', 1));
+    lsn    | checksum | flags | lower | upper | special | pagesize | version | prune_xid
+-----------+----------+-------+-------+-------+---------+----------+---------+-----------
+ 0/19858E0 |        0 |     0 |   308 |   408 |    8192 |     8192 |       4 |         0
+(1 row)
+
+blogdb=# select * from page_header(get_raw_page('countries', 2));
+    lsn    | checksum | flags | lower | upper | special | pagesize | version | prune_xid
+-----------+----------+-------+-------+-------+---------+----------+---------+-----------
+ 0/1987278 |        0 |     0 |   296 |   416 |    8192 |     8192 |       4 |         0
+(1 row)
+
+blogdb=# select * from page_header(get_raw_page('countries', 3));
+    lsn    | checksum | flags | lower | upper | special | pagesize | version | prune_xid
+-----------+----------+-------+-------+-------+---------+----------+---------+-----------
+ 0/19882C8 |        0 |     0 |   196 |  3288 |    8192 |     8192 |       4 |         0
+(1 row)
+```
+
+If we compare the `lower` and `upper` values for these pages, we can see that:
+
+- Page 1 has 408 - 308 = 100 bytes of free space
+- Page 2 has 416 - 296 = 120 bytes of free space
+- Page 3 has 3288 - 196 = 3092 bytes of free space.
+
+We can infer from this that:
+
+- The rows in our countries table is ~100 bytes as that's how much space if left in full pages 1 and 2.
+- Page 3 is the final page as there's plenty of space left in there.
+
+We can confirm the row size using the `heap_page_items()` function from pageinspect:
+
+```sql
+blogdb=# select lp, lp_off, lp_len, t_ctid, t_data
+blogdb-# from heap_page_items(get_raw_page('countries', 1))
+blogdb-# limit 10;
+ lp | lp_off | lp_len | t_ctid |                                                                                                                           t_data                                                                                                                        
+----+--------+--------+--------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  1 |   8064 |    123 | (1,1)  | \x440000002545717561746f7269616c204775696e656107475109474e51093232361d49534f20333136362d323a47510f416672696361275375622d5361686172616e204166726963611d4d6964646c6520416672696361093030320932303209303137
+  2 |   7944 |    114 | (1,2)  | \x45000000114572697472656107455209455249093233321d49534f20333136362d323a45520f416672696361275375622d5361686172616e204166726963611f4561737465726e20416672696361093030320932303209303134
+  3 |   7840 |     97 | (1,3)  | \x46000000114573746f6e696107454509455354093233331d49534f20333136362d323a45450f4575726f7065214e6f72746865726e204575726f706503093135300931353409202020
+  4 |   7720 |    116 | (1,4)  | \x47000000134573776174696e6907535a0953575a093734381d49534f20333136362d323a535a0f416672696361275375622d5361686172616e2041667269636121536f75746865726e20416672696361093030320932303209303138
+  5 |   7600 |    115 | (1,5)  | \x4800000013457468696f70696107455409455448093233311d49534f20333136362d323a45540f416672696361275375622d5361686172616e204166726963611f4561737465726e20416672696361093030320932303209303134
+  6 |   7448 |    148 | (1,6)  | \x490000003946616c6b6c616e642049736c616e647320284d616c76696e61732907464b09464c4b093233381d49534f20333136362d323a464b13416d657269636173414c6174696e20416d657269636120616e64207468652043617269626265616e1d536f75746820416d6572696361093031390934313909303035
+  7 |   7344 |    103 | (1,7)  | \x4a0000001d4661726f652049736c616e647307464f0946524f093233341d49534f20333136362d323a464f0f4575726f7065214e6f72746865726e204575726f706503093135300931353409202020
+  8 |   7248 |     89 | (1,8)  | \x4b0000000b46696a6907464a09464a49093234321d49534f20333136362d323a464a114f6365616e6961154d656c616e6573696103093030390930353409202020
+  9 |   7144 |     97 | (1,9)  | \x4c0000001146696e6c616e640746490946494e093234361d49534f20333136362d323a46490f4575726f7065214e6f72746865726e204575726f706503093135300931353409202020
+ 10 |   7048 |     95 | (1,10) | \x4d0000000f4672616e636507465209465241093235301d49534f20333136362d323a46520f4575726f70651f5765737465726e204575726f706503093135300931353509202020
+(10 rows)
+```
+
+Here `lp` means the line pointer, `lp_off` means the offset to the start of the item, `lp_len` is the size of the item in bytes and `t_ctid` refers to the ctid of the item. The ctid (Current Tuple ID)[^4] tells you where the item is located in the form `(page index, item index within page)` so `(1, 1)` means the first item in page 1 (pages are zero-indexed, item index is not for some reason).
+
+[^4]: I think this is what the C stands for but I'm not sure.
+
+We can also see the actual data for the item here as well, which is pretty cool – this long hex string is exactly the bytes that Postgres has stored on disk. Let's check which row we're looking at with some Python:
+
+```bash
+$ row_data=$(docker exec $pg_container_id psql -U postgres blogdb --tuples-only -c "select t_data from heap_page_items(get_raw_page('countries', 1)) limit 1;")
+$ python3 -c "print(bytearray.fromhex(r'$row_data'.strip().replace('\\\\x', '')).decode('utf-8', errors='ignore'))" > row_data.bin
+$ cat row_data.bin
+D%Equatorial GuineaGQ   GNQ     226ISO 3166-2:GQAfrica'Sub-Saharan AfricaMiddle Africa  002     202     017
+$ hexyl row_data.bin
+┌────────┬─────────────────────────┬─────────────────────────┬────────┬────────┐
+│00000000│ 44 00 00 00 25 45 71 75 ┊ 61 74 6f 72 69 61 6c 20 │D⋄⋄⋄%Equ┊atorial │
+│00000010│ 47 75 69 6e 65 61 07 47 ┊ 51 09 47 4e 51 09 32 32 │Guinea•G┊Q_GNQ_22│
+│00000020│ 36 1d 49 53 4f 20 33 31 ┊ 36 36 2d 32 3a 47 51 0f │6•ISO 31┊66-2:GQ•│
+│00000030│ 41 66 72 69 63 61 27 53 ┊ 75 62 2d 53 61 68 61 72 │Africa'S┊ub-Sahar│
+│00000040│ 61 6e 20 41 66 72 69 63 ┊ 61 1d 4d 69 64 64 6c 65 │an Afric┊a•Middle│
+│00000050│ 20 41 66 72 69 63 61 09 ┊ 30 30 32 09 32 30 32 09 │ Africa_┊002_202_│
+│00000060│ 30 31 37 0a             ┊                         │017_    ┊        │
+└────────┴─────────────────────────┴─────────────────────────┴────────┴────────┘
+$ docker exec $pg_container_id psql -U postgres blogdb -c "select * from countries where name = 'Equatorial Guinea';"
+ ctid  | id |       name        | alpha_2 | alpha_3 | numeric_3 |  iso_3166_2   | region |     sub_region     | intermediate_region | region_code | sub_region_code | intermediate_region_code
+-------+----+-------------------+---------+---------+-----------+---------------+--------+--------------------+---------------------+-------------+-----------------+--------------------------
+ (1,1) | 68 | Equatorial Guinea | GQ      | GNQ     | 226       | ISO 3166-2:GQ | Africa | Sub-Saharan Africa | Middle Africa       | 002         | 202             | 017
+(1 row)
+```
+
+We can see here that each column is being stored right next to each other with a random byte in between each one. Let's dive in:
+
+- `0x 44 00 00 00` = `68` (must be little endian) so the first 4 bytes is the row's ID
+- Then, there's a random byte like `0x25` or `0x07` followed by the column data – the rest of the columns are string types so they're all stored in UTF-8. If you know what these inter-column bytes mean, leave a comment below! I can't figure it out.
+
+We've not talked about TOAST yet – this will be a topic for a future post 🍞.
+
+## What happens when a row gets modifed or deleted?
+
+Postgres uses MVCC (Multiversion Concurrency Control) to handle concurrent access to data. The "multiversion" here means that when a transaction comes in and modifies a row, it doesn't touch the existing tuple on disk at all. Instead, it creates a new tuples at the end of the last page with the modified row. When it commits the update, it swaps the version of the data that a new transaction will see from the old tuple to the new one.
+
+Let's see this in action:
+
+```sql
+blogdb=# select ctid from countries where name = 'Antarctica';
+ ctid
+-------
+ (0,9)
+(1 row)
+
+blogdb=# update countries set region = 'The South Pole' where name = 'Antarctica';
+UPDATE 1
+
+blogdb=# select ctid from countries where name = 'Antarctica';
+  ctid
+--------
+ (3,44)
+(1 row)
+
+blogdb=# select lp, lp_off, lp_len, t_ctid, t_data
+blogdb-# from heap_page_items(get_raw_page('countries', 0))
+blogdb-# offset 8 limit 1;
+ lp | lp_off | lp_len | t_ctid | t_data
+----+--------+--------+--------+--------
+  9 |      0 |      0 |        |
+(1 row)
+```
+
+We can see that once we update the row, its ctid changes from `(0,9)` to `(3,44)` (which is probably at the end of the last page). The old data and ctid is also wiped from the old item location.
+
+What about deletions? Let's take a look:
+
+```sql
+blogdb=# delete from countries where name = 'Equatorial Guinea';
+DELETE 1
+
+blogdb=# select lp, lp_off, lp_len, t_ctid, t_data
+blogdb-# from heap_page_items(get_raw_page('countries', 1))
+blogdb-# limit 1;
+ lp | lp_off | lp_len | t_ctid |                                                                                                  t_data
+----+--------+--------+--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  1 |   8064 |    123 | (1,1)  | \x440000002545717561746f7269616c204775696e656107475109474e51093232361d49534f20333136362d323a47510f416672696361275375622d5361686172616e204166726963611d4d6964646c6520416672696361093030320932303209303137
+(1 row)
+```
+
+The data is still there! That's because Postgres doesn't bother actually deleting the data, it just marks the data as deleted. But you might be thinking, if rows are constantly getting deleted and added, you'll end up with constantly increasing segments files full of deleted data (called "dead tuples" in the Postgres lingo). This is where vacuuming comes in. Let's trigger a manual vacuum and see what happens.
+
+```sql
+blogdb=# vacuum full;
+VACUUM
+
+blogdb=# select lp, lp_off, lp_len, t_ctid, t_data
+blogdb-# from heap_page_items(get_raw_page('countries', 1))
+blogdb-# limit 1; -- This used to be the dead tuple where 'Equatorial Guinea' was.
+ lp | lp_off | lp_len | t_ctid |                                                                        t_data
+----+--------+--------+--------+------------------------------------------------------------------------------------------------------------------------------------------------------
+  1 |   8088 |     97 | (1,1)  | \x46000000114573746f6e696107454509455354093233331d49534f20333136362d323a45450f4575726f7065214e6f72746865726e204575726f706503093135300931353409202020
+(1 row)
+
+blogdb=# select lp, lp_off, lp_len, t_ctid, t_data
+blogdb-# from heap_page_items(get_raw_page('countries', 0))
+blogdb-# offset 8 limit 1; -- This used to be the dead tuple where the old 'Antarctica' version was.
+ lp | lp_off | lp_len | t_ctid |                                                                                                               t_data
+----+--------+--------+--------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  9 |   7192 |    136 | (0,9)  | \x0a00000029416e746967756120616e64204261726275646107414709415447093032381d49534f20333136362d323a414713416d657269636173414c6174696e20416d657269636120616e64207468652043617269626265616e1543617269626265616e093031390934313909303239
+(1 row)
+
+blogdb=# select ctid, name from countries
+blogdb-# where name = 'Antarctica' or ctid = '(0,9)' or ctid = '(1,1)';
+  ctid  |        name
+--------+---------------------
+ (0,9)  | Antigua and Barbuda
+ (1,1)  | Estonia
+ (3,42) | Antarctica
+(3 rows)
+```
+
+Now that we've vacuumed, a couple of things have happened:
+
+- The dead tuple where the outdated first version of the Antarctica row was located has now been replaced with Antigua and Barbuda, which is the next country along.
+- The dead tuple where the Equatorial Guinea row was located has now been replaced with Estonia, the next country along.
+- Antarctica has moved from `(3,44)` down to `(3,42)` because the 2 dead tuples has now been cleaned out and the Antarctica row can move down 2 slots.
 
 ## What about indexes?
 
-Todo
+Indexes work exactly the same as tables! The only difference is that the tuple stored as items in each page contains the indexed data instead of the full row data and the special data contains sibling node information for the binary tree.
+
+**Exercise for the reader:** Find the segment file for the `name` column unique index and investigate the values of the `t_data` in each item and "special data" for each page. Comment below what you find!
 
 ## Why would I ever need to know any of this?
 
@@ -338,18 +559,19 @@ There's a few reasons:
 
 - It's interesting!
 - It helps understand how Postgres queries your data on disk, how MVCC works and lots more that's really useful when you're trying to gain a deep understanding of how your database works for the purpose of fine-tuning performance.
-- In certain rare circumstances, it can actually be quite useful for data recovery. For instance, say you have some unlogged table. (An unlogged table is done where changes aren't written to the WAL, which can be useful for performance reasons but means a database recovery via logical decoding the WAL will not include any of the unlogged table data.) Let's say that for some bizarre reason this unlogged table has vitally important data in – maybe you've been called in to help with disaster recovery for a company that doesn't know what they're doing and accidentally set the table to unlogged, then their server crashed. If you restart the server, Postgres will wipe clean the whole unlogged table because it will restore the database state from the WAL. However, if you copy out the raw database files, you can use the knowledge you have gained from this post to recover the contents of the data. (There's probably a tool that does this already, but if not you could write your own – that would be an interesting project...)
-- It's a good conversation starter at parties. [^3]
+- In certain rare circumstances, it can actually be quite useful for data recovery. For instance, say you have some unlogged table. (An unlogged table is done where changes aren't written to the WAL, which can be useful for performance reasons but means a database recovery via logical decoding the WAL will not include any of the unlogged table data.) Let's say that for some bizarre reason this unlogged table has vitally important data in – maybe you've been called in to help with disaster recovery for a company that doesn't know what they're doing and accidentally set the table to unlogged, then their server crashed. If you restart the server, Postgres will wipe clean the whole unlogged table because it will restore the database state from the WAL. However, if you copy out the raw database files, you can use the knowledge you have gained from this post to recover the contents of the data. (There's probably a tool that does this already, but if not you could write your own – that would be an interesting project...) Alternatively, you could have someone who through incompetence or malice decides to corrupt your database by removing or messing up a couple of files on disk. You can then swoop in and use your knowledge to manually recover the data.
+- It's a good conversation starter at parties [^5].
 
-[^3] It's not, please don't do this unless you don't want to be invited back to said parties.
+[^5]: It's not, please don't do this unless you don't want to be invited back to said parties.
 
 ## Further reading
 
 - [Ketan Singh – How Postgres Stores Rows](https://ketansingh.me/posts/how-postgres-stores-rows/)
 - [PostgreSQL Documentation – Chapter 73. Database Physical Storage](https://www.postgresql.org/docs/current/storage.html)
-- [PostgreSQL Documentation – F.25. pageinspect — low-level inspection of database pages](https://www.postgresql.org/docs/current/pageinspect.html)
 - [Advanced SQL (Summer 2020), U Tübingen – DB2 — Chapter 03 — Video #09 — Row storage in PostgreSQL, heap file page layout](https://www.youtube.com/watch?v=L-dw1yRFYVg)
 - [15-445/645 Intro to Database Systems (Fall 2019), Carnegie Mellon University – 03 - Database Storage I](https://www.youtube.com/watch?v=1D81vXw2T_w)
+- [Structure of Heap Table in PostgreSQL](https://medium.com/quadcode-life/structure-of-heap-table-in-postgresql-d44c94332052)
+- [pgPedia – Data Directory](https://pgpedia.info/categories/data-directory.html)
 
 ## Future topics
 
