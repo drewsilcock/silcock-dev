@@ -18,7 +18,7 @@ I'd like crack open the hard shell of database engines with some friendly introd
 
 To start things off, I'm going to discuss how Postgres actually stores data on disk. I mean, it's all just files, right?
 
-## Ok, so what does a nice fresh Postgres install look like
+## Loading a nice fresh Postgres install
 
 Postgres stores all its data in a directory sensibly called `/var/lib/postgresql/data` [^1] . Let's spin up an empty Postgres installation with Docker and mount the data directory in a local folder so that we can see what's going on in there. (Feel free to follow along and explore the files for yourself!)
 
@@ -106,7 +106,7 @@ There's also a file called `postmaster.pid` which you only see while the Postgre
 
 So that was quite intense – don't worry if you didn't fully understand what all those things mean – it's all super interesting stuff but you don't need to follow most of that to understand what we're going to talk about, which is the actual database storage.
 
-## Let's talk about database storage already
+## Exploring the database folders
 
 Okay, so we mentioned the `base/` directory above, which has a subdirectory for each individual database in your cluster. Let's take a look at what we've got here:
 
@@ -128,7 +128,7 @@ Why are the subdirectories called numbers instead of names?
 
 Well in Postgres, all the system tables for things like namespaces, roles, tables and functions use an Object IDentifier (OID) to identify them. In this case, `1`, `4` and `5` are the OIDs for `postgres`, `template0` and `template1`.
 
-## Let's make our own database
+## Let's play with some data
 
 These in-built tables don't have anything in them and are generally pretty boring, so let's create ourselves a new database and put them data in so that we can examine the data files themselves.
 
@@ -140,11 +140,14 @@ docker run -d --rm -v ./pg-data:/var/lib/postgresql/data -e POSTGRES_PASSWORD=pa
 
 We could use anything as our play dataset, but I like geography so let's make a table with some countries in. Let's download some country data into our container and load it into a new database.
 
+```shell
+curl 'https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.csv' \
+    --output ./pg-data/countries.csv
+```
+
 We can use a local tool like psql or TablePlus to examine the database, but we're going to just exec into the container and use psql from inside the container. This way, we don't have to worry about mapping ports or mismatching psql and Postgres server versions. (Also, it's easier for everyone to follow along at home.)
 
 ```shell
-curl 'https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.csv' --output ./pg-data/countries.csv
-
 pg_container_id=$(docker ps --filter expose=5432 --format "{{.ID}}")
 docker exec -it $pg_container_id psql -U postgres
 ```
@@ -153,7 +156,7 @@ Here we're getting the container ID of the running Postgres container by filteri
 
 If that works, you should see something like:
 
-```console
+```sql
 psql (16.3 (Debian 16.3-1.pgdg120+1))
 Type "help" for help.
 
