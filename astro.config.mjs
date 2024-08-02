@@ -20,7 +20,7 @@ export default defineConfig({
     expressiveCode({
       plugins: [pluginLineNumbers()],
       styleOverrides: {
-        codeFontFamily: ['"Ubuntu Mono"', ...defaultTheme.fontFamily.mono]
+        codeFontFamily: ['"Ubuntu Mono"', ...defaultTheme.fontFamily.mono].join(", "),
       }
     }),
     mdx(),
