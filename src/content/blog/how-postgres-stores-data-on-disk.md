@@ -565,10 +565,13 @@ There's a few reasons:
 
 - It's interesting!
 - It helps understand how Postgres queries your data on disk, how MVCC works and lots more that's really useful when you're trying to gain a deep understanding of how your database works for the purpose of fine-tuning performance.
-- In certain rare circumstances, it can actually be quite useful for data recovery. For instance, say you have some unlogged table. (An unlogged table is done where changes aren't written to the WAL, which can be useful for performance reasons but means a database recovery via logical decoding the WAL will not include any of the unlogged table data.) Let's say that for some bizarre reason this unlogged table has vitally important data in – maybe you've been called in to help with disaster recovery for a company that doesn't know what they're doing and accidentally set the table to unlogged, then their server crashed. If you restart the server, Postgres will wipe clean the whole unlogged table because it will restore the database state from the WAL. However, if you copy out the raw database files, you can use the knowledge you have gained from this post to recover the contents of the data. (There's probably a tool that does this already, but if not you could write your own – that would be an interesting project...) Alternatively, you could have someone who through incompetence or malice decides to corrupt your database by removing or messing up a couple of files on disk. You can then swoop in and use your knowledge to manually recover the data.
-- It's a good conversation starter at parties [^5].
+- In certain rare circumstances, it can actually be quite useful for data recovery. Take the following examples:
+  - You have someone who through incompetence or malice decides to corrupt your database by removing or messing up a couple of files on disk. Postgres can no longer understand the database so starting Postgres up will just result in a corrupted state. You can swoop in and use your knowledge to manually recover the data. This would still be a fairly large undertaking to do this, and in real life you'd probably call in a professional data recovery specialist, but maybe in this imaginary scenario your company can't afford one so you have to make do.
+  - Someone accidentally set the super-important customers table on the production database as unlogged[^5] and then the server crashes. Because in an unlogged table changes aren't written to the WAL, a database recovery via logical decoding will not include any of the unlogged table data. If you restart the server, Postgres will wipe clean the whole unlogged table because it will restore the database state from the WAL. However, if you copy out the raw database files, you can use the knowledge you have gained from this post to recover the contents of the data. (There's probably a tool that does this already, but if not you could write your own – that would be an interesting project...)
+- It's a good conversation starter at parties [^6].
 
-[^5]: It's not, please don't do this unless you don't want to be invited back to said parties.
+[^5]: You can pretend that you've never accidentally run a query on prod instead of your local dev database, but we all do it sooner or later.
+[^6]: It's not, please don't do this unless you don't want to be invited back to said parties.
 
 ## Further reading
 
@@ -583,8 +586,9 @@ There's a few reasons:
 
 Database engines is an endlessly interesting topic, and there's lots more I'd like to write about in this series. Some ideas are:
 
+- How Postgres stores oversized values – let's raise a TOAST
 - How Postgres handles concurrency – MVCC is the real MVP
-- How Postgres turns a SQL string into data – understanding the query planner (cf. https://xuanwo.io/2024/02-what-i-talk-about-when-i-talk-about-query-optimizer-part-1/, https://www.sqlite.org/whybytecode.html, https://www.sqlite.org/queryplanner-ng.html)
+- How Postgres turns a SQL string into data
 - How Postgres ensures data integrity – where's WAL
 
 If you'd like me to write about one of these, leave a comment below 🙂
