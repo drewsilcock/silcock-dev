@@ -25,8 +25,8 @@ export function readingTime(html: string) {
 // Draft posts get rendered and listed in development only.
 
 export function shouldListPage(post: CollectionEntry<"blog" | "projects">) {
-  if (!post.data.archive) {
-    return true;
+  if (post.data.archive) {
+    return false;
   }
 
   const isDev = process.env.NODE_ENV === "development";
