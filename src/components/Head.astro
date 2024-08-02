@@ -327,7 +327,6 @@ const { title, description, imageUrl } = Astro.props;
 
   const decodeEmails = () => {
     const emailElements = document.querySelectorAll(".email.protect-me");
-    console.log("Email elements:", emailElements);
 
     for (const emailElement of emailElements) {
       const encodedEmail = emailElement.getAttribute("href");
