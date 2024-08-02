@@ -24,16 +24,17 @@ export function readingTime(html: string) {
 // Archived posts get rendered but not listed.
 // Draft posts get rendered and listed in development only.
 
-export function shouldListPage(post: CollectionEntry<"blog" | "projects">) {
-  if (post.data.archive) {
+export function shouldListPage(page: CollectionEntry<"blog" | "projects">) {
+  if (page.data.archive) {
     return false;
   }
 
-  const isDev = process.env.NODE_ENV === "development";
-  return post.data.draft === false || isDev;
+  return shouldRenderPage(page);
 }
 
-export function shouldRenderPage(post: CollectionEntry<"blog" | "projects">) {
+export function shouldRenderPage(page: CollectionEntry<"blog" | "projects">) {
   const isDev = process.env.NODE_ENV === "development";
-  return post.data.draft === false || isDev;
+  const isDraft = page.data.draft === true; // Default is `false`
+
+  return isDev || !isDraft;
 }
