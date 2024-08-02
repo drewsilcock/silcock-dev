@@ -397,15 +397,18 @@ blogdb=# select * from page_header(get_raw_page('countries', 3));
 (1 row)
 ```
 
+The first thing you might notice is that `special` is the same as `pagesize` – this is just saying that there is no special data section for this page. The special data section is not used for table pages, only for other types like indexes where it stores information about the binary tree structure.
+
 If we compare the `lower` and `upper` values for these pages, we can see that:
 
+- Page 0 has 376 - 292 = 84 bytes of free space
 - Page 1 has 408 - 308 = 100 bytes of free space
 - Page 2 has 416 - 296 = 120 bytes of free space
 - Page 3 has 3288 - 196 = 3092 bytes of free space.
 
 We can infer from this that:
 
-- The rows in our countries table is ~100 bytes as that's how much space if left in full pages 1 and 2.
+- The rows in our countries table is ~100 bytes as that's how much space if left in the full pages.
 - Page 3 is the final page as there's plenty of space left in there.
 
 We can confirm the row size using the `heap_page_items()` function from pageinspect:
@@ -414,7 +417,7 @@ We can confirm the row size using the `heap_page_items()` function from pageinsp
 blogdb=# select lp, lp_off, lp_len, t_ctid, t_data
 blogdb-# from heap_page_items(get_raw_page('countries', 1))
 blogdb-# limit 10;
- lp | lp_off | lp_len | t_ctid |                                                                                                                           t_data                                                                                                                        
+ lp | lp_off | lp_len | t_ctid |                                                                                                                           t_data
 ----+--------+--------+--------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   1 |   8064 |    123 | (1,1)  | \x440000002545717561746f7269616c204775696e656107475109474e51093232361d49534f20333136362d323a47510f416672696361275375622d5361686172616e204166726963611d4d6964646c6520416672696361093030320932303209303137
   2 |   7944 |    114 | (1,2)  | \x45000000114572697472656107455209455249093233321d49534f20333136362d323a45520f416672696361275375622d5361686172616e204166726963611f4561737465726e20416672696361093030320932303209303134
