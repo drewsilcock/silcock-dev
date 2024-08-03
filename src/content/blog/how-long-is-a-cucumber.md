@@ -6,6 +6,8 @@ description: >-
 date: 2018-12-20
 tags:
   - unicode
+socials:
+  - https://lobste.rs/s/dxfgql/how_long_is_cucumber
 ---
 
 *Or: UTF-16 handling of astral planes and implications for JavaScript string indexing*

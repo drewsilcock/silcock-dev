@@ -5,13 +5,15 @@ type Props = {
   href: string;
   className?: string;
   external?: boolean;
+  hideExternalIcon?: boolean;
   underline?: boolean;
   group?: boolean;
 };
 
 const {
   href,
-  external,
+  external = false,
+  hideExternalIcon = false,
   underline = true,
   group = false,
   className,
@@ -32,9 +34,9 @@ const {
   {...rest}
 >
   <slot />{
-    external && (
+    external && hideExternalIcon === false && (
       <svg
-        class="inline h-4 w-4 ml-1 align-text-top"
+        class="ml-1 inline h-4 w-4 align-text-top"
         aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
         width="24"
