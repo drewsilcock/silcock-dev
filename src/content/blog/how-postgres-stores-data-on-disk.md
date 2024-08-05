@@ -10,6 +10,7 @@ socials:
   - https://lobste.rs/s/nlclpd/how_postgres_stores_data_on_disk_this_one_s
   - https://news.ycombinator.com/item?id=41159180
   - https://www.linkedin.com/posts/drewsilcock_how-postgres-stores-data-on-disk-this-ones-activity-7226141029991653376-hpiB?utm_source=share&utm_medium=member_desktop
+  - https://x.com/drewlhsilcock/status/1820378063596626077
 ---
 
 I remember when I first started on server-side applications – the kind that need to persist data – and not getting what the big deal about databases was. Why are databases such a big thing? Can't we just store some data on disk and read / write from it when we need to? (**Spoiler:** no.)
