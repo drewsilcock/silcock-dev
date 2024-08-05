@@ -30,7 +30,12 @@ const { title, description, imageUrl } = Astro.props;
   href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨🏻‍💻</text></svg>"
 />
 
-<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap-index.xml" />
+<link
+  rel="sitemap"
+  type="application/xml"
+  title="Sitemap"
+  href="/sitemap-index.xml"
+/>
 
 <!-- Primary Meta Tags -->
 <title>{title}</title>
@@ -42,14 +47,22 @@ const { title, description, imageUrl } = Astro.props;
 <meta property="og:url" content={Astro.url} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-{imageUrl && <meta property="og:image" content={new URL(imageUrl, Astro.url)} />}
+{
+  imageUrl && (
+    <meta property="og:image" content={new URL(imageUrl, Astro.url)} />
+  )
+}
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:url" content={Astro.url} />
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
-{imageUrl && <meta property="twitter:image" content={new URL(imageUrl, Astro.url)} />}
+{
+  imageUrl && (
+    <meta property="twitter:image" content={new URL(imageUrl, Astro.url)} />
+  )
+}
 
 <!-- PageFind -->
 <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
@@ -65,7 +78,7 @@ const { title, description, imageUrl } = Astro.props;
   crossorigin="anonymous"
 />
 
-<link rel="style" href="https://www.nerdfonts.com/assets/css/webfont.css"></link>
+<link rel="style" href="https://www.nerdfonts.com/assets/css/webfont.css" />
 
 <ViewTransitions />
 
@@ -326,18 +339,25 @@ const { title, description, imageUrl } = Astro.props;
   };
 
   const decodeEmails = () => {
-    const emailElements = document.querySelectorAll(".email.protect-me");
+    const emailElements = document.querySelectorAll(".email");
 
     for (const emailElement of emailElements) {
-      const encodedEmail = emailElement.getAttribute("href");
+      const isContent = emailElement.classList.contains("email-text");
+      const encodedEmail = isContent
+        ? emailElement.textContent.trim()
+        : emailElement.getAttribute("href");
 
       if (encodedEmail === null) {
         continue;
       }
 
       const decodedEmail = xorDecode(encodedEmail);
-      emailElement.setAttribute("href", `mailto:${decodedEmail}`);
-      emailElement.textContent = decodedEmail;
+
+      if (isContent) {
+        emailElement.textContent = decodedEmail;
+      } else {
+        emailElement.setAttribute("href", `mailto:${decodedEmail}`);
+      }
     }
   };
 

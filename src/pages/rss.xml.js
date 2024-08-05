@@ -17,11 +17,15 @@ export async function GET(context) {
     title: SITE.TITLE,
     description: SITE.DESCRIPTION,
     site: context.site,
+    stylesheet: "/rss-styles.xsl",
     items: items.map((item) => ({
       title: item.data.title,
       description: item.data.description,
       pubDate: item.data.date,
       link: `/${item.collection}/${item.slug}/`,
+      customData: `<updated>
+        ${item.data.updated !== undefined ? item.data.updated.toISOString() : ""}
+      </updated>`,
     })),
   });
 }

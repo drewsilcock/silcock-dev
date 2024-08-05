@@ -2,6 +2,7 @@
 title: How Postgres stores data on disk – this one's a page turner
 description: A high-level overview of how PostgreSQL stores data on disk, covering segments, pages and more.
 date: 2024-08-01T00:00:00.000Z
+updated: 2024-08-05T15:14:00.000Z
 tags:
   - postgres
   - databases
