@@ -605,3 +605,7 @@ Database engines is an endlessly interesting topic, and there's lots more I'd li
 - How Postgres ensures data integrity – where's WAL
 
 If you'd like me to write about one of these, leave a comment below 🙂
+
+## Updates
+
+- 2024-08-05 – Rephrased the explanation of logical decoding based on [HN comment from dfox](https://news.ycombinator.com/item?id=41160109), added explanation of why checksums are all 0 after [HN discussion](https://news.ycombinator.com/item?id=41160233), expanded teaser for future TOAST post.
