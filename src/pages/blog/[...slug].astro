@@ -30,26 +30,16 @@ type Props = CollectionEntry<"blog">;
 
 const posts = (await getCollection("blog"))
   .filter(shouldListPage)
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
 
 function getNextPost() {
-  let postIndex;
-  for (const post of posts) {
-    if (post.slug === Astro.params.slug) {
-      postIndex = posts.indexOf(post);
-      return posts[postIndex + 1];
-    }
-  }
+  const postIndex = posts.findIndex((post) => post.slug === Astro.params.slug);
+  return posts[postIndex + 1];
 }
 
 function getPrevPost() {
-  let postIndex;
-  for (const post of posts) {
-    if (post.slug === Astro.params.slug) {
-      postIndex = posts.indexOf(post);
-      return posts[postIndex - 1];
-    }
-  }
+  const postIndex = posts.findIndex((post) => post.slug === Astro.params.slug);
+  return posts[postIndex - 1];
 }
 
 const nextPost = getNextPost();
