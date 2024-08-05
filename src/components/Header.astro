@@ -4,50 +4,195 @@ import Link from "@components/Link.astro";
 import { SITE } from "@consts";
 ---
 
-<header transition:persist>
+<header id="nav-header" transition:persist>
   <Container>
-    <div class="flex flex-wrap justify-between gap-y-2">
-      <Link href="/" underline={false} group>
-        <div class="relative text-lg font-bold">
-          <span class="align-sub text-2xl">‍👨🏻‍💻</span>
-          <span
-            class="underline decoration-yellow-500 decoration-4 underline-offset-4 group-hover:decoration-[6px]"
-          >
-            {SITE.TITLE}
-            <i class="nf nf-custom-folder"></i>
-          </span>
-        </div>
-      </Link>
-      <nav class="flex items-center gap-1 text-sm">
-        <Link href="/blog">blog</Link>
-        <span>
-          {`/`}
-        </span>
-        <Link href="/projects">projects</Link>
-        <span>
-          {`/`}
-        </span>
+    <nav>
+      <div
+        class="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between"
+      >
+        <Link href="/" underline={false} group>
+          <div class="relative text-lg font-bold">
+            <span class="align-sub text-2xl">‍👨🏻‍💻</span>
+            <span
+              class="underline decoration-yellow-500 decoration-4 underline-offset-4 group-hover:decoration-[6px]"
+            >
+              {SITE.TITLE}
+              <i class="nf nf-custom-folder"></i>
+            </span>
+          </div>
+        </Link>
+
         <button
-          id="magnifying-glass"
-          aria-label="Search"
-          class="flex items-center rounded border border-black/15 bg-neutral-100 px-2 py-1 text-xs transition-colors duration-300 ease-in-out hover:bg-black/5 hover:text-black focus-visible:bg-black/5 focus-visible:text-black dark:border-white/20 dark:bg-neutral-900 dark:hover:bg-white/5 dark:hover:text-white dark:focus-visible:bg-white/5 dark:focus-visible:text-white"
+          data-collapse-toggle="navbar-default"
+          id="header-menu-button"
+          type="button"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-lg p-2 text-sm hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-neutral-200 dark:hover:bg-neutral-700 dark:focus:ring-neutral-600 md:hidden"
+          aria-controls="navbar-default"
+          aria-expanded="false"
         >
+          <span class="sr-only">Open main menu</span>
           <svg
-            height="16"
-            stroke-linejoin="round"
-            viewBox="0 0 16 16"
-            width="16"
-            style="color: currentcolor;"
+            class="h-5 w-5"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 17 14"
           >
             <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M3.5 7C3.5 5.067 5.067 3.5 7 3.5C8.933 3.5 10.5 5.067 10.5 7C10.5 7.88461 10.1718 8.69256 9.63058 9.30876L9.30876 9.63058C8.69256 10.1718 7.88461 10.5 7 10.5C5.067 10.5 3.5 8.933 3.5 7ZM9.96544 11.0261C9.13578 11.6382 8.11014 12 7 12C4.23858 12 2 9.76142 2 7C2 4.23858 4.23858 2 7 2C9.76142 2 12 4.23858 12 7C12 8.11014 11.6382 9.13578 11.0261 9.96544L14.0303 12.9697L14.5607 13.5L13.5 14.5607L12.9697 14.0303L9.96544 11.0261Z"
-              fill="currentColor"></path>
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M1 1h15M1 7h15M1 13h15"></path>
           </svg>
-          <span class="hidden sm:inline">&nbsp;Search (⌘+K)</span>
         </button>
-      </nav>
-    </div>
+
+        <div class="hidden w-full md:block md:w-auto" id="navbar-default">
+          <ul
+            class="mt-4 flex flex-col rounded-lg border border-neutral-200 bg-neutral-50 p-4 font-medium dark:border-neutral-700 dark:bg-neutral-800 md:mt-0 md:flex-row md:items-center md:space-x-1 md:border-0 md:bg-transparent md:p-0 md:dark:bg-transparent rtl:space-x-reverse"
+          >
+            <li>
+              <Link
+                href="/"
+                className="block rounded px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-black md:dark:hover:bg-transparent md:dark:hover:text-white"
+              >
+                home
+              </Link>
+            </li>
+            <span class="hidden text-black/50 dark:text-white/50 md:inline"
+              >/</span
+            >
+            <li>
+              <Link
+                href="/blog"
+                className="block rounded px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-black md:dark:hover:bg-transparent md:dark:hover:text-white"
+              >
+                blog
+              </Link>
+            </li>
+            <span class="hidden text-black/50 dark:text-white/50 md:inline"
+              >/</span
+            >
+            <li>
+              <Link
+                href="/projects"
+                className="block rounded px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-black md:dark:hover:bg-transparent md:dark:hover:text-white"
+              >
+                projects
+              </Link>
+            </li>
+            <span class="hidden text-black/50 dark:text-white/50 md:inline"
+              >/</span
+            >
+            <li>
+              <Link
+                href="/about"
+                className="block rounded px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-black md:dark:hover:bg-transparent md:dark:hover:text-white"
+              >
+                about
+              </Link>
+            </li>
+            <li>
+              <button
+                id="magnifying-glass"
+                aria-label="Search"
+                class="mx-3 my-2 flex w-[calc(100%-1rem)] items-center rounded border border-black/15 bg-neutral-100 px-3 py-2 text-xs transition-colors duration-300 ease-in-out hover:bg-black/5 hover:text-black focus-visible:bg-black/5 focus-visible:text-black dark:border-white/20 dark:bg-neutral-900 dark:hover:bg-white/5 dark:hover:text-white dark:focus-visible:bg-white/5 dark:focus-visible:text-white"
+              >
+                <svg
+                  height="16"
+                  stroke-linejoin="round"
+                  viewBox="0 0 16 16"
+                  width="16"
+                  style="color: currentcolor;"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M3.5 7C3.5 5.067 5.067 3.5 7 3.5C8.933 3.5 10.5 5.067 10.5 7C10.5 7.88461 10.1718 8.69256 9.63058 9.30876L9.30876 9.63058C8.69256 10.1718 7.88461 10.5 7 10.5C5.067 10.5 3.5 8.933 3.5 7ZM9.96544 11.0261C9.13578 11.6382 8.11014 12 7 12C4.23858 12 2 9.76142 2 7C2 4.23858 4.23858 2 7 2C9.76142 2 12 4.23858 12 7C12 8.11014 11.6382 9.13578 11.0261 9.96544L14.0303 12.9697L14.5607 13.5L13.5 14.5607L12.9697 14.0303L9.96544 11.0261Z"
+                    fill="currentColor"></path>
+                </svg>
+                &nbsp;Search (⌘+K)
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
   </Container>
 </header>
+
+<script>
+  function setupMenu() {
+    const menuButton = document.getElementById("header-menu-button");
+    if (menuButton === null) {
+      return;
+    }
+
+    const menuId = menuButton.getAttribute("data-collapse-toggle");
+    if (menuId === null) {
+      return;
+    }
+
+    const menu = document.getElementById(menuId);
+    if (menu === null) {
+      return;
+    }
+
+    function toggleMenu() {
+      if (menu === null || menuButton === null) {
+        return;
+      }
+
+      const expanded = menuButton.getAttribute("aria-expanded") === "true";
+      menuButton.setAttribute("aria-expanded", String(!expanded));
+      menu.hidden = expanded;
+      menu.classList.toggle("hidden");
+    }
+
+    menuButton.addEventListener("click", toggleMenu);
+
+    const navHeader = document.getElementById("nav-header");
+
+    // If user clicks outside the header, close the menu.
+    document.addEventListener("click", (event) => {
+      if (menu.hidden || event.target === null || navHeader === null) {
+        return;
+      }
+
+      if (!navHeader.contains(event.target)) {
+        toggleMenu();
+      }
+    });
+  }
+
+  function updateCurrentPage() {
+    const menu = document.getElementById("navbar-default");
+    if (menu === null) {
+      return;
+    }
+
+    const navLinks = menu.querySelectorAll("a");
+    const basePath = location.pathname.split("/", 2)[1];
+
+    for (const link of navLinks) {
+      const href = link.getAttribute("href");
+      if (href === null) {
+        continue;
+      }
+
+      const linkPath = href.split("/", 2)[1];
+      if (linkPath === basePath) {
+        link.setAttribute("aria-current", "page");
+        link.classList.add("font-bold");
+      } else {
+        link.removeAttribute("aria-current");
+        link.classList.remove("font-bold");
+      }
+    }
+  }
+
+  setupMenu();
+
+  document.addEventListener("astro:page-load", updateCurrentPage);
+  updateCurrentPage();
+</script>
