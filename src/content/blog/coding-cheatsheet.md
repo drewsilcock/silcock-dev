@@ -1,6 +1,6 @@
 ---
 title: Coding cheatsheet
-description: 'Quick snippets of easy-to-forget but often used commands, tricks and tips.'
+description: "Quick snippets of easy-to-forget but often used commands, tricks and tips."
 date: 2014-07-15
 tags:
   - cheatsheet
@@ -129,7 +129,7 @@ I've got `moo.vim` files in my `~/.vim/after/syntax` and `~/.vim/after/ftplugin`
 au BufRead,BufNewFile *.moo set filetype=moo
 ```
 
-*Note*: You may have to wipe your `~/.vim/view` before Vim recognises old files as this new filetype.
+_Note_: You may have to wipe your `~/.vim/view` before Vim recognises old files as this new filetype.
 
 ### Editing over scp
 
@@ -164,10 +164,10 @@ sshfs -o allow_other user@servername:/path/to/content /path/to/local/mountpoint
 Whilst I don't generally like expensive proprietary software, particularly photoshop, given the importance of this small technique to my current project (on which I will write a full post soon), I felt it important to include how to mask parts of photos in Photoshop, ready to be imported into programs like [PhotoScan](http://www.agisoft.ru/products/photoscan) (another piece of incredibly expensive proprietary software).
 
 1. Firstly, select the region you want to mask (or keep unmasked, whichever is easier). The `w` key switches between the Quick Selection and Magic Wand tools, both useful in their own rights.
-2. Next, in the "*Channels*" group, click "*New channel*" at the bottom of the group box. The image should now turn black.
-3. If you want to mask the selection, press `<CMD><SHIFT>I` to invert the selection and press `<SHIFT><F5>`; select "*White*" and press `<CR>`. If you want to mask everything apart from the selection, then simply press `<SHIFT><F5>`, select "*White*" and press `<CR>`
-4. Save the file as a format supporting alpha channels by pressing `<CMD><SHIFT>S`. For PhotoScan imports, `TIFF` is recommended. Tick the box called "*Alpha Channels*" and press `<CR>` twice to save.
-5. (**optional**) In PhotoScan, after loading the photos into the workspace with *Workflow*>*Add photos*/*Add folder*, click *Tools*>*Import*>*Import masks...*. Make sure that "*Method*" is set to "*From Alpha*" and click okay. The masked areas will then be darkened to indicate they are masked.
+2. Next, in the "_Channels_" group, click "_New channel_" at the bottom of the group box. The image should now turn black.
+3. If you want to mask the selection, press `<CMD><SHIFT>I` to invert the selection and press `<SHIFT><F5>`; select "_White_" and press `<CR>`. If you want to mask everything apart from the selection, then simply press `<SHIFT><F5>`, select "_White_" and press `<CR>`
+4. Save the file as a format supporting alpha channels by pressing `<CMD><SHIFT>S`. For PhotoScan imports, `TIFF` is recommended. Tick the box called "_Alpha Channels_" and press `<CR>` twice to save.
+5. (**optional**) In PhotoScan, after loading the photos into the workspace with _Workflow_>_Add photos_/_Add folder_, click _Tools_>_Import_>_Import masks..._. Make sure that "_Method_" is set to "_From Alpha_" and click okay. The masked areas will then be darkened to indicate they are masked.
 
 **Bonus Tip:** To import masks from one photo into another, simpler drag the channel onto the new photo.
 

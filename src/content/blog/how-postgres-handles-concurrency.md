@@ -10,7 +10,6 @@ draft: true
 
 TODO
 
-
 ## Further reading
 
 - [PostgreSQL Documentation – Chapter 13. Concurrency Control](https://www.postgresql.org/docs/current/mvcc.html)

@@ -2,7 +2,7 @@
 title: Jekyll KaTeX Block
 description: A Jekyll plugin for rendering mathematical equations using KaTeX.
 date: 2014-11-04
-tags: 
+tags:
   - jekyll
 archive: true
 ---
@@ -13,11 +13,12 @@ import Callout from "@components/Callout.astro";
     This post was migrated from an old version of my blog, which used Jekyll. The content is likely to be out of date and the rendering will be broken, but I have kept it here so that I don't break any permalinks.
 
     The newer incarnation of my blog uses Astro instead, with support for $$\KaTeX$$ support providing via [remark-math](https://github.com/remarkjs/remark-math/blob/main/packages/remark-math) and [rehype-katex](https://github.com/remarkjs/remark-math/blob/main/packages/rehype-katex).
+
 </Callout>
 
 If you follow [Hacker News](https://news.ycombinator.com/item?id=8320439), then you might've seen the latest development from Khan Academy: [KaTeX](http://khan.github.io/KaTeX/).
 
-Although it hasn't yet implemented the full set of mathematical symbols, $$\KaTeX$$ promises to replace MathJax as *the* web technology for displaying mathematical expressions. This plugin utilises Jekyll's plugin system to enable you to easily add mathematical equations to your statically generated site, by adding a Liquid block corresponding to content to be rendered by KaTeX.
+Although it hasn't yet implemented the full set of mathematical symbols, $$\KaTeX$$ promises to replace MathJax as _the_ web technology for displaying mathematical expressions. This plugin utilises Jekyll's plugin system to enable you to easily add mathematical equations to your statically generated site, by adding a Liquid block corresponding to content to be rendered by KaTeX.
 
 It's as simple as adding this plugin to your `_plugins` folder, pointing the plugin to your $$\KaTeX$$ JavaScript file in `_config.yml`, and including the $$\KaTeX$$ CSS in the resulting web pages.
 
@@ -27,10 +28,10 @@ For more information, continue reading, or if you want to just go straight to th
 
 So why should you use $$\KaTeX$$? Well, here's a few reasons:
 
-* It's super fast
-* It supports server side rendering
-* Pure CSS (the JS is only necessary is you're rendering client-side)
-* It's [*super*](http://jsperf.com/katex-vs-mathjax) fast.
+- It's super fast
+- It supports server side rendering
+- Pure CSS (the JS is only necessary is you're rendering client-side)
+- It's [_super_](http://jsperf.com/katex-vs-mathjax) fast.
 
 ## The Jekyll $$\KaTeX$$ plugin
 
@@ -76,7 +77,7 @@ Then the equation will also be cented on the page, with some space above and bel
 
 If you've already got the $$\KaTeX$$ JavaScript installed on your system, as well as the CSS files and the font files, then all you need to do is drop [jekyll-katex-block.rb](https://raw.githubusercontent.com/drewsberry/jekyll-katex-block/master/katex_block.rb) into your `_plugins` directory in your project, and you're ready to go!
 
-Just make sure that you're loading the CSS in your web page (but *not* the JavaScript) and have the font files available.
+Just make sure that you're loading the CSS in your web page (but _not_ the JavaScript) and have the font files available.
 
 ## Options
 
@@ -84,7 +85,7 @@ You can specify where to tell the plugin to look for your JavaScript file in you
 
 ```yaml
 katex:
-    path_to_js: "./the/path/to/your/js"
+  path_to_js: "./the/path/to/your/js"
 ```
 
 ## Troubleshooting
@@ -96,7 +97,7 @@ If you're seeing a bunch of weird symbols instead of your equations, then it's p
 Put the following in the head of your HTML to sort it out:
 
 ```html
-<meta charset=utf-8>
+<meta charset="utf-8" />
 ```
 
 If you're seeing your equations, but they don't have any special formatting and just look like weird, squished, ugly versions of what you want, like this:
@@ -107,7 +108,7 @@ Then it's probably because your server can't find the font files. You can test t
 
 ```console
 $ jekyll build
-$ cd _site 
+$ cd _site
 $ python -m http.server
 ```
 

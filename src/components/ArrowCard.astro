@@ -24,15 +24,17 @@ const tags = entry.data.tags ?? [];
     <div class="text-sm">
       {entry.data.description}
 
-      {tags.length > 0 && (
-        <div class="flex flex-wrap gap-1 mt-1">
-          {tags.map((tag) => (
-            <span class="text-xs mt-1 bg-black/10 text-black dark:bg-white/10 dark:text-white px-1.5 py-0.5 rounded">
-              #{tag}
-            </span>
-          ))}
-        </div>
-      )}
+      {
+        tags.length > 0 && (
+          <div class="mt-1 flex flex-wrap gap-1">
+            {tags.map((tag) => (
+              <span class="mt-1 rounded bg-black/10 px-1.5 py-0.5 text-xs text-black dark:bg-white/10 dark:text-white">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )
+      }
     </div>
   </div>
   <svg

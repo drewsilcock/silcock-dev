@@ -110,6 +110,11 @@ pre {
   @apply scale-90 transition-transform;
 }
 
-.ds-blog-logo {
-  transition: 
+.section-anchor {
+  @apply scroll-mt-8;
+}
+
+.section-anchor-link {
+  /* yellow-500 = hsl(45, 93%, 47%) */
+  @apply ml-[-2rem] font-bold decoration-transparent absolute transform translate-y-[1.45rem] h-4 w-4 items-center justify-center text-4xl opacity-25 hover:opacity-100 transition-all text-[color:hsl(45,25%,55%)] hover:text-yellow-500 hover:dark:text-yellow-500;
 }

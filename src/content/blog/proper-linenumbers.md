@@ -116,7 +116,8 @@ To solve this, you can either just put `lineanchors` in every `highlight` Liquid
 Using this plugin, you can simply specify as follows in your `_config.yml`:
 
 ```yaml
-pygments_options: ['lineanchors']
+pygments_options:
+  - lineanchors
 ```
 
 Then you don't need to put it in each codeblock tag and can forget about it!
@@ -140,7 +141,7 @@ This is placed in `pre { .. }`, just after `overflow-x: auto;`.
 
 After this, I finally had the beautiful line numbers that Pygments natively lacks.
 
-**Update:** *5-8-14*
+**Update:** _5-8-14_
 
 Dana's global configs Jekyll plugin is incompatible with the new Jekyll 2.2.0 release which both I and GitHub Pages are now using. So it looks like until I get round to sorting out why the plugin is incompatible, you'll need to actually type `highlight lang lineanchors` for each individual code block. Annoying.
 

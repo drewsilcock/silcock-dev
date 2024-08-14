@@ -10,7 +10,6 @@ draft: true
 
 TODO
 
-
 ## Further reading
 
 - [What I Talk About When I Talk About Query Optimizer](https://xuanwo.io/2024/02-what-i-talk-about-when-i-talk-about-query-optimizer-part-1/)

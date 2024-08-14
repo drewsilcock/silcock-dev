@@ -1,12 +1,14 @@
-import tailwind from "@astrojs/tailwind";
-import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
-import pagefind from "astro-pagefind";
-import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
-import expressiveCode from "astro-expressive-code";
+import tailwind from "@astrojs/tailwind";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
+import expressiveCode from "astro-expressive-code";
+import pagefind from "astro-pagefind";
+import { defineConfig } from "astro/config";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeKatex from "rehype-katex";
+import rehypeSlug from "rehype-slug";
+import remarkMath from "remark-math";
 import defaultTheme from "tailwindcss/defaultTheme";
 
 // https://astro.build/config
@@ -20,19 +22,40 @@ export default defineConfig({
     expressiveCode({
       plugins: [pluginLineNumbers()],
       styleOverrides: {
-        codeFontFamily: ['"Ubuntu Mono"', ...defaultTheme.fontFamily.mono].join(", "),
-      }
+        codeFontFamily: ['"Ubuntu Mono"', ...defaultTheme.fontFamily.mono].join(
+          ", ",
+        ),
+      },
     }),
     mdx(),
   ],
   markdown: {
     remarkPlugins: [remarkMath],
-    rehypePlugins: [rehypeKatex],
+    rehypePlugins: [
+      rehypeKatex,
+      rehypeSlug, // ToC adds IDs, but that happens too late for the autolink plugin.
+      [
+        rehypeAutolinkHeadings,
+        {
+          behavior: "before",
+          content: {
+            type: "text",
+            value: "#",
+          },
+          headingProperties: {
+            className: ["section-anchor"],
+          },
+          properties: {
+            className: ["section-anchor-link"],
+          },
+        },
+      ],
+    ],
     shikiConfig: {
       themes: {
         light: "catppuccin-latte",
-        dark: "catppuccin-frappe"
-      }
-    }
-  }
+        dark: "catppuccin-frappe",
+      },
+    },
+  },
 });

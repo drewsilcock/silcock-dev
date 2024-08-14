@@ -18,23 +18,23 @@ The trigonometry assumes that you are flying a UAV with the camera facing direct
 
 Firstly, let's look at how we can go from the information we have to the information we need. We need to know the following to completely determine the <abbr title="Meters Per Pixel">MPP</abbr> (meters per pixel):
 
-* Resolution of the camera
-* Height from which photo was taken
-* Angle of view of the camera
+- Resolution of the camera
+- Height from which photo was taken
+- Angle of view of the camera
 
 Then let us parametrise the situation as follows:
 
-* Ground distances photographed in horizontal and vertical, respectively: $$x$$ and $$y$$
-* Resolution of camera: $$r\_x$$ and $$r\_y$$
-* Height from which photo was taken: $$h$$
-* Angle of view of the camera: $$\alpha\_x$$ and $$\alpha\_y$$
-* MMP: $$\mu\_x$$ and $$\mu\_y$$
+- Ground distances photographed in horizontal and vertical, respectively: $$x$$ and $$y$$
+- Resolution of camera: $$r\_x$$ and $$r\_y$$
+- Height from which photo was taken: $$h$$
+- Angle of view of the camera: $$\alpha\_x$$ and $$\alpha\_y$$
+- MMP: $$\mu\_x$$ and $$\mu\_y$$
 
 The following diagrams illustrate the horizontal and vertical views that the camera sees:
 
 ![horizontal view](/media/archive/meters-per-pixel/horizontal_view.svg)
 
-***
+---
 
 ![vertical view](/media/archive/meters-per-pixel/vertical_view.svg)
 

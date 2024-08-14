@@ -18,14 +18,16 @@ The geometry of the situation is shown below:
 
 ![geometry of overlap](/media/archive/calculating-overlap/overlap.svg)
 
-Let's call the inter-photo distance $$ d_{int} $$, the angle of view $$ \alpha_y $$, the height $$ h $$ and the required overlap fraction $$ \omega $$ (i.e. if we want 80% overlap, then $$ \omega = 0.8 $$).
+Let's call the inter-photo distance $$ d\_{int} $$, the angle of view $$ \alpha_y $$, the height $$ h $$ and the required overlap fraction $$ \omega $$ (i.e. if we want 80% overlap, then $$ \omega = 0.8 $$).
 
 $$
 d_{int}      = 2h\tan\left(\frac{\alpha_y}{2}\right) - \text{overlap}
 $$
+
 $$
 ~~~~~~~~~~~~~~~~~~ = 2h\tan\left(\frac{\alpha_y}{2}\right) - 2h\omega\tan\left(\frac{\alpha_y}{2}\right)
 $$
+
 $$
 ~            = 2h\tan\left(\frac{\alpha_y}{2}\right)\left[ 1 - \omega \right]
 $$
@@ -50,4 +52,4 @@ $$
 v_{UAV} = 9.09 ~ \text{meters/second}
 $$
 
-Luckily, this is a very reasonable value! (Remembering that this is the *maximum* speed you can go before your overlap becomes too small for proper photogrammetry.)
+Luckily, this is a very reasonable value! (Remembering that this is the _maximum_ speed you can go before your overlap becomes too small for proper photogrammetry.)

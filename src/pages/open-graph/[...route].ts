@@ -1,7 +1,7 @@
 // src/pages/open-graph/[...route].ts
 
 import { OGImageRoute } from "astro-og-canvas";
-import { getCollection, type InferEntrySchema } from "astro:content";
+import { getCollection } from "astro:content";
 
 const posts = await getCollection("blog");
 const projects = await getCollection("projects");
@@ -21,9 +21,20 @@ for (const project of projects) {
 
 // There's probably a better way of collecting the other pages, but I don't know enough
 // about Astro to know what that is.
-pages["index"] = { title: "Home", description: "Welcome to drew's dev blog, where I post about tech and tools I'm interested in." };
-pages["blog"] = { title: "Blog", description: "A collection of articles on topics I'm interested in." };
-pages["projects"] = { title: "Projects", description: "A collection of my projects with links to repositories and live demos." };
+pages["index"] = {
+  title: "Home",
+  description:
+    "Welcome to drew's dev blog, where I post about tech and tools I'm interested in.",
+};
+pages["blog"] = {
+  title: "Blog",
+  description: "A collection of articles on topics I'm interested in.",
+};
+pages["projects"] = {
+  title: "Projects",
+  description:
+    "A collection of my projects with links to repositories and live demos.",
+};
 pages["about"] = { title: "About", description: "A little bit about me." };
 pages["404"] = { title: "404", description: "Page not found." };
 

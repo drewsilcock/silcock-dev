@@ -1,11 +1,28 @@
-# Introducing [Astro Micro  ‍👨🏻‍💻](https://astro-micro.vercel.app/)
+# Drew's Dev Blog
 
-Astro Micro is an accessible theme for Astro. It's a fork of [Mark Horn's](https://github.com/markhorn-dev) popular theme [Astro Nano](https://astro-nano-demo.vercel.app/). Like Nano, Micro comes with zero frameworks installed.
+This is the code for my dev blog.
 
-Micro adds features like [Pagefind](https://pagefind.app) for search, [Giscus](https://giscus.app) for comments, and more. For a full list of changes, see this [blog post](https://astro-micro.vercel.app/blog/00-micro-changelog).
+It's based on [Astro Micro](https://astro.build/themes/details/astro-micro/) with some modifications to the styling, plugins, etc.
 
-Micro still comes with everything great about Nano — full type safety, a sitemap, an RSS feed, and Markdown + MDX support. Styled with TailwindCSS and preconfigured with system, light, and dark themes.
+## Getting started
 
----
+Install the latest Node LTS (e.g. via nvm). Then:
 
-![astro-micro-image](https://github.com/trevortylerlee/astro-micro/assets/49603972/ec5bc96a-3e96-4af1-a182-7711b54c5ef6)
+```shell
+# To run dev environment
+npm run dev
+
+# To build site to static 'dist' folder.
+npm run build
+
+# To format code
+npm run format
+
+# To check / lint code
+npm run check
+npm run lint
+```
+
+## Copyright
+
+The content of this project itself is licensed under the [Creative Commons Attribution 4.0 International license](https://creativecommons.org/licenses/by/4.0/), and the underlying source code used to format and display that content is licensed under the [MIT license](LICENCE).

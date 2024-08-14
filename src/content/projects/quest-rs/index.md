@@ -5,8 +5,8 @@ date: 2024-07-15T00:00:00.000Z
 tags:
   - rust
   - quantum-computing
-repoURL: 'https://github.com/drewsilcock/quest-rs'
-packageURL: 'https://crates.io/crates/quest-rs'
+repoURL: "https://github.com/drewsilcock/quest-rs"
+packageURL: "https://crates.io/crates/quest-rs"
 ---
 
 ## About
