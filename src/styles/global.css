@@ -116,5 +116,5 @@ pre {
 
 .section-anchor-link {
   /* yellow-500 = hsl(45, 93%, 47%) */
-  @apply ml-[-2rem] font-bold decoration-transparent absolute transform translate-y-[1.45rem] h-4 w-4 items-center justify-center text-4xl opacity-25 hover:opacity-100 transition-all text-[color:hsl(45,25%,55%)] hover:text-yellow-500 hover:dark:text-yellow-500;
+  @apply absolute ml-[-2rem] h-4 w-4 translate-y-[1.45rem] transform items-center justify-center text-4xl font-bold text-[color:hsl(45,25%,55%)] decoration-transparent opacity-25 transition-all hover:text-yellow-500 hover:opacity-100 hover:dark:text-yellow-500;
 }
