@@ -204,7 +204,7 @@ copy countries (
   intermediate_region_code
 )
 from '/var/lib/postgresql/data/countries.csv'
-delimiter ',' csv header;
+with csv header;
 
 -- Check that the data got loaded into the table ok.
 select * from countries limit 10;
@@ -306,7 +306,9 @@ We can see here that we've only actually got 4 table-like objects – the rest o
 
 So what are these `pg_class` objects and how do they relate to all these files?
 
-Well we can see that `countries` is there with oid and relfilenode values of 16390 – that's our actual table. There's also `countries_pkey` with oid and relfilenode values of 16395 – that's the index for our primary key. There's `countries_name_key` with 16397 – the index for our name unique constraint – and finally `countries_id_seq` with 16389 – the sequence used to generate new ID values (we use `primary key generated always as identity`, which just like `serial` generates new values in a numerically increasing sequence).
+Well we can see that `countries` is there with oid and relfilenode values of 16390 – that's our actual table. There's also `countries_pkey` with oid and relfilenode values of 16395 – that's the index for our primary key. There's `countries_name_key` with 16397 – the index for our name unique constraint – and finally `countries_id_seq` with 16389 – the sequence used to generate new ID values (we use `primary key generated always as identity`, which just like `serial` generates new values in a numerically increasing sequence)[^2.5].
+
+[^2.5]: The relfilenode may start off equal to oid as we can see here but it will change over time, e.g. after a `vacuum full` or `truncate`.
 
 The relfilenode here corresponds to the "filenode" of the object, which is the name of the file on disk. Let's start off with our `countries` table.
 
@@ -452,9 +454,8 @@ We can also see the actual data for the item here as well, which is pretty cool 
 
 ```bash
 $ row_data=$(docker exec $pg_container_id psql -U postgres blogdb --tuples-only -c "select t_data from heap_page_items(get_raw_page('countries', 1)) limit 1;")
-$ python3 -c "print(bytearray.fromhex(r'$row_data'.strip().replace('\\\\x', '')).decode('utf-8', errors='ignore'))" > row_data.bin
-$ cat row_data.bin
-D%Equatorial GuineaGQ   GNQ     226ISO 3166-2:GQAfrica'Sub-Saharan AfricaMiddle Africa  002     202     017
+# You can replace `hexyl` with `xxd` if you don't have hexyl installed.
+$ echo "$row_data" | cut -c4- | xxd -r -p | hexyl
 $ hexyl row_data.bin
 ┌────────┬─────────────────────────┬─────────────────────────┬────────┬────────┐
 │00000000│ 44 00 00 00 25 45 71 75 ┊ 61 74 6f 72 69 61 6c 20 │D⋄⋄⋄%Equ┊atorial │
@@ -610,3 +611,4 @@ If you'd like me to write about one of these, leave a comment below 🙂
 ## Updates
 
 - 2024-08-05 – Rephrased the explanation of logical decoding based on [HN comment from dfox](https://news.ycombinator.com/item?id=41160109), added explanation of why checksums are all 0 after [HN discussion](https://news.ycombinator.com/item?id=41160233), expanded teaser for future TOAST post.
+- 2024-08-15 – On suggestion of [jmholla on HN](https://news.ycombinator.com/item?id=41172885), replace Python decoding with xxd tool one-liner.
