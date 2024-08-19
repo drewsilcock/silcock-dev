@@ -2465,14 +2465,23 @@ If you're always pulling the whole row including the full variable length attrib
 
 On the other hand, if you are often pulling through all the values other than the variable-length attribute in question, it might make more sense to out-of-line it so that you don't have to skip over these large values in the main table when doing a read of contiguous rows on disk. Having smaller rows can often lead to performance improvements due purely to the smaller row size, meaning more rows fit in the shared buffer cache and that sorts can more often be done entirely in-memory.
 
-## Why out-of-line?
+As always, it's never a good idea to base production decisions around abstract thinking when it comes to database performance – there can be a million possible things that can affect database performance based on your individual use case and it only takes one limiting factor to ruin your query performance. Always do proper performance comparisons with real or representative data and base your decisions on a thorough analysis of all those statistics and `explain analyse` outputs[^explain-analyse].
 
-TODO we're splitting our toasted value across multiple tuples, why not just do this in the main table?
+[^explain-analyse]: If you're wondering, yes I do insist on using the British spelling for `explain analyse`. Why would Postgres implement the alias unless they want snobby Brits like me to use it?
 
-## Resources
+## Conclusion
 
-- https://medium.com/quadcode-life/toast-tables-in-postgresql-99e3403ed29b
-- https://www.postgresql.org/docs/current/storage-toast.html
-- https://www.crunchydata.com/blog/postgres-toast-the-greatest-thing-since-sliced-bread
-- https://www.timescale.com/blog/what-is-toast-and-why-it-isnt-enough-for-data-compression-in-postgres/
-- https://wiki.postgresql.org/wiki/TOAST
+If you've made it this far, you should have a thorough understanding of how Postgres handles variable length attributes including compression and out-of-lining. We talked about how Postgres indicates which type of struct is being used to store the variable length attribute header information and how to track down TOAST slices based on the data within the main table.
+
+We talked about the different TOAST strategies you can select within your schema and how this can affect the performance characteristics of your database.
+
+Hopefully, this'll come in useful for you one day when you're analysing and optimising some particularly nasty performance issues. If nothing else, it's an impressive thing to be able to talk about in detail if you're in a job interview.
+
+## Further reading
+
+- [PostgreSQL documentation – 73.2. TOAST](https://www.postgresql.org/docs/current/storage-toast.html)
+- [PostgreSQL source code documentation](https://doxygen.postgresql.org/md_README.html)
+- [PostgreSQL wiki – TOAST](https://wiki.postgresql.org/wiki/TOAST)
+- [Quadcode on Medium – TOAST tables in PostgreSQL](https://medium.com/quadcode-life/toast-tables-in-postgresql-99e3403ed29b)
+- [Crunchy Data blog – Postgres TOAST: The Greatest Thing Since Sliced Bread?](https://www.crunchydata.com/blog/postgres-toast-the-greatest-thing-since-sliced-bread)
+- [Timescale blog – What Is TOAST (and Why It Isn’t Enough for Data Compression in Postgres)](https://www.timescale.com/blog/what-is-toast-and-why-it-isnt-enough-for-data-compression-in-postgres/)
