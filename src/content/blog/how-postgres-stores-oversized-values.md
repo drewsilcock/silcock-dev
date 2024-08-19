@@ -1,12 +1,13 @@
 ---
 title: How Postgres stores oversized values – let's raise a TOAST
 description: Postgres internals part 2 – oversized values and TOASTable types
-date: 2024-08-14
-updated: 2024-08-14T15:14:00.000Z
+date: 2024-08-19
+updated: 2024-08-19T22:00:00.000Z
 tags:
   - postgres
   - databases
-draft: true
+draft: false
+archive: true
 socials: []
 ---
 
