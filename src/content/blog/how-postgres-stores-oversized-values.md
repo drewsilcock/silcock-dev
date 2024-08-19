@@ -2478,6 +2478,22 @@ We talked about the different TOAST strategies you can select within your schema
 
 Hopefully, this'll come in useful for you one day when you're analysing and optimising some particularly nasty performance issues. If nothing else, it's an impressive thing to be able to talk about in detail if you're in a job interview.
 
+I'll leave you with my favourite excerpt from these poems:
+
+<figure class="text-xl">
+  <blockquote cite="https://www.poetryfoundation.org/poems/47311/the-waste-land">
+    <p>
+      And I will show you something different from either<br>
+      Your shadow at morning striding behind you<br>
+      Or your shadow at evening rising to meet you;<br>
+      I will show you fear in a handful of dust.
+    </p>
+  </blockquote>
+  <figcaption class="ml-10">
+    <p>— T. S. Eliot, <cite>The Waste Land</cite></p>
+  </figcaption>
+</figure>
+
 ## Further reading
 
 - [PostgreSQL documentation – 73.2. TOAST](https://www.postgresql.org/docs/current/storage-toast.html)
