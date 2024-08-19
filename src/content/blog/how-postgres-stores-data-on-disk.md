@@ -348,16 +348,6 @@ This diagram shows what the structure of a page is, and how it relates to the se
 <img class="image-dark" alt="Postgres database layout" src="/media/how-postgres-stores-data-on-disk/database-layout-dark.png">
 <img class="image-light" alt="Postgres database layout" src="/media/how-postgres-stores-data-on-disk/database-layout-light.png">
 
-<style>
-  html.dark img.image-light {
-    display: none;
-  }
-
-  html:not(.dark) img.image-dark {
-    display: none;
-  }
-</style>
-
 In our example here, our main table is 2.7 GiB which requires 3 separate segments of 1 GiB each. 131,072 pages of size 8 KiB into 1 GiB and each page consists of around 40 items (based on each item taking up about 200 bytes).
 
 ## Page layout
@@ -478,9 +468,9 @@ Ahah, we are looking at the data for Equatorial Guinea, the only continental Afr
 We can see here that each column is being stored right next to each other with a random byte in between each one. Let's dive in:
 
 - `0x 44 00 00 00` = `68` (must be little endian) so the first 4 bytes is the row's ID
-- Then, there's a random byte like `0x25` or `0x07` followed by the column data – the rest of the columns are string types so they're all stored in UTF-8. If you know what these inter-column bytes mean, leave a comment below! I can't figure it out.
+- Then, there's a random byte like `0x25` or `0x07` followed by the column data – the rest of the columns are string types so they're all stored in UTF-8. If you know what these inter-column bytes mean, leave a comment below! I can't figure it out. **Edit:** Thanks for everyone who commented with their insight on this. For an in-depth explanation, see the part 2 follow-on post: [How Postgres stores oversized values – let's raise a TOAST](/blog/how-postgres-stores-oversized-values).
 
-Individual values that are too big to store in here (e.g. they're more than 8 KiB in size) get stored in a separate relation, or [TOASTed](https://www.postgresql.org/docs/current/storage-toast.html) – this will be the topic of a future post 🍞.
+Individual values that are too big to store in here (e.g. they're more than 8 KiB in size) get stored in a separate relation, or [TOASTed](https://www.postgresql.org/docs/current/storage-toast.html) – this will be the [topic of a future post 🍞](/blog/how-postgres-stores-oversized-values).
 
 ## What happens when a row gets modifed or deleted?
 
