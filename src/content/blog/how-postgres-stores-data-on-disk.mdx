@@ -14,6 +14,11 @@ socials:
   - https://x.com/drewlhsilcock/status/1820378063596626077
 ---
 
+import { Image } from 'astro:assets';
+
+import databaseLayoutDark from "../../assets/how-postgres-stores-data-on-disk/database-layout-dark.png";
+import databaseLayoutLight from "../../assets/how-postgres-stores-data-on-disk/database-layout-light.png";
+
 I remember when I first started on server-side applications – the kind that need to persist data – and not getting what the big deal about databases was. Why are databases such a big thing? Can't we just store some data on disk and read / write from it when we need to? (**Spoiler:** no.)
 
 Once I started working with real-life applications instead of just hobby projects, I realised that databases are basically magic, and SQL is the arcane tongue that allows you to channel that magic. In fact, it's easy to think of databases like a black box where you make sure your tables are indexed sensibly and your queries aren't doing anything silly, and the rest _just happens_.
@@ -345,8 +350,8 @@ You might be thinking – why use pages? Why not just have one page per segment?
 
 This diagram shows what the structure of a page is, and how it relates to the segment and whole object.
 
-<img class="image-dark" alt="Postgres database layout" src="/media/how-postgres-stores-data-on-disk/database-layout-dark.png">
-<img class="image-light" alt="Postgres database layout" src="/media/how-postgres-stores-data-on-disk/database-layout-light.png">
+<Image class="image-dark" alt="Postgres database layout" src={databaseLayoutDark} />
+<Image class="image-light" alt="Postgres database layout" src={databaseLayoutLight} />
 
 In our example here, our main table is 2.7 GiB which requires 3 separate segments of 1 GiB each. 131,072 pages of size 8 KiB into 1 GiB and each page consists of around 40 items (based on each item taking up about 200 bytes).
 

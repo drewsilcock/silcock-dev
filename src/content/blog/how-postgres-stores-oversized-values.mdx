@@ -11,6 +11,11 @@ archive: true
 socials: []
 ---
 
+import { Image } from 'astro:assets';
+
+import varlenaStructsDark from "../../assets/how-postgres-stores-oversized-values/varlena-structs-dark.png";
+import varlenaStructsLight from "../../assets/how-postgres-stores-oversized-values/varlena-structs-light.png";
+
 _This post is part 2 of a series on Postgres internals – for part 1, see [How Postgres stores data on disk – this one's a page turner](/blog/how-postgres-stores-data-on-disk)_.
 
 Where we left off last time, we had a table stored as heap segments, with each segment containing a bunch of pages, each of size 8 KiB. This was working fantastically for our table of countries, but you might be wondering – if each page is 8 KiB in size and a single row can't span multiple pages, what happens if we've got a single value which is bigger than 8 KiB?
@@ -1482,8 +1487,8 @@ We're talking about the "on-disk" variant while the other types of external TOAS
 
 To help visualise these, here's a handy flow diagram:
 
-<img class="image-dark" alt="Postgres variable length attribute (varlena) structures (dark mode)" src="/media/how-postgres-stores-oversized-values/varlena-structs-dark.png">
-<img class="image-light" alt="Postgres variable length attribute (varlena) structures (light mode)" src="/media/how-postgres-stores-oversized-values/varlena-structs-light.png">
+<Image class="image-dark" alt="Postgres variable length attribute (varlena) structures (dark mode)" src={varlenaStructsDark} />
+<Image class="image-light" alt="Postgres variable length attribute (varlena) structures (light mode)" src={varlenaStructsLight} />
 
 ## Looking back at our poem varlena headers
 
@@ -2483,9 +2488,9 @@ I'll leave you with my favourite excerpt from these poems:
 <figure class="text-xl">
   <blockquote cite="https://www.poetryfoundation.org/poems/47311/the-waste-land">
     <p>
-      And I will show you something different from either<br>
-      Your shadow at morning striding behind you<br>
-      Or your shadow at evening rising to meet you;<br>
+      And I will show you something different from either<br/>
+      Your shadow at morning striding behind you<br/>
+      Or your shadow at evening rising to meet you;<br/>
       I will show you fear in a handful of dust.
     </p>
   </blockquote>
