@@ -1447,17 +1447,17 @@ First, let's take a look at the different structs we've got here. There are esse
 
 ### 1. `varattrib_4b.va_4byte`
 
-This is the normal 4-byte header that's used when the value is not long enough to be compressed or out-of-lined. The header itself contains the length of the data within the 4-byte header, but as we'll see in `varattrib_4b.va_compressed` and `varattrib_1b`, the first bit of the varlena header is used to hold a flag indicating whether the data uses the `varattrib_1b` or `varattrib_1b_e` formats and the second bit is used to hold a flag indicating whether the and the actual length is stored in the other 30 bits.
+This is the normal 4-byte header that's used when the value is not long enough to be compressed or out-of-lined. The header itself contains the length of the data within the 4-byte header, but as we'll see in `varattrib_4b.va_compressed` and `varattrib_1b`, the first bit of the varlena header is used to hold a flag indicating whether the data uses the `varattrib_1b` or `varattrib_1b_e` formats and the second bit is used to hold a flag indicating whether the data is compressed, so the actual length is stored in the other 30 bits.
 
-This means that the maximum length we can have is `0x3ffffff` = 1,073,741,823 which is probably big enough given the default page size is 8,192 bytes.
+This means that the maximum length we can have is $$2^{30} - 1 = (1 \ll 30) - 1 = \mathtt{0x3ffffff} = 1,073,741,823$$ which is probably big enough given the default page size is 8,192 bytes.
 
 ### 2. `varattrib_4b.va_compressed`
 
 This is an 8-byte header used when the value is big enough to need compressing, but not big enough to need out-of-lining. This struct is the same as the 4-byte header but adds an extra uint32 to store information about the compression.
 
-**Note:** for people unfamiliar with `union` in C, this is basically saying that the struct `varattrib_4b` can refer to either the struct `va_4byte` or `va_compressed` within the same bit of memory. It's not clear to me why these two structs are in a union but the other two aren't, but hey ho.
+**Note:** for people unfamiliar with `union` in C, this is basically saying that the struct `varattrib_4b` can refer to either the struct `va_4byte` or `va_compressed` within the same bit of memory. It's not immediately clear to me why these two structs are in a union but the other two aren't. Based on the comment above these structs, I presume it's because the `varattrib_4b` union members are aligned as they consist of `uint32` fields, whereas the `varattrib_1b` and `varattrib_1b_e` structs are not aligned because they have one or two `uint8` fields inside them. I'm not entirely certain on this, though, so if any C experts want to chime in, feel free.
 
-Also, why we're at it, it seems silly that `va_compressed` is part of `varattrib_4b` when the header is 8 bytes long, not 4 bytes as the name implies, but I guess I've never written a database used by millions so I can't really criticise.
+Also, while we're at it, it seems silly that `va_compressed` is part of `varattrib_4b` when the header is 8 bytes long, not 4 bytes as the name implies, but I guess I've never written a database used by millions so I can't really criticise.
 
 ### 3. `varattrib_1b`
 
@@ -2460,7 +2460,7 @@ What's happening here is that Postgres is doing it's utmost effort to make as mu
 
 Depending on your specific use-case, different strategies can produce different performance characteristics.
 
-For instance, if you are doing lots of substring operations on really string values, using "external" is probably a good bet as long as you don't mind the increased size on-disk.
+For instance, if you are doing lots of substring operations on really wide string values, using "external" is probably a good bet as long as you don't mind the increased size on-disk.
 
 If you're always pulling the whole row including the full variable length attribute in question, you might find that using `main` reduces the time spent pulling data out of external toast tables.
 
