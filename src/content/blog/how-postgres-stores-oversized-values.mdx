@@ -2,7 +2,7 @@
 title: How Postgres stores oversized values – let's raise a TOAST
 description: Postgres internals part 2 – oversized values and TOASTable types
 date: 2024-08-22
-updated: 2024-08-22T12:28:00.000Z
+updated: 2024-09-10T13:58:00.000Z
 tags:
   - postgres
   - databases
@@ -26,7 +26,7 @@ Let's find out.
 
 ## Recap
 
-_**(If you've just come from [part 1](/blog/how-postgres-stores-data-on-disk) and still have the database setup, feel free to [skip over this bit](http://localhost:4321/blog/how-postgres-stores-oversized-values/#lets-create-another-table).)**_
+_**(If you've just come from [part 1](/blog/how-postgres-stores-data-on-disk) and still have the database setup, feel free to [skip over this bit](#lets-create-another-table).)**_
 
 Last time we spin up a fresh Postgres instance and inserted a load of countries in from CSV. You can re-create this by running:
 
@@ -355,7 +355,7 @@ This is the name that Postgres gives its technique for handling these pesky valu
 
 These three poems have been carefully selected[^carefully-selected] to showcase the two TOAST tools that Postgres uses: compression and out-of-lining. These tools can be used on many variable length field, not just strings like our poems. For instance, bytea and jsonb values are commonly "TOAST-ed" as well.
 
-[^selected-selected]: The smaller and bigger were easier but finding a poem of just the right length to be compressed but not out-of-lined was tricky, big shout out to that Grecian urn 🙏🏻
+[^carefully-selected]: The smaller and bigger were easier but finding a poem of just the right length to be compressed but not out-of-lined was tricky – big shout out to that Grecian urn 🙏🏻⚱️
 
 What is this "out-of-lining", I hear you say? It's precisely what it sounds like: Postgres takes the value out of the line that the rest of the row sits in, and puts it a separate relation where it can really think about its actions until its small enough to come back inside the main heap file.
 
