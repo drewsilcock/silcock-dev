@@ -86,7 +86,25 @@ html.scrolled #back-to-top {
 
 .section-anchor-link {
   /* yellow-500 = hsl(45, 93%, 47%) */
-  @apply absolute ml-[-2rem] h-4 w-4 translate-y-[1.45rem] transform items-center justify-center text-4xl font-bold text-[color:hsl(45,25%,55%)] decoration-transparent opacity-25 transition-all hover:text-yellow-500 hover:opacity-100 hover:dark:text-yellow-500;
+  @apply absolute ml-[-2rem] h-4 w-4 text-4xl translate-y-[1.45rem] transform items-center
+         justify-center font-bold text-[color:hsl(45,25%,55%)] decoration-transparent
+         opacity-25 transition-all hover:text-yellow-500 hover:opacity-100 hover:dark:text-yellow-500;
+}
+
+.section-anchor-link:has(+ h3) {
+  @apply text-2xl translate-y-2;
+}
+
+.section-anchor-link:has(+ h4) {
+  @apply text-xl translate-y-[0.65rem];
+}
+
+.section-anchor-link:has(+ h5) {
+  @apply text-xl translate-y-0;
+}
+
+.section-anchor-link:has(+ h6) {
+  @apply text-xl translate-y-0;
 }
 
 /** Enable using separate dark-mode and light-mode images. */
