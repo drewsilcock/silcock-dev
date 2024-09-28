@@ -1,11 +1,15 @@
 ---
 title: Everything you need to know about Python 3.13 – JIT and GIL went up the hill
-description: Python's upcoming 3.13 release is a big one – here's all the important stuff you need to know if you're thinking of upgrading, including implications of changes to the Global Interpreter Lock (GIL) and Just-in-Time (JIT) compilation.
+description: All you need to know about the latest Python release including Global Interpreter Lock and Just-in-Time compilation.
 date: 2024-09-28
-updated: 2024-09-28T12:00:00Z
+updated: 2024-09-28T13:00:00Z
 tags:
   - python
-socials: []
+socials:
+  - https://lobste.rs/s/icnsw6/everything_you_need_know_about_python_3_13
+  - https://news.ycombinator.com/item?id=41677131
+  - https://www.linkedin.com/posts/drewsilcock_everything-you-need-to-know-about-python-activity-7245765286795046912-8-y5
+  - https://x.com/drewlhsilcock/status/1839999402909241476
 ---
 
 import Callout from "@/components/Callout.astro";
@@ -16,7 +20,7 @@ import performanceComparisonM3Light from "../../assets/everything-you-need-to-kn
 import performanceComparisonEC2Dark from "../../assets/everything-you-need-to-know-about-python-3-13/bench-comparison-ec2-dark.png";
 import performanceComparisonEC2Light from "../../assets/everything-you-need-to-know-about-python-3-13/bench-comparison-ec2-light.png";
 
-On October 2<sup>nd</sup>, 2024, the Python core developers and community will release [CPython v3.13.0](https://docs.python.org/3.13/whatsnew/3.13.html) – and it's a doozy.
+On 2<sup>nd</sup> October 2024, the Python core developers and community will release [CPython v3.13.0](https://docs.python.org/3.13/whatsnew/3.13.html) – and it's a doozy. (Update: release has now been [pushed back to 7<sup>th</sup> October](https://discuss.python.org/t/incremental-gc-and-pushing-back-the-3-13-0-release/65285).)
 
 So what makes this release different, and why should you care about it?
 
@@ -164,7 +168,7 @@ With that in mind, we can already make a few observations:
 
 ### How do I try out free-threaded Python?
 
-At the time of writing, Python 3.13 is still in release candidate and hasn't been officially released. Having said that, today is Saturday 28<sup>th</sup> and the release is scheduled for 2<sup>nd</sup> October which is Wednesday, so its not far away.
+At the time of writing, Python 3.13 is still in release candidate and hasn't been officially released. Having said that, today is Saturday 28<sup>th</sup> September and the release is scheduled for ~~2<sup>nd</sup>~~ 7<sup>th</sup> October which is ~~Wednesday~~ a week on Thursday, so its not far away. (Update: updated release date to reflect [pushed back release schedule](https://discuss.python.org/t/incremental-gc-and-pushing-back-the-3-13-0-release/65285).)
 
 If you want to try it out ahead of time, you're out of luck with [rye](https://rye.astral.sh/) which only seems to ship deployed versions and [uv](https://docs.astral.sh/uv/) which includes the 3.13.0rc2 build but not the 3.13.0rc2t build. Luckily, [pyenv](https://github.com/pyenv/pyenv) supports both 3.13.0rc2 and 3.13.0rc2t. To try it out for yourself:
 
@@ -303,3 +307,7 @@ Python 3.13 is a big release in introducing some exciting new concepts and featu
 - [Python 3.13 gets a JIT – Anthony Shaw](https://tonybaloney.github.io/posts/python-gets-a-jit.html)
 - [PEP 744 – JIT Compilation](https://peps.python.org/pep-0744/)
 - [Discuss – PEP 744: JIT Compilation](https://discuss.python.org/t/pep-744-jit-compilation/50756)
+
+## Updates
+
+- 2024-09-28: Updated release date for v3.13.0 from 2<sup>nd</sup> October to 7<sup>th</sup> October. Thanks to [nmstoker](https://news.ycombinator.com/item?id=41679328) on HN for pointing this out.
