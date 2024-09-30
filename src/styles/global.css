@@ -92,15 +92,15 @@ html.scrolled #back-to-top {
 }
 
 .section-anchor-link:has(+ h3) {
-  @apply text-2xl translate-y-2;
+  @apply text-2xl translate-y-3;
 }
 
 .section-anchor-link:has(+ h4) {
-  @apply text-xl translate-y-[0.65rem];
+  @apply text-xl translate-y-[0.1rem];
 }
 
 .section-anchor-link:has(+ h5) {
-  @apply text-xl translate-y-0;
+  @apply text-xl translate-y-[1.65rem];
 }
 
 .section-anchor-link:has(+ h6) {

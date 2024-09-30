@@ -15,10 +15,20 @@ socials:
 import Callout from "@/components/Callout.astro";
 import { Image } from "astro:assets";
 
-import performanceComparisonM3Dark from "../../assets/everything-you-need-to-know-about-python-3-13/bench-comparison-m3-dark.png";
-import performanceComparisonM3Light from "../../assets/everything-you-need-to-know-about-python-3-13/bench-comparison-m3-light.png";
-import performanceComparisonEC2Dark from "../../assets/everything-you-need-to-know-about-python-3-13/bench-comparison-ec2-dark.png";
-import performanceComparisonEC2Light from "../../assets/everything-you-need-to-know-about-python-3-13/bench-comparison-ec2-light.png";
+import performanceComparisonM3Light from "@/assets/everything-you-need-to-know-about-python-3-13/bench-comparison-m3-light.png";
+import performanceComparisonM3Dark from "@/assets/everything-you-need-to-know-about-python-3-13/bench-comparison-m3-dark.png";
+import performanceComparisonEC2Light from "@/assets/everything-you-need-to-know-about-python-3-13/bench-comparison-ec2-light.png";
+import performanceComparisonEC2Dark from "@/assets/everything-you-need-to-know-about-python-3-13/bench-comparison-ec2-dark.png";
+
+import performanceScalingTimeEC2Light from "@/assets/everything-you-need-to-know-about-python-3-13/bench-scaling-time-ec2-light.png";
+import performanceScalingTimeEC2Dark from "@/assets/everything-you-need-to-know-about-python-3-13/bench-scaling-time-ec2-dark.png";
+import performanceScalingTimeM3Light from "@/assets/everything-you-need-to-know-about-python-3-13/bench-scaling-time-m3-light.png";
+import performanceScalingTimeM3Dark from "@/assets/everything-you-need-to-know-about-python-3-13/bench-scaling-time-m3-dark.png";
+
+import performanceScalingSpeedupEC2Light from "@/assets/everything-you-need-to-know-about-python-3-13/bench-scaling-speedup-ec2-light.png";
+import performanceScalingSpeedupEC2Dark from "@/assets/everything-you-need-to-know-about-python-3-13/bench-scaling-speedup-ec2-dark.png";
+import performanceScalingSpeedupM3Light from "@/assets/everything-you-need-to-know-about-python-3-13/bench-scaling-speedup-m3-light.png";
+import performanceScalingSpeedupM3Dark from "@/assets/everything-you-need-to-know-about-python-3-13/bench-scaling-speedup-m3-dark.png";
 
 On 2<sup>nd</sup> October 2024, the Python core developers and community will release [CPython v3.13.0](https://docs.python.org/3.13/whatsnew/3.13.html) – and it's a doozy. (Update: release has now been [pushed back to 7<sup>th</sup> October](https://discuss.python.org/t/incremental-gc-and-pushing-back-the-3-13-0-release/65285).)
 
@@ -120,33 +130,34 @@ I've run a few benchmarks on both my machine – MacBook Pro with Apple M3 Pro (
 The graphs below show a comparison of the runtime performance of a CPU-intensive task (converging Mandelbrot set) between Python 3.12 and Python 3.13 with and without the GIL.
 
 <Image
-  class="image-dark"
-  alt="Performance comparison for Apple M3 Pro"
-  src={performanceComparisonM3Dark}
-/>
-<Image
   class="image-light"
   alt="Performance comparison for Apple M3 Pro"
   src={performanceComparisonM3Light}
 />
 <Image
   class="image-dark"
-  alt="Performance comparison for t3.2xlarge EC2 instance"
-  src={performanceComparisonEC2Dark}
+  alt="Performance comparison for Apple M3 Pro"
+  src={performanceComparisonM3Dark}
 />
+
+<br />
+
 <Image
   class="image-light"
   alt="Performance comparison for t3.2xlarge EC2 instance"
   src={performanceComparisonEC2Light}
 />
-
-(These graphs aren't the most readable, I know – I'll improve on them when I get some time.)
+<Image
+  class="image-dark"
+  alt="Performance comparison for t3.2xlarge EC2 instance"
+  src={performanceComparisonEC2Dark}
+/>
 
 To explain what these runtimes mean:
 
 - `3.12.6` – Python version 3.12.6.
 - `3.13.0rc2` – the default build of Python 3.13.0 release candidate 2 (the latest version at the time of writing).
-- `3.13.0rc2t` – the Python 3.13.0 release candidate 2 with experimental free-threading enabled at build-time, run without additional arguments (i.e. GIL disabled).
+- `3.13.0rc2t-g0` – the Python 3.13.0 release candidate 2 with experimental free-threading enabled at build-time, run with the `-X gil=0` argument, thereby ensuring the GIL is disabled even if imported libraries are not marked as supporting it.
 - `3.13.0rc2t-g1` – the Python 3.13.0 release candidate 2 with experimental free-threading enabled at build-time, run with the `-X gil=1` argument, thereby "re-enabling" the GIL at runtime.
 
 A few caveats to this:
@@ -165,6 +176,72 @@ With that in mind, we can already make a few observations:
 - Apple Silicon chips really are quite impressive. Single-threaded performance on my M3 Pro is about 4x faster than single-threaded performance on the t3.2xlarge. I mean, I know t3 are designed to be cheap and burstable, but even so! It's even more impressive if you consider the insane battery life you get out of these things[^apple-sponsorship].
 
 [^apple-sponsorship]: Apple aren't even paying me to say this stuff, it's just true.
+
+#### Update 2024-09-30:  how do they scale?
+
+I've run a few extra benchmarks to see how the performance scales with the number of threads / processes. Here are the graphs in seconds:
+
+<Image
+  class="image-light"
+  alt="Performance scaling in seconds for Apple M3 Pro"
+  src={performanceScalingTimeM3Light}
+/>
+<Image
+  class="image-dark"
+  alt="Performance scaling in seconds for Apple M3 Pro"
+  src={performanceScalingTimeM3Dark}
+/>
+
+<br />
+
+<Image
+  class="image-light"
+  alt="Performance scaling in seconds for EC2 t3.2xlarge"
+  src={performanceScalingTimeEC2Light}
+/>
+<Image
+  class="image-dark"
+  alt="Performance scaling in seconds for EC2 t3.2xlarge"
+  src={performanceScalingTimeEC2Dark}
+/>
+
+(Don't ask what was happening on chunk 23 on my MacBook, something obviously decided to take up a lot of CPU in the background.)
+
+As expected, changing the number of threads doesn't change the performance of the GIL-enabled runtimes while both the GIL-disabled runtimes and multi-processing modes give a nice curve tending to a minimum execution time, where the non-parallel portion and hardware limitations (i.e. number of physical cores) restrict the performance improvements.
+
+I was a bit surprised that the performance continued to improve way past the number of physical cores for both multi-threaded and multi-processing modes. The M3 has 12 cores and [doesn't do any Simultaneous Multi-Threading (SMT)](https://apple.stackexchange.com/a/425670)[^smt-vs-ht] while the t3.2xlarge has 8 vCPUs which is actually just [4 cores with SMT](https://aws-pricing.com/t3.2xlarge.html) so I don't quite get how you're still seeing better performance at 16 threads / processes than 15. Leave a comment or email if you've got an idea for why this is!
+
+[^smt-vs-ht]: Some people use "hyper-threading" as a generic term for SMT, but hyper-threading is the Intel-specific brand name for their implementation of SMT, while SMT is the generic term for the technology, so we should call it SMT.
+
+This becomes even more clear when you plot is as a speedup fraction:
+
+<Image
+  class="image-light"
+  alt="Performance scaling in speedup fraction for Apple M3 Pro"
+  src={performanceScalingSpeedupM3Light}
+/>
+<Image
+  class="image-dark"
+  alt="Performance scaling in speedup fraction for Apple M3 Pro"
+  src={performanceScalingSpeedupM3Dark}
+/>
+
+<br />
+
+<Image
+  class="image-light"
+  alt="Performance scaling in speedup fraction for EC2 t3.2xlarge"
+  src={performanceScalingSpeedupEC2Light}
+/>
+<Image
+  class="image-dark"
+  alt="Performance scaling in speedup fraction for EC2 t3.2xlarge"
+  src={performanceScalingSpeedupEC2Dark}
+/>
+
+This shows the same data as before but where each data point is scaled as the performance improvement over base case (where the number of threads / processes is 1) for that runtime and mode.
+
+People who care about performance like to plot it like this so that they can compare it to [Amdahl's Law](https://en.wikipedia.org/wiki/Amdahl%27s_law) which is a theoretical limit on how much you can speed up a program by parallelising it, although this obviously isn't a proper performance analysis, it's mostly just for fun 😎📈
 
 ### How do I try out free-threaded Python?
 
@@ -311,3 +388,5 @@ Python 3.13 is a big release in introducing some exciting new concepts and featu
 ## Updates
 
 - 2024-09-28: Updated release date for v3.13.0 from 2<sup>nd</sup> October to 7<sup>th</sup> October. Thanks to [nmstoker](https://news.ycombinator.com/item?id=41679328) on HN for pointing this out.
+- 2024-09-30: Updated graphs to be more readable and added extra section on performance scaling.
+
