@@ -107,7 +107,7 @@ Fast forward to 2021 and [Sam Gross](https://github.com/colesbury) implemented a
 
 From reading the discussions, there's a strong desire to not "split" Python into two separate implementations – one with the GIL and one without – with the intention being that eventually after free-threading mode has been the default for a while, the GIL will be removed entirely and the free-threading mode will be the only mode.
 
-While all this GIL vs. no-GIL stuff has been going on the last few years, there has been a parallel effort called the "Faster CPython" project. This has been [funded by Microsoft](https://lwn.net/ml/python-dev/CAGr09bSrMNyVNLTvFq-h6t38kTxqTXfgxJYApmbEWnT71L74-g@mail.gmail.com/) and led by [Mark Shannon](https://us.pycon.org/2023/speaker/profile/81/index.html) and [Guido van Rossum](https://gvanrossum.github.io/) himself, both of whom work at Microsoft.
+While all this GIL vs. no-GIL stuff has been going on the last few years, there has been a parallel effort called the "Faster CPython" project. This has been [funded by Microsoft](https://pyfound.blogspot.com/2022/05/the-2022-python-language-summit_2.html) and led by [Mark Shannon](https://us.pycon.org/2023/speaker/profile/81/index.html) and [Guido van Rossum](https://gvanrossum.github.io/) himself, both of whom work at Microsoft.
 
 The effort this team have been making has produced some very impressive results, particularly for [3.11](https://docs.python.org/3/whatsnew/3.11.html#faster-cpython) which boasted significant performance boosts over 3.10.
 
