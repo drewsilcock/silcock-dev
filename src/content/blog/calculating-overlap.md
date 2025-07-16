@@ -18,7 +18,7 @@ The geometry of the situation is shown below:
 
 ![geometry of overlap](/media/archive/calculating-overlap/overlap.svg)
 
-Let's call the inter-photo distance $$ d\_{int} $$, the angle of view $$ \alpha_y $$, the height $$ h $$ and the required overlap fraction $$ \omega $$ (i.e. if we want 80% overlap, then $$ \omega = 0.8 $$).
+Let's call the inter-photo distance $$d_{int}$$, the angle of view $$ \alpha_y $$, the height $$ h $$ and the required overlap fraction $$ \omega $$ (i.e. if we want 80% overlap, then $$ \omega = 0.8 $$).
 
 $$
 d_{int}      = 2h\tan\left(\frac{\alpha_y}{2}\right) - \text{overlap}
