@@ -10,17 +10,17 @@ Install the latest Node LTS (e.g. via nvm). Then:
 
 ```shell
 # To run dev environment
-npm run dev
+pnpm dev
 
 # To build site to static 'dist' folder.
-npm run build
+pnpm build
 
 # To format code
-npm run format
+pnpm format
 
 # To check / lint code
-npm run check
-npm run lint
+pnpm run check
+pnpm run lint
 ```
 
 ## Copyright
