@@ -302,6 +302,33 @@ The "pack" folder is very commonly used, and it's where git puts its packfiles. 
 
 This does introduce the problem of how to find objects once they've been packed up. Git supports per-pack index files and also multi-index files, which is a more recent introduction that allows using a single index for all your packs. If you're using multiple pack index files, you can try some tactics like looking at the most recently changed packfiles first as potential speedups, but ultimately you do have to search through all the packfile index files to find your object.
 
+At this point you might have a couple of questions:
+
+- How does this stop repositories from getting mahoosive? Sure, it's a bit better compressed, but that won't make that much of a difference.
+- If git stores the complete version of every file, why does git say "resolving deltas..." when I clone a repository?
+
+The answer is that git does store deltas in the packfiles. In fact, git uses [various strange heuristics](https://git-scm.com/docs/pack-heuristics) to determine how to pack objects as efficiently as possible, both in terms of the deltas and in terms of the compression (which is done after the delta creation).
+
+In particular, git does not store the chronologically "first" version of a file as the base and then add deltas on top of that. It doesn't even care whether two objects represent the same or not – git looks at which objects are similar and determines which would be the most optimal base for the deltas, regardless of whether the similar objects even represent the same file.
+
+It is this clever but slightly magical heuristic-based packfile creation system that keeps the size of git repositories down. It also helps that git throws out "unreachable" objects so that your repository only has what you need it to have.
+
+## Taking the trash out
+
+It's worth talking a bit more about git's garbage collection, i.e. the removal of unreachable objects, because this is a bit of knowledge that may actually save your proverbial bacon one day.
+
+If you accidentally delete a branch that has a bunch of important commits in, you might be thinking "Egad, I've lost all my precious files! Woe!", but don't worry – git does not in fact delete all your commits and files when you delete the branch.
+
+In fact, git keeps a log of all the actions you do on each branch and HEAD in the folder `.git/logs/`. All the actions you do on HEAD are in `.git/logs/HEAD` while changes to references like branches are in e.g. `.git/logs/refs/heads/main`. Each log file contains one line per "action", e.g. making a commit, pulling from a remote, merging a branch, checking out another branch (checkouts will only be in HEAD log, not individual branches), etc.
+
+Because these logs contain information about actions performed on each reference, they're called reference logs or just reflogs for short.
+
+Reflog entries are kept for [90 days](https://git-scm.com/docs/git-gc#Documentation/git-gc.txt-gcreflogExpire) (configurable as `gc.reflogExpire`) and while a commit is referenced from the reflog, it is still considered "reachable" by git. Even once an item is truly unreachable, i.e. it's been removed from the reflog, git still gives it [2 weeks](https://git-scm.com/docs/git-gc#Documentation/git-gc.txt-gcpruneExpire) (configurable as `gc.pruneExpire`) before it garbage collects it as a grace period. This means that you can often still recover your work using either the manual methods we describe here or by using the `git reflog` commands followed by `git checkout` or `git reset --hard`.
+
+For more details on reflog and more, check out the [Oh Shit, Git! zine from Julia Evans](https://wizardzines.com/zines/oh-shit-git/).
+
+Beware, however! Logref files are local to your individual repository – if you delete your `.git` folder or clone afresh, it will not contain your deleted branch.
+
 ## Creating our first commit
 
 Now that we understand git objects, we can make our first commit.
@@ -530,7 +557,7 @@ If you get stuck with any of these points or get an error like `error: bad tree 
 It's taken long enough to get to this point, but there's a bunch of really interesting stuff that we didn't have a chance to talk about – leave a comment, send me an email or shout into the wind which of the following you'd like to hear in a follow-up post:
 
 - Stashes – how do they work? (Spoiler: they're basically just commits)
-- Reflog – what is it and why should I care?
+- Reflog – I want to know more about how I can use the hidden power of the reflog to bring my precious files back from the dead.
 - Packfile format and indices – I want to hear more about these packfiles and how git looks through them.
 - Index file format – I am deeply upset that you skipped over this and demand a full blog post covering the binary format in full detail bit-by-bit, otherwise I will be seeking legal action.
 - Networking – how does git communicate with the server? What's the actual on-the-wire difference between using `https://github.com/...` vs. `ssh@github.com:/...` vs. `git@github.com:...`. I actually have no idea about this so it'd be interesting to explore.
@@ -543,13 +570,17 @@ Hopefully, you found this interesting. To be honest, if you make it this far, yo
 
 If there's one thing to take away from this, it is the elegance of the design of git, and how it's actually not that complicated once you understand the underlying file formats. Yes, I know there's rebases and reflogs and all these more complicated things but git is not magic, and implementing a git clone (pun intended) from scratch in a language of your choice actually wouldn't be that hard! At least, if you ignore the more complex things.
 
+## Updates
+
+- **2025-07-17:** Added more details about packfiles, garbage collection and reflog.
+
 ## Further reading
 
 The main inspiration for this was reading Julia Evans' blog posts about git, so if you found this interesting, check our her posts about git. Then check out all the others too, they're all good.
 
 - Julia Evans – Inside .git – https://jvns.ca/blog/2024/01/26/inside-git
 - Julia Evans – In a git repository, where do your files live? – https://jvns.ca/blog/2023/09/14/in-a-git-repository--where-do-your-files-live-/
-- Git Reference Documentation – The Git indec file has the following format – https://git-scm.com/docs/index-format
+- Git Reference Documentation – The Git index file has the following format – https://git-scm.com/docs/index-format
 - Unpacking Git packfiles – https://codewords.recurse.com/issues/three/unpacking-git-packfiles
 - Abin Simon (@meain) – What is in that .git directory? – https://blog.meain.io/2023/what-is-in-dot-git/
 - Dulwich Project Documentation – Git File format – https://www.samba.org/~jelmer/dulwich/docs/tutorial/file-format.html
