@@ -13,7 +13,7 @@ socials:
   - https://x.com/drewlhsilcock/status/1820378063596626077
 ---
 
-import { Image } from 'astro:assets';
+import { Image } from "astro:assets";
 
 import databaseLayoutDark from "../../assets/how-postgres-stores-data-on-disk/database-layout-dark.png";
 import databaseLayoutLight from "../../assets/how-postgres-stores-data-on-disk/database-layout-light.png";
@@ -349,8 +349,16 @@ You might be thinking – why use pages? Why not just have one page per segment?
 
 This diagram shows what the structure of a page is, and how it relates to the segment and whole object.
 
-<Image class="image-dark" alt="Postgres database layout" src={databaseLayoutDark} />
-<Image class="image-light" alt="Postgres database layout" src={databaseLayoutLight} />
+<Image
+  class="image-dark"
+  alt="Postgres database layout"
+  src={databaseLayoutDark}
+/>
+<Image
+  class="image-light"
+  alt="Postgres database layout"
+  src={databaseLayoutLight}
+/>
 
 In our example here, our main table is 2.7 GiB which requires 3 separate segments of 1 GiB each. 131,072 pages of size 8 KiB into 1 GiB and each page consists of around 40 items (based on each item taking up about 200 bytes).
 
@@ -604,5 +612,5 @@ If you'd like me to write about one of these, leave a comment below 🙂
 
 ## Updates
 
-- 2024-08-05 – Rephrased the explanation of logical decoding based on [HN comment from dfox](https://news.ycombinator.com/item?id=41160109), added explanation of why checksums are all 0 after [HN discussion](https://news.ycombinator.com/item?id=41160233), expanded teaser for future TOAST post.
-- 2024-08-15 – On suggestion of [jmholla on HN](https://news.ycombinator.com/item?id=41172885), replace Python decoding with xxd tool one-liner.
+- **2024-08-05:** Rephrased the explanation of logical decoding based on [HN comment from dfox](https://news.ycombinator.com/item?id=41160109), added explanation of why checksums are all 0 after [HN discussion](https://news.ycombinator.com/item?id=41160233), expanded teaser for future TOAST post.
+- **2024-08-15:** On suggestion of [jmholla on HN](https://news.ycombinator.com/item?id=41172885), replace Python decoding with xxd tool one-liner.
