@@ -38,11 +38,7 @@ export default defineConfig({
       [
         rehypeAutolinkHeadings,
         {
-          behavior: "before",
-          content: {
-            type: "text",
-            value: "#",
-          },
+          behavior: "prepend",
           headingProperties: {
             className: ["section-anchor"],
           },

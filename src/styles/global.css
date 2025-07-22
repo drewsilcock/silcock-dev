@@ -72,39 +72,19 @@ article {
   @apply translate-y-0 opacity-100;
 }
 
-html #back-to-top {
-  @apply pointer-events-none opacity-0;
-}
-
-html.scrolled #back-to-top {
-  @apply pointer-events-auto opacity-100;
-}
-
 .section-anchor {
   @apply scroll-mt-8;
 }
 
 .section-anchor-link {
   /* yellow-500 = hsl(45, 93%, 47%) */
-  @apply absolute ml-[-2rem] h-4 w-4 text-4xl translate-y-[1.45rem] transform items-center
-         justify-center font-bold text-[color:hsl(45,25%,55%)] decoration-transparent
+  @apply absolute ml-[-1.5rem] items-center justify-center
+         font-bold text-[color:hsl(45,25%,55%)] decoration-transparent
          opacity-25 transition-all hover:text-yellow-500 hover:opacity-100 hover:dark:text-yellow-500;
 }
 
-.section-anchor-link:has(+ h3) {
-  @apply text-2xl translate-y-3;
-}
-
-.section-anchor-link:has(+ h4) {
-  @apply text-xl translate-y-[0.1rem];
-}
-
-.section-anchor-link:has(+ h5) {
-  @apply text-xl translate-y-[1.65rem];
-}
-
-.section-anchor-link:has(+ h6) {
-  @apply text-xl translate-y-0;
+.section-anchor-link::after {
+  content: "#";
 }
 
 /** Enable using separate dark-mode and light-mode images. */
@@ -114,4 +94,19 @@ html.dark img.image-light {
 
 html:not(.dark) img.image-dark {
   display: none;
+}
+
+article {
+  font-size: var(--article-font-size, 1rem);
+  line-height: var(--article-line-height, 1.5rem);
+}
+
+.expressive-code pre > code :not(path) {
+  font-size: var(--code-font-size, 0.875rem);
+  line-height: var(--code-line-height, 1.25rem);
+}
+
+.table-of-contents-list li {
+  font-size: var(--toc-font-size, 0.875rem);
+  line-height: var(--toc-line-height, 1.25rem);
 }

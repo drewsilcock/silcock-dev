@@ -32,8 +32,8 @@ function buildToc(headings: Heading[]) {
   class="animate rounded-lg border border-black/15 dark:border-white/20"
 >
   <summary>Table of Contents</summary>
-  <nav class="">
-    <ul class="py-3">
+  <nav>
+    <ul class="table-of-contents-list py-3">
       {toc.map((heading) => <TableOfContentsHeading heading={heading} />)}
     </ul>
   </nav>

@@ -1,6 +1,6 @@
 ---
 import "../styles/global.css";
-import { ViewTransitions } from "astro:transitions";
+import { ClientRouter } from "astro:transitions";
 
 import "@fontsource/geist-sans";
 import "@fontsource/geist-mono";
@@ -80,15 +80,14 @@ const { title, description, imageUrl } = Astro.props;
 
 <link rel="style" href="https://www.nerdfonts.com/assets/css/webfont.css" />
 
-<ViewTransitions />
+<ClientRouter />
 
 <script is:inline>
   function init() {
     preloadTheme();
-    onScroll();
+    preloadFontSize();
     animate();
     updateThemeButtons();
-    //addCopyCodeButtons();
     setGiscusTheme();
     decodeEmails();
 
@@ -122,12 +121,20 @@ const { title, description, imageUrl } = Astro.props;
     window
       .matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", (event) => {
-        if (localStorage.theme === "system") {
+        if (localStorage.getItem("theme") === "system") {
           toggleTheme(event.matches);
         }
       });
+  }
 
-    document.addEventListener("scroll", onScroll);
+  function removeActiveButtonTheme(button) {
+    button?.classList.remove("bg-black/5");
+    button?.classList.remove("dark:bg-white/5");
+  }
+
+  function addActiveButtonTheme(button) {
+    button?.classList.add("bg-black/5");
+    button?.classList.add("dark:bg-white/5");
   }
 
   function updateThemeButtons() {
@@ -135,16 +142,6 @@ const { title, description, imageUrl } = Astro.props;
     const lightThemeButton = document.getElementById("light-theme-button");
     const darkThemeButton = document.getElementById("dark-theme-button");
     const systemThemeButton = document.getElementById("system-theme-button");
-
-    function removeActiveButtonTheme(button) {
-      button?.classList.remove("bg-black/5");
-      button?.classList.remove("dark:bg-white/5");
-    }
-
-    function addActiveButtonTheme(button) {
-      button?.classList.add("bg-black/5");
-      button?.classList.add("dark:bg-white/5");
-    }
 
     removeActiveButtonTheme(lightThemeButton);
     removeActiveButtonTheme(darkThemeButton);
@@ -159,6 +156,8 @@ const { title, description, imageUrl } = Astro.props;
     }
   }
 
+  function updateFontSelectorButtons() {}
+
   function animate() {
     const animateElements = document.querySelectorAll(".animate");
 
@@ -167,14 +166,6 @@ const { title, description, imageUrl } = Astro.props;
         element.classList.add("show");
       }, index * 100);
     });
-  }
-
-  function onScroll() {
-    if (window.scrollY > 0) {
-      document.documentElement.classList.add("scrolled");
-    } else {
-      document.documentElement.classList.remove("scrolled");
-    }
   }
 
   function scrollToTop(event) {
@@ -197,8 +188,8 @@ const { title, description, imageUrl } = Astro.props;
              -ms-transition: none !important;
              transition: none !important;
           }
-        `,
-      ),
+        `
+      )
     );
 
     document.head.appendChild(css);
@@ -216,7 +207,7 @@ const { title, description, imageUrl } = Astro.props;
   }
 
   function preloadTheme() {
-    const userTheme = localStorage.theme;
+    const userTheme = localStorage.getItem("theme");
 
     if (userTheme === "light" || userTheme === "dark") {
       toggleTheme(userTheme === "dark");
@@ -225,42 +216,44 @@ const { title, description, imageUrl } = Astro.props;
     }
   }
 
-  function addCopyCodeButtons() {
-    let copyButtonLabel = "📋";
-    let codeBlocks = Array.from(document.querySelectorAll("pre"));
-
-    async function copyCode(codeBlock, copyButton) {
-      const codeText = codeBlock.innerText;
-      const buttonText = copyButton.innerText;
-      const textToCopy = codeText.replace(buttonText, "");
-
-      await navigator.clipboard.writeText(textToCopy);
-      copyButton.innerText = "✅";
-
-      setTimeout(() => {
-        copyButton.innerText = copyButtonLabel;
-      }, 2000);
-    }
-
-    for (let codeBlock of codeBlocks) {
-      const wrapper = document.createElement("div");
-      wrapper.style.position = "relative";
-
-      const copyButton = document.createElement("button");
-      copyButton.innerText = copyButtonLabel;
-      copyButton.classList = "copy-code";
-
-      codeBlock.setAttribute("tabindex", "0");
-      codeBlock.appendChild(copyButton);
-
-      codeBlock.parentNode.insertBefore(wrapper, codeBlock);
-      wrapper.appendChild(codeBlock);
-
-      copyButton?.addEventListener("click", async () => {
-        await copyCode(codeBlock, copyButton);
-      });
-    }
+  function preloadFontSize() {
+    const userFontSize = localStorage.getItem("fontSize") || "medium";
+    updateFontSize(userFontSize);
   }
+
+  window.updateFontSize = function (size) {
+    for (const el of document.getElementsByClassName("font-selector-button")) {
+      if (el.dataset.fontSize === size) {
+        addActiveButtonTheme(el);
+      } else {
+        removeActiveButtonTheme(el);
+      }
+    }
+
+    const fontSizes = {
+      small: { article: "0.85rem", code: "0.7rem", toc: "0.75rem" },
+      medium: { article: "1rem", code: "0.85rem", toc: "0.875rem" },
+      large: { article: "1.25rem", code: "1rem", toc: "1.05rem" },
+    };
+
+    const lineHeights = {
+      small: { article: "1.25rem", code: "1.15rem", toc: "1.18rem" },
+      medium: { article: "1.5rem", code: "1.24rem", toc: "1.25rem" },
+      large: { article: "1.75rem", code: "1.5rem", toc: "1.55" },
+    };
+
+    const docStyle = document.documentElement.style;
+
+    docStyle.setProperty("--article-font-size", fontSizes[size].article);
+    docStyle.setProperty("--code-font-size", fontSizes[size].code);
+    docStyle.setProperty("--toc-font-size", fontSizes[size].toc);
+
+    docStyle.setProperty("--article-line-height", lineHeights[size].article);
+    docStyle.setProperty("--code-line-height", lineHeights[size].code);
+    docStyle.setProperty("--toc-line-height", lineHeights[size].toc);
+
+    localStorage.setItem("fontSize", size);
+  };
 
   function setGiscusTheme() {
     const giscus = document.querySelector(".giscus-frame");
