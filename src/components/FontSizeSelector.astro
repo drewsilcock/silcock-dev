@@ -1,14 +1,3 @@
-<script>
-  const buttons = document.getElementsByClassName("font-selector-button");
-
-  for (const el of buttons) {
-    const size = el.dataset.fontSize;
-    el.addEventListener("click", () => {
-      window.updateFontSize(size);
-    });
-  }
-</script>
-
 <div class="flex gap-2">
   <button
     data-font-size="small"

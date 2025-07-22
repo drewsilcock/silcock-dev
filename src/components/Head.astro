@@ -125,6 +125,16 @@ const { title, description, imageUrl } = Astro.props;
           toggleTheme(event.matches);
         }
       });
+
+    const fontSelectorButtons = document.getElementsByClassName(
+      "font-selector-button"
+    );
+    for (const el of fontSelectorButtons) {
+      el.addEventListener("click", () => {
+        const size = el.dataset.fontSize;
+        updateFontSize(size);
+      });
+    }
   }
 
   function removeActiveButtonTheme(button) {
@@ -155,8 +165,6 @@ const { title, description, imageUrl } = Astro.props;
       addActiveButtonTheme(systemThemeButton);
     }
   }
-
-  function updateFontSelectorButtons() {}
 
   function animate() {
     const animateElements = document.querySelectorAll(".animate");
@@ -221,7 +229,7 @@ const { title, description, imageUrl } = Astro.props;
     updateFontSize(userFontSize);
   }
 
-  window.updateFontSize = function (size) {
+  function updateFontSize(size) {
     for (const el of document.getElementsByClassName("font-selector-button")) {
       if (el.dataset.fontSize === size) {
         addActiveButtonTheme(el);
@@ -253,7 +261,7 @@ const { title, description, imageUrl } = Astro.props;
     docStyle.setProperty("--toc-line-height", lineHeights[size].toc);
 
     localStorage.setItem("fontSize", size);
-  };
+  }
 
   function setGiscusTheme() {
     const giscus = document.querySelector(".giscus-frame");
