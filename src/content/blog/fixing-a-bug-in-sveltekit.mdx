@@ -1,7 +1,8 @@
 ---
 title: Hunting a production-only proxy bug in SvelteKit
 description: "The curious case of the proxy bug in SvelteKit"
-date: 2025-12-04
+date: 2025-12-04T15:50:00.000Z
+updated: 2025-12-04T16:05:00.000Z
 tags:
   - svelte
   - javascript
@@ -41,7 +42,7 @@ Well, the main thing is that when I run it locally, I use `pnpm dev` whereas in 
 
 The staging server gives me no information in the interface/browser console, but if I dig through the container logs I can see a single error message:
 
-```
+```txt showLineNumbers=false
 Unable to retrieve user dashboard: TypeError: Cannot read private member #state from an object whose class did not declare it
      at Proxy.clone (node:internal/deps/undici/undici:10027:31)
      at UsersApi.fetchApi (file:///app/build/server/chunks/runtime-BIi4o4oJ.js:170:30)
@@ -146,7 +147,7 @@ console.log = new Proxy(originalLog, {
 
 So what does this strange-looking code do? Let's try it out:
 
-```js frame="shell"
+```js frame="shell" showLineNumbers=false
 » console.log("The quick brown fox jumps over the lazy dog")
 ← tHe qUiCk bRoWn fOx jUmPs oVeR ThE LaZy dOg
 ```
@@ -183,7 +184,7 @@ This time we are intercepting the constructor of the `Proxy` class so that we ca
 
 Here's the single trace that showed:
 
-```
+```txt showLineNumbers=false
 Trace: Creating response Proxy
     at Object.construct (.../src/hooks.server.ts:20:17)
     at universal_fetch (.../node_modules/.pnpm/@sveltejs+kit@2.49.0_@opentelemetry+api@1.9.0_@sveltejs+vite-plugin-svelte@6.2.1_svelte_1a81703e589b392db9a0fd6d8f25cd68/node_modules/@sveltejs/kit/src/runtime/server/page/load_data.js:331:17)
@@ -333,7 +334,7 @@ fancyProxy = new Proxy(me, {
 
 Here are the differences:
 
-```js frame="shell"
+```js frame="shell" showLineNumbers=false
 » brokenProxy.status("Drew", "drew@person.example")
 ⚠︎ brokenProxy.status()
 Uncaught TypeError: can't access private field or method: object is not the right class
