@@ -1,0 +1,375 @@
+---
+title: Fighting Proxy Wars in SvelteKit
+description: "How I found and fixed a fun bug in SvelteKit"
+date: 2025-12-03
+tags:
+  - svelte
+socials: []
+---
+
+I came across a pretty gnarly/fun bug in my Svelte project recently that had me scratching my head for a while and turned out to be a bug in SvelteKit itself, so I thought I'd write up the process I went through in finding, debugging, and fixing it.
+
+Hopefully, someone wil find this useful if they come across a similar issue – there didn't seem to be a lot around it when I was frantically Googling it during the early phases of "why is this happening to me???", anyway. (That includes me in 3 months time when I've forgotten all about this.)
+
+## So what's the issue?
+
+I've got a medium-sized SvelteKit app that I've been working on-and-off for a few years now (maybe 50k SLOC across a few hundred files) and I recently (finally) took the plunge to update it from Svelte 4 to Svelte 5. It was a pretty painful few days, but at the end of it, I had my app working locally with runes enabled on every single page and component.
+
+There was just one issue – when I pushed my code up to the staging server, it didn't work :-(
+
+And when I say "didn't work", I mean not a single page would load. Not even the main layout would load.
+
+## Works on my machine
+
+It's basically impossible to debug an issue in production or even on a staging server, so the first thing was to figure out why, given this issue was 100% reproducible and unavoidable by visiting any page on the staging server, I wasn't seeing anything wrong when running it locally.
+
+So what's the difference between how this is running locally and in prod/staging? Who are the main suspects in this murder mystery where my staging server is the tragic victim?
+
+Well, the main thing is that when I run it locally, I use `pnpm dev` whereas in prod, I use the [Node Adapter](https://svelte.dev/docs/kit/adapter-node) running insidemore than once Docker. This narrows it down somewhat – here are the main suspects:
+
+- The Docker environment is Linux and I'm developing on macOS.
+- I use Sentry in prod/staging but have it disabled locally – it could be doing something naughty? I updated all my dependencies including Sentry integration during the Svelte upgrade so this bump could've introduced an issue.
+- The Node Adapter environment is different from the vite dev environment.
+- It could be an issue with the staging infra (REST API, DB, etc.) which is cascading down to the frontend, or the issue could only be present in error handling code which is only triggered by an issue w/ the staging infra.
+
+## Geolocating the bug
+
+The staging server gives me no information in the interface/browser console, but if I dig through the container logs I can see a single error message:
+
+```
+Unable to retrieve user dashboard: TypeError: Cannot read private member #state from an object whose class did not declare it
+     at Proxy.clone (node:internal/deps/undici/undici:10027:31)
+     at UsersApi.fetchApi (file:///app/build/server/chunks/runtime-BIi4o4oJ.js:170:30)
+     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+     at async UsersApi.request (file:///app/build/server/chunks/runtime-BIi4o4oJ.js:90:22)
+     at async UsersApi.getCurrentUserDashboardRaw (file:///app/build/server/chunks/UsersApi-D2Mg9-4e.js:110:22)
+     at async UsersApi.getCurrentUserDashboard (file:///app/build/server/chunks/UsersApi-D2Mg9-4e.js:126:22)
+     at async load (file:///app/build/server/chunks/12-CIrAv-H7.js:16:23)
+     at async fn (file:///app/build/server/index.js:3022:14)
+     at async load_data (file:///app/build/server/index.js:3013:18)
+     at async file:///app/build/server/index.js:4639:18
+```
+
+Ahah, our first clue! 🔎
+
+Okay, so it looks like the frontend is trying to hit the REST API to get user information to load the main dashboard, and it's hitting an error inside some internal node dependency called "undici" 🤔
+
+This is a bit weird – my code is the next stack up, in `UsersApi.fetchApi` – this code is auto-generated using [OpenAPI Generator's typescript-fetch generator](https://openapi-generator.tech/docs/generators/typescript-fetch/), meaning it has been auto-generated from the OpenAPI specification of my REST API. That hasn't changed in the recent upgrade, so it must be one of the dependencies that I updated...
+
+This is all a bit weird as the actual error is happening inside an internal node dependency, [undici](https://github.com/nodejs/undici). I haven't bumped by Node version itself so this clue confuses me greatly.
+
+Let's check out my code that's creating the error. The stack trace is from a prod build so it's giving me a line number form the built chunk, but that's fine. Here's the code:
+
+```ts startLineNumber=163 {8}
+...
+     for (const middleware of this.middleware) {
+       if (middleware.post) {
+         response = await middleware.post({
+           fetch: this.fetchApi,
+           url: fetchParams.url,
+           init: fetchParams.init,
+           response: response.clone()
+         }) || response;
+       }
+     }
+...
+```
+
+## The Cloning Theorem
+
+Okay, so `response.clone()` is where the error is happening. The `response` object is an instance of `Response` coming from `fetch()` which is what the undici library provides, but the stack trace doesn't say `Response.clone()`, it says `Proxy.clone()`... Another mystery 🤔
+
+But what does the actual error mean? Apparently I have been living under a TypeScript rock for the last few years, because I don't think I've ever actually seen anyone using `#my-element` in JavaScript before, even though it's been [deployed to V8 since 2019](https://medium.com/@AamirAbbasNaqvi/javascript-private-class-fields-68636113aee1).
+
+Anyway, if you have a class in JavaScript with an element ([MDN says not to call them properties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_elements) because property implies some attributes which these private elements don't have but you can mentally replace "element" with "field or method") whose name starts with `#` the JavaScript runtime enforces that this element cannot be accessed from outside the class – they are private.
+
+This kind of makes sense – the stack trace says `Proxy.clone()`, not `Response.clone()`, but it is the undici `Response` class that defines the private `#state` field. You can see the code for yourself on [nodejs/undici](https://github.com/nodejs/undici/blob/main/lib/web/fetch/response.js). The `Proxy` class isn't allowed to see `Response` class's privates – they just don't have that kind of relationship.
+
+So now the question is: **who's doing the proxying???**
+
+## It's always ~~lupus~~ Sentry
+
+Like Dr. House barely 10 minutes into the episode [^dr-house], I was convinced that Sentry was the culprit – I had updated the library and the update was doing something stupid. As an error handling/tracing library, it must be proxying the response so that it can determine whether it is an error response to report back to the Sentry server.
+
+[^dr-house]: If House was so clever, he would know that his first guess isn't right because it's only 10 minutes into the episode but hey, I'm not the one with the medical degree.
+
+It's prefect – it fits all the symptoms and explains why I'm not seeing the issue locally (I disable Sentry in local dev environment). [^mixing-metaphors]
+
+[^mixing-metaphors]: I am mixing the metaphors a little here – first it's a murder, now it's a diagnostic mystery – just stick with it.
+
+As such, I prescribed an immediate Sentry-ectomy, removing all the Sentry code whatsoever and pushing the update up to staging, confident that my clinical intervention would immediately resolve the issue and reveal the culprit as Sentry.
+
+The result? Still broke. The patient was still dying. The murderer remained at large. The dominoes of my Sentry theory had fallen like a house of cards – checkmate.
+
+## It must be something about Docker or Node Adapter then
+
+At this point I thought that it must be something to do with running inside Docker or using the Node Adapter, so I:
+
+- Ran `pnpm build` and `node --env-file=.env build` – no issue.
+- Ran `docker build -t my-app .` and `docker run --network=host --rm --env-file=.env my-app` – no issue.
+
+This was getting weird now.
+
+## Death by Proxy
+
+At this point, we need more clues. This is probably the bit of the episode where Dr. House intentionally makes the patient worse to try to figure out what the underlying issue is.
+
+Luckily, we have a more precise surgical tool to figure out who is using `Proxy`, and the answer is... `Proxy`.
+
+What exactly does `Proxy` do? Well, if you want to attach additional functionality to a pre-existing class or function, you can wrap it in a proxy and insert your own code into the process. This is especially useful for things like tracing, which is why I (unfairly) blamed Sentry earlier.
+
+Here's an example:
+
+```js
+const originalLog = console.log;
+console.log = new Proxy(originalLog, {
+  apply(target, thisArg, args) {
+    const convertedArgs = args.map(arg => {
+      if (typeof arg === 'string') {
+        return  arg
+          .split('')
+          .map((char, i) => (i % 2 === 0 ? char.toLowerCase() : char.toUpperCase()))
+          .join('');
+      }
+      return arg;
+    });
+
+    return Reflect.apply(target, thisArg, convertedArgs);
+  }
+});
+```
+
+So what does this strange-looking code do? Let's try it out:
+
+```js frame="shell"
+» console.log("The quick brown fox jumps over the lazy dog")
+← tHe qUiCk bRoWn fOx jUmPs oVeR ThE LaZy dOg
+```
+
+Now you can successfully make everything that logs to your console sound ✨ sardonic and disingenuous ✨ I call it spongelog (trademark pending).
+
+<Aside>
+For those lucky of you who haven't come across `Reflect` and/or `apply` yet, invoking a function like `myClass.doSomethingNow(arg1, arg2)` is the same as doing `myClass.doSomethingNow.apply(myClass, [arg1, arg2])` which is also the same as doing `myClass.call(myClass, arg1, arg2)` which is the same as `Reflect.apply(myClass.doSomethingNow, myClass, [arg1, arg2])`... Yeah, this is what JavaScript is like. Keep adding newer, more "modern" ways of doing the same things without ever removing the old ways.
+</Aside>
+
+So how can we proxy-ception our response to find our culprit?
+
+```js
+const OriginalProxy = Proxy;
+globalThis.Proxy = new Proxy(OriginalProxy, {
+  construct(target, args, newTarget) {
+    // We can proxying the creation of a proxy, so the first arg to the
+    // constructor is the object we're proxying. We only care about code
+    // that's proxying the response.
+    const proxiedClass = args[0].constructor.name;
+    if (proxiedClass === "Response") {
+      console.trace("Creating response Proxy");
+    }
+    return Reflect.construct(target, args, newTarget);
+  },
+});
+```
+
+This time we are intercepting the constructor of the `Proxy` class so that we can find what piece of code is doing `new Proxy(response, ...)`. When you do `new Proxy()`, the first argument is the thing we're proxying, so we want to find who is doing `new Proxy()` on something whose first argument is an instance of class `Response` from undici – we can do this by getting the [name of the constructor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/constructor) which is the same as the name of the class. (It's possible that there's another class called `Response` elsewhere in the code, but unlikely.)
+
+<Aside type="tip">Don't be silly and accidentally put this code somewhere where it runs on every request, or you'll end up with expontential explosion of `console.trace` calls as each new proxy triggers the other proxies and adds another trace to the pile, like the logging equivalent of a nuclear bomb... Not that I did that or anything, that would be stupid haha...</Aside>
+
+## And the culprit is...
+
+Here's the single trace that showed:
+
+```
+Trace: Creating response Proxy
+    at Object.construct (.../src/hooks.server.ts:20:17)
+    at universal_fetch (.../node_modules/.pnpm/@sveltejs+kit@2.49.0_@opentelemetry+api@1.9.0_@sveltejs+vite-plugin-svelte@6.2.1_svelte_1a81703e589b392db9a0fd6d8f25cd68/node_modules/@sveltejs/kit/src/runtime/server/page/load_data.js:331:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+```
+
+The first frame at `hooks.server.ts` is just where my code that is creating my proxy-ception is running so we can ignore that. The culprit is [`@sveltejs/kit/src/runtime/server/page/load_data.js`](https://github.com/sveltejs/kit/blob/1c416bc653169f43f17b1cf423e2c1d3b59440ec/packages/kit/src/runtime/server/page/load_data.js#L318-L432).
+
+Here's an abbreviation of what the code is doing:
+
+```js
+const proxy = new Proxy(response, {
+  get(response, key, _receiver) {
+    // Lots of SvelteKit-specific functionality which isn't relevant for us
+    // ...
+
+    return Reflect.get(response, key, response);
+  }
+});
+```
+
+## What's `this` all about then?
+
+So what's the issue with this? Well, prior to my raising a bug in the SvelteKit repo, there was precisely one mention of this specific bug: [nodejs/undici#4290](https://github.com/nodejs/undici/issues/4290) which explains that when you proxy an object that has methods, doing `obj[key]` or `Reflect.get(obj, key, obj)` will get the method from the object[^reflect-get] but it will not bind the resulting method to `obj`. Normally, this doesn't matter, but when you're proxying an object, the `this` will be bound not to the object but to the proxy instance itself.
+
+[^reflect-get]: If you're wondering what the difference is between `obj[key]` and `Reflect.get(obj, key, obj)`, it only makes a difference when `key` has a getter defined on `obj` which means that doing `obj[key]` actually invokes the getter method – `Reflect.get()` ensures that `this` is correctly bound to `obj` when the getter is invoked.
+
+This explains why the stack trace was showing `Proxy.clone()` instead of `Response.clone()` because when `clone()` was running, `this` was an instance of `Proxy`, not an instance of `Response`.
+
+## Hi, I'm the problem, it's me
+
+You might be wondering why this issue only occurred in prod/staging and not locally. The answer is that I was being stupid [^decent-bet].
+
+[^decent-bet]: To be fair, this is generally a decent bet.
+
+I was convinced that the reason this was happening was because of this big Svelte upgrade that I just did, but the truth is that it's completely unrelated and this just happened to be the first update I'd made to the app since `node:lts` Docker image changed from Node v22 to Node v24 in October 2025.
+
+In the CI pipeline, it was Node v24 that was being pulled instead of v22 – the `#state` private field was introduced in v24 so that it why the issue was not showing before.
+
+As to why it wasn't showing when I run it locally using Docker – my Docker was using a cache `node:lts` image which was the old v22 one. 🤦🏻‍♂️
+
+### It's version managers all the way down
+
+I tried verifying this by doing `fnm use 24` followed by `pnpm dev`, but the bug was still mysteriously missing.
+
+It is at this point that I found out that pnpm has it's own node version manager built-in, which you can change using `pnpm use --global 24`. If you want to be sure, you can do `pnpm exec node --version` to tell you.
+
+So not only can pnpm manage its own version using the `packageManager` field in `package.json`, it can also manage the `node` version. What a crazy world we live in.
+
+## Applying the fix
+
+With the pnpm-managed node version set to 24, sure enough the issue was present locally. Applying the quick fix recommended in the [undici GitHub issue](https://github.com/nodejs/undici/issues/4290) as a manual patch to the library files in `node_modules` fixed the issue:
+
+```diff lang="js"
+const proxy = new Proxy(response, {
+-  get(response, key, _receiver) {
++  get(response, key, receiver) {
+    // Lots of SvelteKit-specific functionality which isn't relevant for us
+    // ...
+
+-    return Reflect.get(response, key, response);
++    const value = Reflect.get(response, key, response);
++
++    if (value instanceof Function) {
++      // On Node v24+, the Response object has a private element #state – we
++      // need to bind this function to the response in order to allow it to
++      // access this private element. Defining the name and length ensure it
++      // is identical to the original function when introspected.
++      return Object.defineProperties(
++        /**
++         * @this {any}
++         */
++        function () {
++          return Reflect.apply(value, this === receiver ? response : this, arguments);
++        },
++        {
++          name: { value: value.name },
++          length: { value: value.length }
++        }
++      );
++    }
++
++    return value;
+  }
+});
+```
+
+## Okay, but what's up with the `Object.defineProperties()` nonsense?
+
+This is probably not needed, but the recommended fix from MDN returns a bound method that is *slightly* different from the original. You can see this by comparing the 2 different methods:
+
+```js
+class Person {
+  #hunger = "hungry";
+  
+  status(name, email) {
+    return `I am ${name} <${email}> and I am ${this.#hunger}`;
+  }
+};
+
+const me = new Person();
+
+brokenProxy = new Proxy(me, {
+  get(target, prop, receiver) {
+    return Reflect.get(target, prop, receiver);
+  }
+})
+
+plainProxy = new Proxy(me, {
+  get(target, prop, receiver) {
+    const value = Reflect.get(target, prop, receiver);
+
+    if (value instanceof Function) {
+      return function (...args) {
+        return value.apply(target, args);
+      }
+    }
+    
+    return value;
+  }
+});
+
+fancyProxy = new Proxy(me, {
+  get(target, prop, receiver) {
+    const value = Reflect.get(target, prop, receiver);
+
+    if (value instanceof Function) {
+      // On Node v24+, the Response object has a private element #state – we
+      // need to bind this function to the response in order to allow it to
+      // access this private element. Defining the name and length ensure it
+      // is identical to the original function when introspected.
+      return Object.defineProperties(
+        function () {
+          return Reflect.apply(value, this === receiver ? target : this, arguments);
+        },
+        {
+          name: { value: value.name },
+          length: { value: value.length }
+        }
+      );
+    }
+
+    return value;
+  }
+});
+```
+
+Here are the differences:
+
+```js frame="shell"
+» brokenProxy.status("Drew", "drew@person.example")
+⚠︎ brokenProxy.status()
+Uncaught TypeError: can't access private field or method: object is not the right class
+    status debugger eval code:5
+    <anonymous> debugger eval code:1
+
+» plainProxy.status("Drew", "drew@person.example")
+← "I am Drew <drew@person.example> and I am hungry"
+
+» plainProxy.status.name
+← ""
+
+» plainProxy.status.length
+← 0
+
+» fancyProxy.status("Drew", "drew@person.example")
+← "I am Drew <drew@person.example> and I am hungry"
+
+» fancyProxy.status.name
+← "status"
+
+» fancyProxy.status.length
+← 2
+```
+
+As expected, the original proxy is broken as `this` is not bound and so the privacy of the `Person.#hunger` field is violated. Both the plain and fancy proxies work when invoked, when they you look at their name and length (the latter being the number of arguments), they are different.
+
+Some JavaScript code will introspect a method to see what the name and length are for various (somewhat hacky) reasons. (There's a lot of bad JavaScript code out there, trust me – I only wrote some of it.) This is probably pretty unlikely, but if you thought this was a bad bug to find, just think about how nasty it would be to track down some stray code that was introspecting the name and/or length of some random method on response and making faulty assumptions based on the incorrect values presented by the proxied method 🤢
+
+## Fixed 🎉
+
+I created a [PR with this fix](https://github.com/sveltejs/kit/pull/15005) whereupon it was quickly merged and within 4 days it was bundled into the next SvelteKit release – this project is really actively maintained.
+
+I was quite surprised that this wasn't picked up by anyone else – after all, any call to `response.clone()` where the `response` comes from SvelteKit's `fetch()` inside a page load handler would trigger this bug as long as you're on Node v24+. I guess cloning responses isn't a very common thing to do? 🤷🏻
+
+Regardless, the murderer is serving hard time, the patient is recovering, and I can go touch some grass and not think about JavaScript for a while.
+
+## Further Reading
+
+- [MDN – Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy)
+- [MDN – Private elements](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_elements)
+- [MDN – Function: name](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
+- [MDN – Function: length](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
+- [touchgrass](https://touchgrass.now/)
