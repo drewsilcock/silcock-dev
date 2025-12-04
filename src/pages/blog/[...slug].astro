@@ -28,6 +28,7 @@ export async function getStaticPaths() {
     props: post,
   }));
 }
+
 type Props = CollectionEntry<"blog">;
 
 const posts = (await getCollection("blog"))
@@ -73,9 +74,18 @@ const socials = post.data.socials ?? [];
           {readingTime(post.body)}
         </div>
       </div>
+
       <h1 class="animate text-3xl font-semibold text-black dark:text-white">
         {post.data.title}
       </h1>
+
+      {
+        post.data.description && (
+          <div class="mt-4 text-gray-600 dark:text-gray-300">
+            {post.data.description}
+          </div>
+        )
+      }
 
       <nav class="animate flex gap-2 font-semibold">
         {
