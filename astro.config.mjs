@@ -12,24 +12,20 @@ import rehypeSlug from "rehype-slug";
 import remarkMath from "remark-math";
 import defaultTheme from "tailwindcss/defaultTheme";
 
+import icon from "astro-icon";
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://drew.silcock.dev",
   // The order of integrations is important here.
-  integrations: [
-    tailwind(),
-    sitemap(),
-    pagefind(),
-    expressiveCode({
-      plugins: [pluginLineNumbers(), pluginCollapsibleSections()],
-      styleOverrides: {
-        codeFontFamily: ['"Ubuntu Mono"', ...defaultTheme.fontFamily.mono].join(
-          ", ",
-        ),
-      },
-    }),
-    mdx(),
-  ],
+  integrations: [tailwind(), sitemap(), pagefind(), expressiveCode({
+    plugins: [pluginLineNumbers(), pluginCollapsibleSections()],
+    styleOverrides: {
+      codeFontFamily: ['"Ubuntu Mono"', ...defaultTheme.fontFamily.mono].join(
+        ", ",
+      ),
+    },
+  }), mdx(), icon()],
   markdown: {
     remarkPlugins: [remarkMath],
     rehypePlugins: [

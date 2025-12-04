@@ -15,6 +15,7 @@ import TableOfContents from "@components/TableOfContents.astro";
 import Link from "@components/Link.astro";
 import Giscus from "@components/Giscus.astro";
 import FontSizeSelector from "@components/FontSizeSelector.astro";
+import Aside from "@components/Aside.astro";
 
 export async function getStaticPaths() {
   // Draft posts are excluded, but archived posts are included - they're just not
@@ -115,7 +116,7 @@ const socials = post.data.socials ?? [];
     {headings.length > 0 && <TableOfContents headings={headings} />}
 
     <article class="animate">
-      <Content />
+      <Content components={{ Aside }} />
       <div class="mt-24">
         <PostNavigation prevPost={prevPost} nextPost={nextPost} />
       </div>
