@@ -159,7 +159,7 @@ import { SITE } from "@consts";
 
     // If user clicks outside the header, close the menu.
     document.addEventListener("click", (event) => {
-      if (menu.hidden || event.target === null || navHeader === null) {
+      if (menu.hidden || !(event.target instanceof Node) || navHeader === null) {
         return;
       }
 
