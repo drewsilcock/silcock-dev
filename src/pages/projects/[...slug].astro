@@ -44,7 +44,13 @@ const socials = project.data.socials ?? [];
 <Layout
   title={project.data.title}
   description={project.data.description}
-  route={`${project.collection}/${project.slug}`}
+  route={`${project.collection}/${project.id}`}
+  article={{
+    title: project.data.title,
+    publishedDate: project.data.date,
+    updatedDate: project.data.updated,
+    tags: project.data.tags,
+  }}
 >
   <Container>
     <div class="animate">

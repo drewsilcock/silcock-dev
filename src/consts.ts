@@ -6,6 +6,7 @@ export const SITE: Site = {
   DESCRIPTION:
     "Drew's Dev Blog featuring thoughts and explainers on tech, software engineering, databases, programming languages and more.",
   EMAIL: "031a0c1d2b1f04020c1f12195d101000",
+  TWITTER_HANDLE: "@drewlhsilcock",
   NUM_POSTS_ON_HOMEPAGE: 5,
   NUM_PROJECTS_ON_HOMEPAGE: 3,
 };

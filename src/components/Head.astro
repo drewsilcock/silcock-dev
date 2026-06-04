@@ -5,15 +5,64 @@ import { ClientRouter } from "astro:transitions";
 import "@fontsource/geist-sans";
 import "@fontsource/geist-mono";
 
+import { Schema } from "astro-seo-schema";
+import type { BlogPosting, Person, WebSite, WithContext } from "schema-dts";
+
+import { SITE, SOCIALS } from "@consts";
+import type { ArticleMeta } from "@layouts/Layout.astro";
+
 interface Props {
   title: string;
   description: string;
   imageUrl?: string;
+  article?: ArticleMeta;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, imageUrl } = Astro.props;
+const { title, description, imageUrl, article } = Astro.props;
+
+const absoluteImageUrl = imageUrl
+  ? new URL(imageUrl, Astro.site).toString()
+  : undefined;
+
+const ogType = article ? "article" : "website";
+
+// JSON-LD structured data. The Person and WebSite nodes describe the site and
+// author on every page; a BlogPosting node is added for individual posts.
+const author: Person = {
+  "@type": "Person",
+  name: SITE.AUTHOR,
+  url: Astro.site?.toString(),
+  sameAs: SOCIALS.map((social) => social.HREF),
+};
+
+const websiteSchema: WithContext<WebSite> = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE.TITLE,
+  description: SITE.DESCRIPTION,
+  url: Astro.site?.toString(),
+  author,
+};
+
+const articleSchema: WithContext<BlogPosting> | undefined = article && {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: article.title,
+  description,
+  url: canonicalURL.toString(),
+  mainEntityOfPage: {
+    "@type": "WebPage",
+    "@id": canonicalURL.toString(),
+  },
+  datePublished: article.publishedDate.toISOString(),
+  dateModified: (article.updatedDate ?? article.publishedDate).toISOString(),
+  author,
+  publisher: author,
+  ...(absoluteImageUrl ? { image: absoluteImageUrl } : {}),
+  ...(article.tags?.length ? { keywords: article.tags.join(", ") } : {}),
+};
 ---
 
 <!-- Global Metadata -->
@@ -43,26 +92,43 @@ const { title, description, imageUrl } = Astro.props;
 <meta name="description" content={description} />
 
 <!-- Open Graph / Facebook -->
-<meta property="og:type" content="website" />
-<meta property="og:url" content={Astro.url} />
+<meta property="og:type" content={ogType} />
+<meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
+<meta property="og:site_name" content={SITE.TITLE} />
+{absoluteImageUrl && <meta property="og:image" content={absoluteImageUrl} />}
 {
-  imageUrl && (
-    <meta property="og:image" content={new URL(imageUrl, Astro.url)} />
+  article && (
+    <>
+      <meta
+        property="article:published_time"
+        content={article.publishedDate.toISOString()}
+      />
+      <meta
+        property="article:modified_time"
+        content={(article.updatedDate ?? article.publishedDate).toISOString()}
+      />
+      <meta property="article:author" content={SITE.AUTHOR} />
+      {article.tags?.map((tag) => (
+        <meta property="article:tag" content={tag} />
+      ))}
+    </>
   )
 }
 
 <!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:url" content={Astro.url} />
-<meta property="twitter:title" content={title} />
-<meta property="twitter:description" content={description} />
-{
-  imageUrl && (
-    <meta property="twitter:image" content={new URL(imageUrl, Astro.url)} />
-  )
-}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content={SITE.TWITTER_HANDLE} />
+<meta name="twitter:creator" content={SITE.TWITTER_HANDLE} />
+<meta name="twitter:url" content={canonicalURL} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+{absoluteImageUrl && <meta name="twitter:image" content={absoluteImageUrl} />}
+
+<!-- JSON-LD structured data -->
+<Schema item={websiteSchema} />
+{articleSchema && <Schema item={articleSchema} />}
 
 <!-- PageFind -->
 <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
@@ -127,7 +193,7 @@ const { title, description, imageUrl } = Astro.props;
       });
 
     const fontSelectorButtons = document.getElementsByClassName(
-      "font-selector-button"
+      "font-selector-button",
     );
     for (const el of fontSelectorButtons) {
       el.addEventListener("click", () => {
@@ -196,8 +262,8 @@ const { title, description, imageUrl } = Astro.props;
              -ms-transition: none !important;
              transition: none !important;
           }
-        `
-      )
+        `,
+      ),
     );
 
     document.head.appendChild(css);
