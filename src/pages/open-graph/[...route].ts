@@ -49,7 +49,7 @@ export const { getStaticPaths, GET } = OGImageRoute({
   pages,
 
   // For each page, this callback will be used to customize the OpenGraph image.
-  getImageOptions: (path, page) => ({
+  getImageOptions: (_path, page) => ({
     title: page.title,
     bgImage: {
       path: "./images/og-background.png",
@@ -57,12 +57,12 @@ export const { getStaticPaths, GET } = OGImageRoute({
     padding: 100,
     font: {
       title: {
-        families: ["Geist Sans"],
+        families: ["Hanken Grotesk"],
         weight: "Bold",
         size: 65,
       },
       description: {
-        families: ["Geist Sans"],
+        families: ["Hanken Grotesk"],
         weight: "Thin",
         size: 35,
       },

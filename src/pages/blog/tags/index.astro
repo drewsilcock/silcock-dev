@@ -1,9 +1,6 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
-import Container from "@components/Container.astro";
-import Link from "@components/Link.astro";
-import BackToPrevious from "@components/BackToPrevious.astro";
 import { BLOG_TAGS } from "@consts";
 import { shouldListPage } from "@lib/utils";
 
@@ -13,7 +10,8 @@ const posts = (await getCollection("blog"))
 
 const tags = posts
   .flatMap((p) => p.data.tags ?? [])
-  .filter((tag, index, self) => self.indexOf(tag) === index);
+  .filter((tag, index, self) => self.indexOf(tag) === index)
+  .sort();
 ---
 
 <Layout
@@ -21,30 +19,19 @@ const tags = posts
   description={BLOG_TAGS.DESCRIPTION}
   route="blog/tags"
 >
-  <Container>
-    <div class="animate">
-      <BackToPrevious href="/blog">Back to blog</BackToPrevious>
-    </div>
+  <div class="page-head">
+    <h1 class="page-title">Tags</h1>
+    <p class="page-intro">Browse posts by topic.</p>
+  </div>
 
-    <div class="animate my-10 space-y-10">
-      <h1 class="animate text-3xl font-semibold text-black dark:text-white">
-        Tags
-      </h1>
-
-      <ul class="animate not-prose flex flex-col gap-4">
-        {
-          tags.map((tag) => (
-            <li>
-              <Link
-                href={`./${tag}`}
-                className="text-xl font-semibold text-gray-500 dark:text-gray-400"
-              >
-                #{tag}
-              </Link>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </Container>
+  <div class="filter-row">
+    <a class="pill" href="/blog">all posts</a>
+    {
+      tags.map((tag) => (
+        <a class="pill" href={`/blog/tags/${tag}`}>
+          #{tag}
+        </a>
+      ))
+    }
+  </div>
 </Layout>

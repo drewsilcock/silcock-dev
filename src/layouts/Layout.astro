@@ -23,7 +23,7 @@ const { title, description, route, article } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark" data-fs="m">
   <head>
     <Head
       title={`${title} | ${SITE.TITLE}`}
@@ -34,7 +34,7 @@ const { title, description, route, article } = Astro.props;
   </head>
   <body>
     <Header />
-    <main>
+    <main class="wrap">
       <slot />
     </main>
     <Footer />

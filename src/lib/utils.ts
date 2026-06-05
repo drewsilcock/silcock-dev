@@ -21,6 +21,37 @@ export function readingTime(html: string) {
   return `${readingTimeMinutes} min read`;
 }
 
+// Placeholder engagement metadata: deterministic from the entry id so the
+// numbers are stable across rebuilds. Real values come from the `views`/
+// `stars`/`language` frontmatter fields once they're populated.
+function hashKey(key: string) {
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) {
+    hash = (hash * 31 + key.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash);
+}
+
+function entryKey(entry: CollectionEntry<"blog" | "projects">) {
+  return entry.id ?? entry.slug ?? entry.data.title;
+}
+
+export function displayViews(entry: CollectionEntry<"blog" | "projects">) {
+  const views = entry.data.views ?? 300 + (hashKey(entryKey(entry)) % 32000);
+  if (views >= 1000) {
+    return `${(views / 1000).toFixed(views < 10000 ? 1 : 0)}k`;
+  }
+  return String(views);
+}
+
+export function displayStars(entry: CollectionEntry<"projects">) {
+  return String(entry.data.stars ?? 20 + (hashKey(entryKey(entry)) % 380));
+}
+
+export function displayLanguage(entry: CollectionEntry<"projects">) {
+  return entry.data.language ?? entry.data.tags?.[0] ?? "Code";
+}
+
 // Archived posts get rendered but not listed.
 // Draft posts get rendered and listed in development only.
 

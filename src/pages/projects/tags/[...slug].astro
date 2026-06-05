@@ -1,9 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
-import Container from "@components/Container.astro";
-import ArrowCard from "@components/ArrowCard.astro";
-import BackToPrevious from "@components/BackToPrevious.astro";
+import ProjectCard from "@components/ProjectCard.astro";
 import { PROJECTS } from "@consts";
 import { shouldListPage, shouldRenderPage } from "@lib/utils";
 
@@ -13,10 +11,17 @@ type Props = {
 
 const { tag } = Astro.props;
 
-const taggedProjects = (await getCollection("projects"))
+const projects = (await getCollection("projects"))
   .filter(shouldListPage)
-  .filter((project) => project.data.tags?.includes(tag))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const tags = projects
+  .flatMap((project) => project.data.tags ?? [])
+  .filter((value, index, self) => self.indexOf(value) === index);
+
+const taggedProjects = projects.filter((project) =>
+  project.data.tags?.includes(tag),
+);
 
 export async function getStaticPaths() {
   const projects = (await getCollection("projects"))
@@ -39,26 +44,29 @@ export async function getStaticPaths() {
   description={`Explore some of the projects I've worked on that are tagged with #${tag}`}
   route={`projects/tags/${tag}`}
 >
-  <Container>
-    <div class="animate">
-      <BackToPrevious href="..">Back to projects</BackToPrevious>
-    </div>
+  <div class="page-head">
+    <h1 class="page-title">Projects</h1>
+    <p class="page-intro">
+      {taggedProjects.length} project{taggedProjects.length === 1 ? "" : "s"}
+      tagged <strong>#{tag}</strong>.
+    </p>
+  </div>
 
-    <div class="mb-2 mt-10 space-y-10">
-      <h1 class="animate text-3xl font-semibold text-black dark:text-white">
-        Projects tagged with
-        <span class="text-gray-500 dark:text-gray-400">#{tag}</span>
-      </h1>
+  <div class="filter-row">
+    <a class="pill" href="/projects">all projects</a>
+    {
+      tags.map((value) => (
+        <a
+          class:list={["pill", value === tag && "active"]}
+          href={`/projects/tags/${value}`}
+        >
+          #{value}
+        </a>
+      ))
+    }
+  </div>
 
-      <ul class="animate not-prose flex flex-col gap-4">
-        {
-          taggedProjects.map((project) => (
-            <li>
-              <ArrowCard entry={project} />
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </Container>
+  <div class="card-list">
+    {taggedProjects.map((project) => <ProjectCard entry={project} />)}
+  </div>
 </Layout>

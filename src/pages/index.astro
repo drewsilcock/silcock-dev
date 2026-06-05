@@ -1,18 +1,22 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import Container from "@components/Container.astro";
-import { SITE, HOME } from "@consts";
-import { shouldListPage } from "@lib/utils";
-import ArrowCard from "@components/ArrowCard.astro";
-import Link from "@components/Link.astro";
-import Socials from "@components/Socials.astro";
+import FormattedDate from "@components/FormattedDate.astro";
+import { HOME, SITE } from "@consts";
+import {
+  shouldListPage,
+  readingTime,
+  displayViews,
+  displayStars,
+} from "@lib/utils";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 
-const blog = (await getCollection("blog"))
+const allPosts = (await getCollection("blog"))
   .filter(shouldListPage)
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const totalPosts = allPosts.length;
+const posts = allPosts.slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 
 const projects: CollectionEntry<"projects">[] = (
   await getCollection("projects")
@@ -20,112 +24,119 @@ const projects: CollectionEntry<"projects">[] = (
   .filter(shouldListPage)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
+
+const tagSet = new Set(allPosts.flatMap((post) => post.data.tags ?? []));
+const topicLabels = [
+  "Go",
+  "Rust",
+  "React",
+  "Svelte",
+  "TypeScript",
+  "Python",
+  "Postgres",
+  "Best practices",
+];
+const topics = topicLabels.map((label) => {
+  const slug = label.toLowerCase();
+  return { label, href: tagSet.has(slug) ? `/blog/tags/${slug}` : "/blog" };
+});
 ---
 
 <Layout title={HOME.TITLE} description={HOME.DESCRIPTION} route="index">
-  <Container>
-    <h1 class="animate font-semibold text-black dark:text-white">
-      👋🏻 Welcome to drew's dev blog
+  <section class="hero">
+    <span class="hi">👋 hey, I'm Drew</span>
+    <h1>
+      I write deep dives into the parts of the stack most people skim past.
     </h1>
-    <div class="space-y-16">
-      <section>
-        <article class="space-y-4">
-          <span class="animate">
-            <p>
-              Hi, I'm Drew! I'm a software engineer living in Liverpool in the
-              UK 🇬🇧
-            </p>
-            <p>I like talking and writing about technical things.</p>
-          </span>
-          <span class="animate">
-            <p>
-              Here's some things I like to write about:
-
-              <ul class="columns-2">
-                <li>🐭 Go</li>
-                <li>🦀 Rust</li>
-                <li>
-                  <img
-                    src="/images/svelte-logo.svg"
-                    alt="Svelte Logo"
-                    width="18"
-                    class="inline"
-                  /> Svelte
-                </li>
-                <li>
-                  <img
-                    src="/images/ts-logo.svg"
-                    alt="TypeScript Logo"
-                    width="18"
-                    class="inline"
-                  /> TypeScript
-                </li>
-                <li>🐍 Python</li>
-                <li>💬 Programming languages</li>
-                <li>🙌 Best practices</li>
-                <li>🚀 Continuous integration & deployment</li>
-                <li>🎮 Game development</li>
-                <li>⋯ Lots of other things!</li>
-              </ul>
-            </p>
-            <p>
-              If you like reading about any of these things, <Link href="/blog"
-                >check out some of my posts</Link
-              >.
-            </p>
-
-            <p>
-              You can also <Link href="/rss.xml">subscribe to my RSS feed</Link>
-              or <Link href="/about">read more about me</Link>.
-            </p>
-          </span>
-        </article>
-      </section>
-
-      <section class="animate space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-y-2">
-          <h2 class="font-semibold text-black dark:text-white">Latest posts</h2>
-          <Link href="/blog"> See all posts </Link>
-        </div>
-        <ul class="not-prose flex flex-col gap-4">
-          {
-            blog.map((post) => (
-              <li>
-                <ArrowCard entry={post} />
-              </li>
-            ))
-          }
-        </ul>
-      </section>
-
-      <section class="animate space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-y-2">
-          <h2 class="font-semibold text-black dark:text-white">
-            Recent projects
-          </h2>
-          <Link href="/projects"> See all projects </Link>
-        </div>
-        <ul class="not-prose flex flex-col gap-4">
-          {
-            projects.map((project) => (
-              <li>
-                <ArrowCard entry={project} />
-              </li>
-            ))
-          }
-        </ul>
-      </section>
-
-      <section class="animate space-y-4">
-        <h2 class="font-semibold text-black dark:text-white">Say hi 😎</h2>
-        <article>
-          <p>
-            If you want to get in touch with me about something or just to say
-            hi, reach out on social media or send me an email.
-          </p>
-        </article>
-        <Socials />
-      </section>
+    <p class="lede">
+      Software engineer in Liverpool. No courses, no funnels, no “hustle” — just
+      databases, compilers and the occasional cursed git trick, explained
+      properly.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="/blog">Read the latest →</a>
+      <a class="btn btn-ghost" href="/rss.xml">Subscribe via RSS</a>
     </div>
-  </Container>
+    <div class="topics">
+      {
+        topics.map((topic) => (
+          <a class="topic" href={topic.href}>
+            {topic.label}
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <div class="sec-head">
+    <h2>Latest posts</h2>
+    <span class="spacer"></span>
+    <a href="/blog">See all {totalPosts} →</a>
+  </div>
+  <section class="posts">
+    {
+      posts.map((post, i) => (
+        <a class="post" href={`/blog/${post.slug}`}>
+          <div class="post-top">
+            <span class="post-num">{String(i + 1).padStart(2, "0")}</span>
+            <h3 class="post-title">{post.data.title}</h3>
+            <span class="post-arrow">→</span>
+          </div>
+          <p class="post-sub">{post.data.description}</p>
+          <div class="post-meta">
+            <span class="tags">
+              {(post.data.tags ?? []).map((tag) => (
+                <span class="tag">#{tag}</span>
+              ))}
+            </span>
+            <span class="spacer" />
+            <span class="meta-bit">
+              <FormattedDate date={post.data.date} />
+            </span>
+            <span class="meta-sep">·</span>
+            <span class="meta-bit">{readingTime(post.body)}</span>
+            <span class="meta-sep">·</span>
+            <span class="meta-bit">{displayViews(post)} views</span>
+          </div>
+        </a>
+      ))
+    }
+  </section>
+
+  <div class="sec-head">
+    <h2>Recent projects</h2>
+    <span class="spacer"></span>
+    <a href="/projects">See all →</a>
+  </div>
+  <section class="proj-grid">
+    {
+      projects.map((project) => (
+        <a class="proj" href={`/projects/${project.slug}`}>
+          <div class="proj-top">
+            <span class="proj-dot" />
+            <h4 class="proj-name">{project.data.title}</h4>
+            <span class="spacer" />
+            <span class="proj-stars">★ {displayStars(project)}</span>
+          </div>
+          <p class="proj-sub">{project.data.description}</p>
+          <div class="tags">
+            {(project.data.tags ?? []).map((tag) => (
+              <span class="tag">#{tag}</span>
+            ))}
+          </div>
+        </a>
+      ))
+    }
+  </section>
+
+  <div class="contact">
+    <div>
+      <h3>Say hi 😎</h3>
+      <p>Got a question or just want to chat? My inbox is open.</p>
+    </div>
+    <span class="spacer"></span>
+    <a class="email" href={SITE.EMAIL} aria-label="Email Drew">
+      <span class="email email-text">{SITE.EMAIL}</span>
+    </a>
+  </div>
 </Layout>

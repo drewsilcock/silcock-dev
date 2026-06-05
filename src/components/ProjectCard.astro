@@ -1,0 +1,34 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { displayStars, displayLanguage } from "@lib/utils";
+
+type Props = { entry: CollectionEntry<"projects"> };
+
+const { entry } = Astro.props;
+const tags = entry.data.tags ?? [];
+---
+
+<a class="card" href={`/projects/${entry.slug}`}>
+  <div class="body">
+    <div style="display:flex; align-items:center; gap:9px; margin-bottom:6px;">
+      <span class="proj-dot"></span>
+      <h3
+        class="card-title"
+        style="margin:0; font-family:var(--mono); font-size:calc(16px * var(--fsm));"
+      >
+        {entry.data.title}
+      </h3>
+    </div>
+    <p class="card-sub">{entry.data.description}</p>
+    <div class="card-foot">
+      <span class="tags">
+        {tags.map((tag) => <span class="tag">#{tag}</span>)}
+      </span>
+      <span class="spacer"></span>
+      <span class="meta-bit">{displayLanguage(entry)}</span>
+      <span class="meta-sep">·</span>
+      <span class="meta-bit">★ {displayStars(entry)}</span>
+    </div>
+  </div>
+  <span class="chev">›</span>
+</a>

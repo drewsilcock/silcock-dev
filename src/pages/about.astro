@@ -1,120 +1,8 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import Container from "@components/Container.astro";
-import Link from "@components/Link.astro";
-import Socials from "@components/Socials.astro";
----
+import { SITE } from "@consts";
 
-<Layout title="About me" description="All about me, Drew" route="about">
-  <Container>
-    <h1 class="animate font-semibold text-black dark:text-white">
-      About me 👨🏻‍💻
-    </h1>
-
-    <div class="space-y-16">
-      <section>
-        <article class="space-y-4">
-          <span class="animate">
-            <p>Hey, I'm Drew.</p>
-
-            <p>
-              I'm currently a Senior Research Software Engineer at
-              <Link external href="https://www.hartree.stfc.ac.uk/">
-                STFC Hartree Centre
-              </Link>, part of the <Link
-                external
-                href="https://www.ukri.org/councils/stfc/"
-              >
-                Science and Technology Facilities Council (STFC)
-              </Link>
-              which is in turn part of <Link
-                external
-                href="https://www.ukri.org/"
-              >
-                UK Research and Innovation (UKRI)
-              </Link>. I live in Liverpool and work in <Link
-                external
-                href="https://www.ukri.org/who-we-are/stfc/facilities/daresbury-laboratory/"
-              >
-                Daresbury Laboratory
-              </Link>, near Warrington.
-            </p>
-          </span>
-
-          <span class="animate">
-            <p>
-              I'm interesting in all things technical, but I've got a particular
-              interest in things like databases, programming languages, best
-              practices, cloud infrastructure and game development.
-            </p>
-
-            <p>
-              I like using and writing about languages like Go, Python,
-              TypeScript and Rust, but I'll use whatever tool is best for the
-              task at hand.
-            </p>
-          </span>
-        </article>
-
-        <section>
-          <div class="flex flex-wrap items-center justify-between gap-y-2">
-            <h2 class="font-semibold text-black dark:text-white">Socials</h2>
-          </div>
-
-          <article>
-            <span class="animate">
-              <p>
-                <Socials />
-              </p>
-            </span>
-          </article>
-        </section>
-
-        <section>
-          <div class="flex flex-wrap items-center justify-between gap-y-2">
-            <h2 class="font-semibold text-black dark:text-white">Support me</h2>
-          </div>
-
-          <article>
-            <span class="animate">
-              <p>
-                If you liked something I wrote or made, feel free to support me
-                on Ko-fi 🙂
-              </p>
-
-              <div class="mb-8 mt-6 text-center">
-                <a
-                  role="button"
-                  href="https://ko-fi.com/drewsilcock/"
-                  class="w-[100%] rounded-[100px] border-r-8 border-[#ff5f5f] bg-[#ff5f5f] p-4 text-lg font-bold text-white no-underline"
-                  target="_blank"
-                >
-                  <img
-                    src="/media/kofi-cup.png"
-                    alt="Ko-fi"
-                    class="mr-1 inline h-5 align-sub"
-                  />
-                  Support me on Ko-fi
-                </a>
-              </div>
-            </span>
-          </article>
-        </section>
-
-        <section>
-          <div class="flex flex-wrap items-center justify-between gap-y-2">
-            <h2 class="font-semibold text-black dark:text-white">
-              Public keys
-            </h2>
-          </div>
-
-          <article>
-            <span class="animate">
-              <h4 class="font-normal italic">GPG</h4>
-
-              <p>
-                <pre
-                  class="bg-neutral-50 text-neutral-800 dark:bg-neutral-900 dark:text-neutral-50"><code>-----BEGIN PGP PUBLIC KEY BLOCK-----
+const gpgKey = `-----BEGIN PGP PUBLIC KEY BLOCK-----
 
 mQINBFvukQMBEADYf+a7JR1Szd0Ym0GPfNoaPlhn6e7o7LcIq6uk6PtIcNxwK+xr
 lhfXfQqW/MqAaHYkcTix8sg07eIzcz0QMdpKPX+Yh+07MKnlQgLJUyRyZvGSkg7+
@@ -166,21 +54,223 @@ ZxD/TVubvFGuUpd+sJwPq76rtfFoR8lotHXXzw7GE2zsVaBXGrKYuL7iDE9woE5c
 37T5K24h3G7F7F8S/WLvV3roNYAfFZdtXVq84NvKsbnUY9tP7t3TixdNh8HR6V6K
 BA==
 =AY97
------END PGP PUBLIC KEY BLOCK-----</code></pre>
-              </p>
-            </span>
+-----END PGP PUBLIC KEY BLOCK-----`;
 
-            <h4 class="font-normal italic">SSH</h4>
+const sshKey = `ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFduo05erKfMKFmHa3ioLVMEiiFRq4ZYNGe11PTarv52 github.com/drewsilcock`;
+---
 
-            <span class="animate">
-              <p>
-                <pre
-                  class="bg-neutral-50 text-neutral-800 dark:bg-neutral-900 dark:text-neutral-50"><code>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFduo05erKfMKFmHa3ioLVMEiiFRq4ZYNGe11PTarv52 github.com/drewsilcock</code></pre>
-              </p>
-            </span>
-          </article>
-        </section>
-      </section>
+<Layout title="About me" description="All about me, Drew" route="about">
+  <div class="page-head">
+    <h1 class="page-title">About me 🧑‍💻</h1>
+  </div>
+
+  <div class="prose">
+    <p>Hey, I'm Drew.</p>
+    <p>
+      I'm currently a Senior Research Software Engineer at the <a
+        href="https://www.hartree.stfc.ac.uk/"
+        target="_blank"
+        rel="noopener">STFC Hartree Centre</a
+      >, part of the <a
+        href="https://www.ukri.org/councils/stfc/"
+        target="_blank"
+        rel="noopener">Science and Technology Facilities Council (STFC)</a
+      > which is in turn part of <a
+        href="https://www.ukri.org/"
+        target="_blank"
+        rel="noopener">UK Research and Innovation (UKRI)</a
+      >. I live in Liverpool and work in <a
+        href="https://www.ukri.org/who-we-are/stfc/facilities/daresbury-laboratory/"
+        target="_blank"
+        rel="noopener">Daresbury Laboratory</a
+      >, near Warrington.
+    </p>
+    <p>
+      I'm interested in all things technical, but I've got a particular soft
+      spot for databases, programming languages, best practices, cloud
+      infrastructure and game development.
+    </p>
+    <p>
+      I like using and writing about languages like Go, Python, TypeScript and
+      Rust — but I'll reach for whatever tool is best for the task at hand.
+    </p>
+
+    <h2>Socials</h2>
+    <div class="social-list">
+      <a
+        class="social-row"
+        href="https://twitter.com/drewlhsilcock"
+        target="_blank"
+        rel="noopener"
+      >
+        <span class="ic"
+          ><svg viewBox="0 0 24 24" fill="currentColor"
+            ><path
+              d="M18.9 2H22l-7.6 8.7L23 22h-6.9l-5-6.6L5.2 22H2l8.2-9.4L1.5 2h7l4.5 6 5.9-6Zm-1.2 18h1.9L7.2 4H5.2l12.5 16Z"
+            ></path></svg
+          ></span
+        >
+        <span
+          ><span class="lbl">X (formerly Twitter)</span><br /><span
+            class="handle">@drewlhsilcock</span
+          ></span
+        >
+      </a>
+      <a
+        class="social-row"
+        href="https://github.com/drewsilcock"
+        target="_blank"
+        rel="noopener"
+      >
+        <span class="ic"
+          ><svg viewBox="0 0 24 24" fill="currentColor"
+            ><path
+              d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48l-.01-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.36 1.09 2.94.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85l-.01 2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"
+            ></path></svg
+          ></span
+        >
+        <span
+          ><span class="lbl">GitHub</span><br /><span class="handle"
+            >@drewsilcock</span
+          ></span
+        >
+      </a>
+      <a
+        class="social-row"
+        href="https://www.linkedin.com/in/drewsilcock"
+        target="_blank"
+        rel="noopener"
+      >
+        <span class="ic"
+          ><svg viewBox="0 0 24 24" fill="currentColor"
+            ><path
+              d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.55V9h3.57v11.45ZM22.22 0H1.77C.8 0 0 .77 0 1.73v20.54C0 23.23.8 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"
+            ></path></svg
+          ></span
+        >
+        <span
+          ><span class="lbl">LinkedIn</span><br /><span class="handle"
+            >in/drewsilcock</span
+          ></span
+        >
+      </a>
+      <a class="social-row" href="/rss.xml">
+        <span class="ic"
+          ><svg viewBox="0 0 24 24" fill="currentColor"
+            ><path
+              d="M4 11a9 9 0 0 1 9 9h2.5A11.5 11.5 0 0 0 4 8.5V11Zm0 4a5 5 0 0 1 5 5h2.5A7.5 7.5 0 0 0 4 12.5V15Zm1.5 5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"
+            ></path></svg
+          ></span
+        >
+        <span
+          ><span class="lbl">RSS</span><br /><span class="handle">/rss.xml</span
+          ></span
+        >
+      </a>
+      <a class="social-row email" href={SITE.EMAIL} aria-label="Email Drew">
+        <span class="ic"
+          ><svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            ><rect x="3" y="5" width="18" height="14" rx="2"></rect><path
+              d="m3 7 9 6 9-6"></path></svg
+          ></span
+        >
+        <span
+          ><span class="lbl">Email</span><br /><span
+            class="handle email email-text">{SITE.EMAIL}</span
+          ></span
+        >
+      </a>
     </div>
-  </Container></Layout
->
+
+    <h2>Support me</h2>
+    <p>
+      If you liked something I wrote or made, feel free to support me on Ko-fi
+      🙂
+    </p>
+    <a
+      href="https://ko-fi.com/drewsilcock/"
+      target="_blank"
+      rel="noopener"
+      style="display:inline-flex; align-items:center; gap:10px; background:#FF5E5B; color:#fff; font-weight:700; font-size:calc(15px * var(--fsm)); text-decoration:none; padding:13px 22px; border-radius:12px; box-shadow:0 4px 14px rgba(255,94,91,.3);"
+    >
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+        ><path
+          d="M4 5h13a3 3 0 0 1 3 3 4 4 0 0 1-4 4h-1"
+          stroke="#fff"
+          stroke-width="2"
+          stroke-linecap="round"></path><path
+          d="M4 5v9a4 4 0 0 0 4 4h4a4 4 0 0 0 4-4V5H4Z"
+          fill="#fff"
+          opacity=".25"></path><path
+          d="M4 5v9a4 4 0 0 0 4 4h4a4 4 0 0 0 4-4V5"
+          stroke="#fff"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"></path></svg
+      >
+      Support me on Ko-fi
+    </a>
+
+    <h2>Public keys</h2>
+    <p class="keylabel" style="display:flex; align-items:center; gap:10px;">
+      GPG
+      <button
+        class="copy-key btn-ghost"
+        data-target="gpg"
+        style="font-family:var(--mono); font-size:11px; padding:3px 9px; border-radius:7px; cursor:pointer; border:1px solid var(--line); background:var(--chip-bg); color:var(--mut);"
+        >copy</button
+      >
+    </p>
+    <div class="keyblock"><pre id="gpg" set:text={gpgKey} /></div>
+
+    <p class="keylabel" style="display:flex; align-items:center; gap:10px;">
+      SSH
+      <button
+        class="copy-key btn-ghost"
+        data-target="ssh"
+        style="font-family:var(--mono); font-size:11px; padding:3px 9px; border-radius:7px; cursor:pointer; border:1px solid var(--line); background:var(--chip-bg); color:var(--mut);"
+        >copy</button
+      >
+    </p>
+    <div class="keyblock"><pre id="ssh" set:text={sshKey} /></div>
+  </div>
+</Layout>
+
+<script>
+  function bindCopyKeys() {
+    const buttons = document.querySelectorAll<HTMLButtonElement>(".copy-key");
+    buttons.forEach((btn) => {
+      if (btn.dataset.bound) {
+        return;
+      }
+      btn.dataset.bound = "1";
+      btn.addEventListener("click", async () => {
+        const targetId = btn.dataset.target;
+        if (!targetId) {
+          return;
+        }
+        const target = document.getElementById(targetId);
+        if (!target || target.textContent === null) {
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(target.textContent);
+        } catch {
+          return;
+        }
+        const original = btn.textContent;
+        btn.textContent = "copied ✓";
+        setTimeout(() => {
+          btn.textContent = original;
+        }, 1400);
+      });
+    });
+  }
+
+  document.addEventListener("astro:page-load", bindCopyKeys);
+  bindCopyKeys();
+</script>

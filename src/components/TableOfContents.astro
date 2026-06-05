@@ -9,48 +9,28 @@ export interface Heading {
   depth: number;
   slug: string;
   text: string;
+  subheadings: Heading[];
 }
 
 function buildToc(headings: Heading[]) {
   const toc: Heading[] = [];
-  const parentHeadings = new Map();
+  const parentHeadings = new Map<number, Heading>();
   headings.forEach((h) => {
     const heading = { ...h, subheadings: [] };
     parentHeadings.set(heading.depth, heading);
     if (heading.depth === 2) {
       toc.push(heading);
     } else {
-      parentHeadings.get(heading.depth - 1).subheadings.push(heading);
+      parentHeadings.get(heading.depth - 1)?.subheadings.push(heading);
     }
   });
   return toc;
 }
 ---
 
-<details
-  open
-  class="animate rounded-lg border border-black/15 dark:border-white/20"
->
-  <summary>Table of Contents</summary>
-  <nav>
-    <ul class="table-of-contents-list py-3">
-      {toc.map((heading) => <TableOfContentsHeading heading={heading} />)}
-    </ul>
-  </nav>
+<details class="toc" open>
+  <summary><span class="caret">▶</span> Table of Contents</summary>
+  <ol>
+    {toc.map((heading) => <TableOfContentsHeading heading={heading} />)}
+  </ol>
 </details>
-
-<style>
-  @reference "../styles/global.css";
-
-  summary {
-    @apply cursor-pointer rounded-t-lg px-3 py-1.5 font-medium transition-colors;
-  }
-
-  summary:hover {
-    @apply bg-black/5 dark:bg-white/5;
-  }
-
-  details[open] summary {
-    @apply bg-black/5 dark:bg-white/5;
-  }
-</style>
