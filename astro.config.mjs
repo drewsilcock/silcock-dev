@@ -1,6 +1,6 @@
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
-import tailwind from "@astrojs/tailwind";
+import tailwindcss from "@tailwindcss/vite";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import expressiveCode from "astro-expressive-code";
@@ -17,8 +17,11 @@ import icon from "astro-icon";
 // https://astro.build/config
 export default defineConfig({
   site: "https://drew.silcock.dev",
+  vite: {
+    plugins: [tailwindcss()],
+  },
   // The order of integrations is important here.
-  integrations: [tailwind(), sitemap(), pagefind(), expressiveCode({
+  integrations: [sitemap(), pagefind(), expressiveCode({
     plugins: [pluginLineNumbers(), pluginCollapsibleSections()],
     styleOverrides: {
       codeFontFamily: ['"Ubuntu Mono"', ...defaultTheme.fontFamily.mono].join(
