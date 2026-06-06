@@ -1,3 +1,10 @@
+# Prettifying the actual content does annoying things like prettify code blocks
+# inside the Markdown files which isn't generally useful.
+src/content/**/*.md
+src/content/**/*.mdx
+
+pnpm-lock.yaml
+
 public/admin
 public/pagefind
 public/site.webmanifest
