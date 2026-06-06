@@ -54,7 +54,7 @@ const socials = post.data.socials ?? [];
 <Layout
   title={post.data.title}
   description={post.data.description}
-  route={`${post.collection}/${post.id}`}
+  route={`${post.collection}/${post.slug}`}
   article={{
     title: post.data.title,
     publishedDate: post.data.date,
