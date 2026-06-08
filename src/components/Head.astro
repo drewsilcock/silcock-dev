@@ -109,7 +109,19 @@ const articleSchema: WithContext<BlogPosting> | undefined = article && {
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:site_name" content={SITE.TITLE} />
-{absoluteImageUrl && <meta property="og:image" content={absoluteImageUrl} />}
+
+{
+  absoluteImageUrl && (
+    <>
+      <meta property="og:image" content={absoluteImageUrl} />
+      <meta property="og:image:type" content="image/png" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content={title} />
+    </>
+  )
+}
+
 {
   article && (
     <>
@@ -136,7 +148,14 @@ const articleSchema: WithContext<BlogPosting> | undefined = article && {
 <meta name="twitter:url" content={canonicalURL} />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
-{absoluteImageUrl && <meta name="twitter:image" content={absoluteImageUrl} />}
+{
+  absoluteImageUrl && (
+    <>
+      <meta name="twitter:image" content={absoluteImageUrl} />
+      <meta name="twitter:image:alt" content={title} />
+    </>
+  )
+}
 
 <!-- JSON-LD structured data -->
 <Schema item={websiteSchema} />
@@ -354,17 +373,35 @@ const articleSchema: WithContext<BlogPosting> | undefined = article && {
     });
   }
 
+  let giscusLoaded = false;
+
   function setGiscusTheme() {
     const giscus = document.querySelector(".giscus-frame");
-    if (!giscus) {
+    if (!giscus?.contentWindow || !giscusLoaded) {
       return;
     }
+
     const isDark =
       document.documentElement.getAttribute("data-theme") === "dark";
-    const url = new URL(giscus.src);
-    url.searchParams.set("theme", isDark ? "dark" : "light");
-    giscus.src = url.toString();
+
+    giscus.contentWindow.postMessage(
+      { giscus: { setConfig: { theme: isDark ? "dark" : "light" } } },
+      "https://giscus.app",
+    );
   }
+
+  window.addEventListener("message", (e) => {
+    if (
+      e.origin !== "https://giscus.app" ||
+      e.data?.giscus === undefined ||
+      giscusLoaded
+    ) {
+      return;
+    }
+
+    giscusLoaded = true;
+    setGiscusTheme();
+  });
 
   const baseXorDecodeKey = 103;
 
@@ -412,7 +449,6 @@ const articleSchema: WithContext<BlogPosting> | undefined = article && {
     bindFontSize();
     setupBackToTop();
     animate();
-    setGiscusTheme();
     decodeEmails();
   }
 
