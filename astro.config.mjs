@@ -23,7 +23,9 @@ export default defineConfig({
     sitemap(),
     pagefind(),
     expressiveCode({
-      themes: ["catppuccin-frappe"],
+      themes: ["catppuccin-latte", "catppuccin-frappe"],
+      themeCssSelector: (theme) => `[data-theme="${theme.type}"]`,
+      useDarkModeMediaQuery: false,
       plugins: [pluginLineNumbers(), pluginCollapsibleSections()],
       styleOverrides: {
         codeFontFamily: [
@@ -31,8 +33,6 @@ export default defineConfig({
           ...defaultTheme.fontFamily.mono,
         ].join(", "),
         borderRadius: "12px",
-        borderColor: "rgba(255,255,255,.06)",
-        codeBackground: "#14161B",
         codePaddingInline: "20px",
         codePaddingBlock: "18px",
       },

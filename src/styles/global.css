@@ -11,9 +11,7 @@
   --fsm: 1; /* font-size multiplier, set by [data-fs] */
   --maxw: 760px;
 
-  /* code surface — fixed across themes */
-  --code-bg: #14161b;
-  --code-ink: #d7dbe0;
+  /* code surface — themed (see html[data-theme] blocks); matches Expressive Code */
   --tok-kw: #c792ea;
   --tok-str: #c3e88d;
   --tok-fn: #82aaff;
@@ -53,6 +51,8 @@ html[data-theme="dark"] {
   --warn-bg: rgba(245, 166, 35, 0.08);
   --danger-bg: rgba(248, 113, 113, 0.08);
   --danger-line: #f87171;
+  --code-bg: #303446;
+  --code-ink: #c6d0f5;
 }
 html[data-theme="light"] {
   --bg: #fbfaf6;
@@ -75,6 +75,8 @@ html[data-theme="light"] {
   --warn-bg: rgba(172, 107, 18, 0.07);
   --danger-bg: rgba(220, 38, 38, 0.06);
   --danger-line: #dc2626;
+  --code-bg: #eff1f5;
+  --code-ink: #4c4f69;
 }
 
 * {
@@ -931,7 +933,7 @@ a.tag:hover {
 .article pre {
   margin: 22px 0;
   background: var(--code-bg);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line);
   border-radius: 12px;
   padding: 18px 20px;
   overflow-x: auto;
@@ -1239,7 +1241,7 @@ a.tag:hover {
 .keyblock {
   margin: 14px 0 26px;
   background: var(--code-bg);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line);
   border-radius: 12px;
   padding: 16px 18px;
   overflow-x: auto;
