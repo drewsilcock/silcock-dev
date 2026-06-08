@@ -37,7 +37,6 @@ const fonts = [
 type Card = {
   key: string;
   eyebrow: string;
-  kicker: string;
   title: string;
   description: string;
   tags: string[];
@@ -75,10 +74,9 @@ function articleCard(
   return {
     key: `${entry.collection}/${entry.slug}`,
     eyebrow,
-    kicker: `// ${tags[0] ?? eyebrow}`,
     title: stripEmoji(entry.data.title),
     description: stripEmoji(entry.data.description),
-    tags: tags.slice(0, 4),
+    tags: tags.slice(0, 3),
     meta: `${ogDate(entry.data.date)} · ${readingTime(entry.body)}`,
   };
 }
@@ -96,28 +94,25 @@ async function buildCards(): Promise<Card[]> {
     {
       key: "index",
       eyebrow: "dev blog",
-      kicker: "// dev blog",
       title:
         "I write deep dives into the parts of the stack most people skim past.",
       description:
-        "Software engineer in Liverpool — databases, compilers and the occasional cursed git trick, explained properly.",
+        "Software engineer in Liverpool — databases, compilers and cursed git tricks.",
       tags: [],
       meta: "drew.silcock.dev",
     },
     {
       key: "blog",
       eyebrow: "dev blog",
-      kicker: "// all posts",
       title: "Posts",
       description:
-        "Deep dives — databases, compilers, git internals and whatever else I fell down a rabbit hole on.",
+        "Deep dives — databases, compilers, git internals and whatever else.",
       tags: [],
       meta: "drew.silcock.dev",
     },
     {
       key: "projects",
       eyebrow: "dev blog",
-      kicker: "// projects",
       title: "Projects",
       description:
         "Things I've built because the tool I wanted didn't exist yet.",
@@ -127,17 +122,15 @@ async function buildCards(): Promise<Card[]> {
     {
       key: "about",
       eyebrow: "dev blog",
-      kicker: "// about",
       title: "About me",
       description:
-        "Senior Research Software Engineer in Liverpool. Go, Rust, Python, TypeScript — whatever fits.",
+        "Senior Research Software Engineer in Liverpool. Go, Rust, Python, TypeScript.",
       tags: [],
       meta: "drew.silcock.dev",
     },
     {
       key: "404",
       eyebrow: "dev blog",
-      kicker: "// 404",
       title: "Page not found",
       description: "That page doesn't exist, or it wandered off somewhere.",
       tags: [],
@@ -148,37 +141,42 @@ async function buildCards(): Promise<Card[]> {
   return [...cards, ...sections];
 }
 
+// The wide 1200×630 card keeps all content inside the centred 630px-wide
+// column so it survives a 1:1 crop on platforms that square the image.
 function cardMarkup(card: Card) {
-  const titleSize = card.title.length > 48 ? 52 : 62;
+  const len = card.title.length;
+  const titleSize = len > 55 ? 34 : len > 32 ? 42 : 50;
+  const comment = `// ${card.description}`;
   const tagsMarkup = card.tags
     .map(
       (tag) =>
-        `<div style="display:flex; font-family:'JetBrains Mono'; font-size:18px; color:#9A9AA2; background-color:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.10); border-radius:8px; padding:7px 14px;">#${esc(tag)}</div>`,
+        `<div style="display:flex; font-family:'JetBrains Mono'; font-size:15px; color:#9A9AA2; background-color:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.10); border-radius:7px; padding:6px 11px;">#${esc(tag)}</div>`,
     )
     .join("");
 
   return `
-  <div style="position:relative; display:flex; flex-direction:column; width:1200px; height:630px; background-color:#0D0D0F; padding:64px 72px; font-family:'Hanken Grotesk';">
+  <div style="position:relative; display:flex; flex-direction:column; width:1200px; height:630px; background-color:#0D0D0F; font-family:'Hanken Grotesk';">
     <img src="${bgImage}" style="position:absolute; top:0; left:0; width:1200px; height:630px;" />
     <div style="display:flex; position:absolute; top:0; left:0; width:8px; height:630px; background-color:#F5A623;"></div>
 
-    <div style="display:flex; align-items:center;">
-      <img src="${logoImage}" style="display:flex; width:40px; height:40px;" />
-      <div style="display:flex; margin-left:16px; font-family:'JetBrains Mono'; font-weight:600; font-size:26px; color:#ECECEE; letter-spacing:-0.3px;">drew.silcock<div style="display:flex; color:#F5A623;">.dev</div></div>
-      <div style="display:flex; flex-grow:1;"></div>
-      <div style="display:flex; font-family:'JetBrains Mono'; font-weight:600; font-size:16px; color:#F5A623; text-transform:uppercase; letter-spacing:2.5px; border:1px solid rgba(245,166,35,0.35); border-radius:999px; background-color:rgba(245,166,35,0.07); padding:8px 16px;">${esc(card.eyebrow)}</div>
-    </div>
+    <div style="display:flex; flex-direction:column; width:600px; height:630px; margin-left:300px; padding:54px 0 54px 28px;">
+      <div style="display:flex; align-items:center;">
+        <img src="${logoImage}" style="display:flex; width:34px; height:34px;" />
+        <div style="display:flex; margin-left:13px; font-family:'JetBrains Mono'; font-weight:600; font-size:21px; color:#ECECEE; letter-spacing:-0.3px;">drew.silcock<div style="display:flex; color:#F5A623;">.dev</div></div>
+        <div style="display:flex; flex-grow:1;"></div>
+        <div style="display:flex; font-family:'JetBrains Mono'; font-weight:600; font-size:12.5px; color:#F5A623; text-transform:uppercase; letter-spacing:2px; border:1px solid rgba(245,166,35,0.35); border-radius:999px; background-color:rgba(245,166,35,0.07); padding:6px 12px;">${esc(card.eyebrow)}</div>
+      </div>
 
-    <div style="display:flex; flex-direction:column; flex-grow:1; justify-content:center;">
-      <div style="display:flex; font-family:'JetBrains Mono'; font-size:19px; color:#F5A623; letter-spacing:0.7px; margin-bottom:18px;">${esc(card.kicker)}</div>
-      <div style="display:flex; font-size:${titleSize}px; font-weight:800; letter-spacing:-1.8px; line-height:1.06; color:#ECECEE; max-width:1010px;">${esc(card.title)}</div>
-      <div style="display:flex; font-size:25px; line-height:1.5; color:#9A9AA2; margin-top:22px; max-width:880px;">${esc(card.description)}</div>
-    </div>
+      <div style="display:flex; flex-direction:column; flex-grow:1; justify-content:center;">
+        <div style="display:flex; font-family:'JetBrains Mono'; font-size:16px; color:#F5A623; line-height:1.5; margin-bottom:16px;">${esc(comment)}</div>
+        <div style="display:flex; font-size:${titleSize}px; font-weight:800; letter-spacing:-1.2px; line-height:1.1; color:#ECECEE;">${esc(card.title)}</div>
+      </div>
 
-    <div style="display:flex; align-items:center;">
-      <div style="display:flex; gap:10px;">${tagsMarkup}</div>
-      <div style="display:flex; flex-grow:1;"></div>
-      <div style="display:flex; font-family:'JetBrains Mono'; font-size:19px; color:#6E6E76;">${esc(card.meta)}</div>
+      <div style="display:flex; align-items:center;">
+        <div style="display:flex; gap:8px;">${tagsMarkup}</div>
+        <div style="display:flex; flex-grow:1;"></div>
+        <div style="display:flex; font-family:'JetBrains Mono'; font-size:16px; color:#6E6E76;">${esc(card.meta)}</div>
+      </div>
     </div>
   </div>`;
 }
