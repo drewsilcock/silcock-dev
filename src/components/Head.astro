@@ -441,6 +441,15 @@ const articleSchema: WithContext<BlogPosting> | undefined = article && {
     }
   }
 
+  function updateActiveNav() {
+    const path = window.location.pathname;
+    for (const link of document.querySelectorAll(".nav-links a")) {
+      const href = link.getAttribute("href");
+      const active = href === "/" ? path === "/" : path.startsWith(href);
+      link.classList.toggle("active", active);
+    }
+  }
+
   function init() {
     preloadTheme();
     preloadFontSize();
@@ -448,6 +457,7 @@ const articleSchema: WithContext<BlogPosting> | undefined = article && {
     bindThemeToggle();
     bindFontSize();
     setupBackToTop();
+    updateActiveNav();
     animate();
     decodeEmails();
   }
