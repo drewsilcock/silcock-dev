@@ -310,22 +310,31 @@ const articleSchema: WithContext<BlogPosting> | undefined = article && {
           return;
         }
         busy = true;
-        const fullHTML = word.innerHTML;
         const fullText = word.textContent;
+        const tld = word.querySelector(".tld")?.textContent || "";
+        const plain = fullText.slice(0, fullText.length - tld.length);
         const total = fullText.length;
-        word.textContent = "";
-        const txt = document.createTextNode("");
-        const caret = document.createElement("span");
-        caret.className = "caret";
-        word.append(txt, caret);
+        // Reserve the wordmark's width so the brand link stays fully
+        // clickable even while the text is "deleted" mid-animation.
+        word.style.display = "inline-block";
+        word.style.minWidth = word.offsetWidth + "px";
         let i = 0;
         (function step() {
-          txt.nodeValue = fullText.slice(0, i);
+          // Rebuild progressively so the ".dev" TLD keeps its accent colour
+          // as it's typed, instead of only after the animation finishes.
+          const plainShown = plain.slice(0, Math.min(i, plain.length));
+          const tldShown =
+            i > plain.length ? tld.slice(0, i - plain.length) : "";
+          word.innerHTML =
+            plainShown +
+            (tldShown ? `<span class="tld">${tldShown}</span>` : "") +
+            `<span class="caret"></span>`;
           if (i < total) {
             i++;
             setTimeout(step, 26);
           } else {
-            word.innerHTML = fullHTML;
+            word.style.minWidth = "";
+            word.style.display = "";
             busy = false;
           }
         })();

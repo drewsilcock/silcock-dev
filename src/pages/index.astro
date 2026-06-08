@@ -18,40 +18,44 @@ const allPosts = (await getCollection("blog"))
 const totalPosts = allPosts.length;
 const posts = allPosts.slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 
-const projects: CollectionEntry<"projects">[] = (
+const allProjects: CollectionEntry<"projects">[] = (
   await getCollection("projects")
 )
   .filter(shouldListPage)
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-const tagSet = new Set(allPosts.flatMap((post) => post.data.tags ?? []));
-const topicLabels = [
-  "Go",
-  "Rust",
-  "React",
-  "Svelte",
-  "TypeScript",
-  "Python",
-  "Postgres",
-  "Best practices",
-];
-const topics = topicLabels.map((label) => {
-  const slug = label.toLowerCase();
-  return { label, href: tagSet.has(slug) ? `/blog/tags/${slug}` : "/blog" };
-});
+const projects = allProjects.slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
+
+// Topics: the most recently used tags across blog posts and projects, newest
+// first. Each links to that tag's page in the collection it last appeared in.
+const NUM_TOPICS = 8;
+const recentlyTagged = [...allPosts, ...allProjects].sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const seenTags = new Set<string>();
+const topics: { tag: string; href: string }[] = [];
+for (const entry of recentlyTagged) {
+  for (const tag of entry.data.tags ?? []) {
+    if (seenTags.has(tag)) {
+      continue;
+    }
+    seenTags.add(tag);
+    topics.push({ tag, href: `/${entry.collection}/tags/${tag}` });
+  }
+}
+const recentTopics = topics.slice(0, NUM_TOPICS);
 ---
 
 <Layout title={HOME.TITLE} description={HOME.DESCRIPTION} route="index">
   <section class="hero">
-    <span class="hi">👋 hey, I'm Drew</span>
+    <span class="hi">👋 Hey, I'm Drew</span>
     <h1>
-      I write deep dives into the parts of the stack most people skim past.
+      I like computers (most of the time) and write long-form deep dives about
+      them (sometimes)
     </h1>
     <p class="lede">
-      Software engineer in Liverpool. No courses, no funnels, no “hustle” — just
-      databases, compilers and the occasional cursed git trick, explained
-      properly.
+      I'm a software engineer living in Portishead, UK. I like writing things
+      about software and computers. You might find them interesting.
     </p>
     <div class="cta-row">
       <a class="btn btn-primary" href="/blog">Read the latest →</a>
@@ -59,9 +63,9 @@ const topics = topicLabels.map((label) => {
     </div>
     <div class="topics">
       {
-        topics.map((topic) => (
+        recentTopics.map((topic) => (
           <a class="topic" href={topic.href}>
-            {topic.label}
+            #{topic.tag}
           </a>
         ))
       }

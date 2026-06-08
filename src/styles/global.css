@@ -145,10 +145,10 @@ a {
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .brand:hover .mark svg {
-  transform: translateY(-1px) scale(1.08);
+  transform: translateY(-1px);
 }
 .brand .word .caret {
-  display: inline-block;
+  display: none;
   width: 0.55em;
   height: 1em;
   margin-left: 2px;
@@ -156,22 +156,12 @@ a {
   border-radius: 1px;
   background: var(--accent);
 }
-@media (prefers-reduced-motion: no-preference) {
-  .brand:hover .mark svg rect:last-of-type {
-    animation: ddb-ul-blink 0.75s steps(1) infinite;
-  }
-  .brand .word .caret {
-    animation: ddb-caret 0.7s steps(1) infinite;
-  }
+.brand:hover .word .caret {
+  display: inline-block;
 }
-@keyframes ddb-ul-blink {
-  0%,
-  55% {
-    opacity: 1;
-  }
-  55.01%,
-  100% {
-    opacity: 0;
+@media (prefers-reduced-motion: no-preference) {
+  .brand:hover .word .caret {
+    animation: ddb-caret 0.7s steps(1) infinite;
   }
 }
 @keyframes ddb-caret {
@@ -499,7 +489,7 @@ a.tag:hover {
 }
 .hero .hi {
   font-family: var(--mono);
-  font-size: calc(13px * var(--fsm));
+  font-size: calc(24px * var(--fsm));
   color: var(--accent-text);
 }
 .hero h1 {
@@ -1235,7 +1225,7 @@ a.tag:hover {
 .social-row .handle {
   font-family: var(--mono);
   font-size: calc(12.5px * var(--fsm));
-  color: var(--dim);
+  color: var(--mut);
   white-space: nowrap;
 }
 .keyblock {
