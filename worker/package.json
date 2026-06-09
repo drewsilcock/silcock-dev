@@ -1,0 +1,18 @@
+{
+  "name": "silcock-dev-stats",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:init": "wrangler d1 execute silcock-dev-db --remote --file=./schema.sql",
+    "db:init:local": "wrangler d1 execute silcock-dev-db --local --file=./schema.sql",
+    "tail": "wrangler tail"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260608.1",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.98.0"
+  }
+}

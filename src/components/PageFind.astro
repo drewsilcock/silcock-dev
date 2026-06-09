@@ -2,15 +2,8 @@
 import Search from "astro-pagefind/components/Search";
 ---
 
-<div
-  transition:persist
-  id="backdrop"
-  class="bg-[rgba(0, 0, 0, 0.5] invisible fixed left-0 top-0 z-50 flex h-screen w-full justify-center p-6 backdrop-blur-xs"
->
-  <div
-    id="pagefind-container"
-    class="m-0 flex h-fit max-h-[80%] w-full max-w-screen-sm flex-col overflow-auto rounded-sm border border-black/15 bg-neutral-100 p-2 px-4 py-3 shadow-lg dark:border-white/20 dark:bg-neutral-900"
-  >
+<div transition:persist id="backdrop" class="pf-backdrop">
+  <div id="pagefind-container" class="pf-container">
     <Search
       id="search"
       className="pagefind-ui"
@@ -20,10 +13,8 @@ import Search from "astro-pagefind/components/Search";
         resetStyles: false,
       }}
     />
-    <div class="mr-2 pb-1 pt-4 text-right text-xs dark:prose-invert">
-      Press <span class="prose text-xs dark:prose-invert"
-        ><kbd class="">Esc</kbd></span
-      > or click anywhere to close
+    <div class="pf-hint">
+      Press <kbd>Esc</kbd> or click anywhere to close
     </div>
   </div>
 </div>
@@ -33,26 +24,20 @@ import Search from "astro-pagefind/components/Search";
   const backdrop = document.getElementById("backdrop");
 
   function openPagefind() {
-    const searchDiv = document.getElementById("search");
-    const search = searchDiv.querySelector("input");
-    setTimeout(() => {
-      search.focus();
-    }, 0);
-    backdrop?.classList.remove("invisible");
-    backdrop?.classList.add("visible");
+    const search = document.getElementById("search")?.querySelector("input");
+    backdrop?.classList.add("open");
+    setTimeout(() => search?.focus(), 0);
   }
 
   function closePagefind() {
-    const search = document.getElementById("search");
-    search.value = "";
-    backdrop?.classList.remove("visible");
-    backdrop?.classList.add("invisible");
+    const search = document.getElementById("search")?.querySelector("input");
+    if (search) {
+      search.value = "";
+    }
+    backdrop?.classList.remove("open");
   }
 
-  // open pagefind
-  magnifyingGlass?.addEventListener("click", () => {
-    openPagefind();
-  });
+  magnifyingGlass?.addEventListener("click", openPagefind);
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "/") {
@@ -61,12 +46,7 @@ import Search from "astro-pagefind/components/Search";
     } else if ((e.metaKey || e.ctrlKey) && e.key === "k") {
       e.preventDefault();
       openPagefind();
-    }
-  });
-
-  // close pagefind
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" || e.code === 27) {
+    } else if (e.key === "Escape") {
       closePagefind();
     }
   });
@@ -76,46 +56,79 @@ import Search from "astro-pagefind/components/Search";
       closePagefind();
     }
   });
-
-  // prevent form submission
-  const form = document.getElementById("form");
-  form?.addEventListener("submit", (event) => {
-    event.preventDefault();
-  });
 </script>
 
 <style is:global>
   :root {
     --pagefind-ui-scale: 0.75;
     --pagefind-ui-border-width: 1px;
-    --pagefind-ui-border-radius: 3px;
-    --pagefind-ui-font: "Geist", sans-serif;
-    --pagefind-ui-primary: #3d3d3d;
-    --pagefind-ui-text: #3d3d3d;
+    --pagefind-ui-border-radius: 8px;
+    --pagefind-ui-font: var(--sans);
+  }
+  html[data-theme="light"] {
+    --pagefind-ui-primary: #1c1a16;
+    --pagefind-ui-text: #2d2a24;
     --pagefind-ui-background: #ffffff;
-    --pagefind-ui-border: #d0d0d0;
-    --pagefind-ui-tag: #f5f5f5;
+    --pagefind-ui-border: rgba(20, 18, 12, 0.1);
+    --pagefind-ui-tag: rgba(20, 18, 12, 0.04);
+  }
+  html[data-theme="dark"] {
+    --pagefind-ui-primary: #ececee;
+    --pagefind-ui-text: #cfcfd4;
+    --pagefind-ui-background: #161619;
+    --pagefind-ui-border: rgba(255, 255, 255, 0.08);
+    --pagefind-ui-tag: rgba(255, 255, 255, 0.05);
   }
 
-  .dark {
-    --pagefind-ui-primary: #d4d4d4;
-    --pagefind-ui-text: #d4d4d4;
-    --pagefind-ui-background: #171717;
-    --pagefind-ui-border: #404040;
+  .pf-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 8vh 24px 24px;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+  .pf-backdrop.open {
+    display: flex;
+  }
+  .pf-container {
+    width: 100%;
+    max-width: 640px;
+    max-height: 80vh;
+    overflow: auto;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 18px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  }
+  .pf-hint {
+    margin-top: 10px;
+    text-align: right;
+    font-family: var(--mono);
+    font-size: calc(12px * var(--fsm));
+    color: var(--dim);
+  }
+  .pf-hint kbd {
+    font-family: var(--mono);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 1px 5px;
+    background: var(--chip-bg);
   }
 
   #search input {
     font-weight: normal;
   }
-
   #search p {
     font-weight: normal;
   }
-
   #search .pagefind-ui__result-title {
     font-weight: 600;
   }
-
   #search .pagefind-ui__message {
     padding: 0;
     padding-bottom: 0.75rem;

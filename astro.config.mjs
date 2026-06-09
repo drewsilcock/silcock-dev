@@ -1,6 +1,5 @@
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
-import tailwindcss from "@tailwindcss/vite";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import expressiveCode from "astro-expressive-code";
@@ -10,25 +9,29 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
 import remarkMath from "remark-math";
-import defaultTheme from "tailwindcss/defaultTheme";
-
-import icon from "astro-icon";
 
 // https://astro.build/config
 export default defineConfig({
   site: "https://drew.silcock.dev",
-  vite: {
-    plugins: [tailwindcss()],
-  },
   // The order of integrations is important here.
-  integrations: [sitemap(), pagefind(), expressiveCode({
-    plugins: [pluginLineNumbers(), pluginCollapsibleSections()],
-    styleOverrides: {
-      codeFontFamily: ['"Ubuntu Mono"', ...defaultTheme.fontFamily.mono].join(
-        ", ",
-      ),
-    },
-  }), mdx(), icon()],
+  integrations: [
+    sitemap(),
+    pagefind(),
+    expressiveCode({
+      themes: ["catppuccin-latte", "catppuccin-frappe"],
+      themeCssSelector: (theme) => `[data-theme="${theme.type}"]`,
+      useDarkModeMediaQuery: false,
+      plugins: [pluginLineNumbers(), pluginCollapsibleSections()],
+      styleOverrides: {
+        codeFontFamily:
+          '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+        borderRadius: "12px",
+        codePaddingInline: "20px",
+        codePaddingBlock: "18px",
+      },
+    }),
+    mdx(),
+  ],
   markdown: {
     remarkPlugins: [remarkMath],
     rehypePlugins: [

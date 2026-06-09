@@ -9,48 +9,83 @@ export interface Heading {
   depth: number;
   slug: string;
   text: string;
+  subheadings: Heading[];
 }
 
 function buildToc(headings: Heading[]) {
   const toc: Heading[] = [];
-  const parentHeadings = new Map();
+  const parentHeadings = new Map<number, Heading>();
   headings.forEach((h) => {
     const heading = { ...h, subheadings: [] };
     parentHeadings.set(heading.depth, heading);
     if (heading.depth === 2) {
       toc.push(heading);
     } else {
-      parentHeadings.get(heading.depth - 1).subheadings.push(heading);
+      parentHeadings.get(heading.depth - 1)?.subheadings.push(heading);
     }
   });
   return toc;
 }
 ---
 
-<details
-  open
-  class="animate rounded-lg border border-black/15 dark:border-white/20"
->
-  <summary>Table of Contents</summary>
-  <nav>
-    <ul class="table-of-contents-list py-3">
-      {toc.map((heading) => <TableOfContentsHeading heading={heading} />)}
-    </ul>
-  </nav>
+<details class="toc" open>
+  <summary><span class="caret">▶</span> Table of Contents</summary>
+  <ol>
+    {toc.map((heading) => <TableOfContentsHeading heading={heading} />)}
+  </ol>
 </details>
 
-<style>
-  @reference "../styles/global.css";
-
-  summary {
-    @apply cursor-pointer rounded-t-lg px-3 py-1.5 font-medium transition-colors;
+<style is:global>
+  .toc {
+    margin: 30px 0;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--card);
+    overflow: hidden;
+    box-shadow: var(--shadow);
   }
-
-  summary:hover {
-    @apply bg-black/5 dark:bg-white/5;
+  .toc > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 14px 18px;
+    font-size: calc(14px * var(--fsm));
+    font-weight: 600;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: var(--chip-bg);
   }
-
-  details[open] summary {
-    @apply bg-black/5 dark:bg-white/5;
+  .toc > summary::-webkit-details-marker {
+    display: none;
+  }
+  .toc > summary .caret {
+    transition: transform 0.2s;
+    color: var(--mut);
+    font-size: 11px;
+  }
+  .toc[open] > summary .caret {
+    transform: rotate(90deg);
+  }
+  .toc ol {
+    margin: 6px 0;
+    padding: 8px 18px 14px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .toc ol ol {
+    margin: 8px 0 0;
+    padding: 0 0 0 18px;
+  }
+  .toc li {
+    font-size: calc(14px * var(--fsm));
+  }
+  .toc a {
+    color: var(--mut);
+    text-decoration: none;
+  }
+  .toc a:hover {
+    color: var(--accent-text);
   }
 </style>

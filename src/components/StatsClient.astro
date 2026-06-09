@@ -1,0 +1,170 @@
+---
+// Hydrates live view/like counts from the stats Worker. Included once in the
+// layout; a no-op on pages without any stats markup.
+---
+
+<script>
+  const API = import.meta.env.PUBLIC_STATS_API || "/api";
+
+  // Below this many views, don't show a real number — "0 views" on a fresh post
+  // looks sad. Override via PUBLIC_MIN_VIEWS. Set PUBLIC_LOW_VIEWS_LABEL to show
+  // a message (e.g. "Not many views yet") instead of hiding the count entirely.
+  const MIN_VIEWS = Number(import.meta.env.PUBLIC_MIN_VIEWS ?? 30);
+  const LOW_VIEWS_LABEL = import.meta.env.PUBLIC_LOW_VIEWS_LABEL || "";
+
+  function fmt(n: number) {
+    return n >= 1000 ? `${(n / 1000).toFixed(n < 10000 ? 1 : 0)}k` : String(n);
+  }
+
+  async function getJSON(path: string) {
+    const res = await fetch(API + path);
+    if (!res.ok) throw new Error(String(res.status));
+    return res.json();
+  }
+
+  async function postJSON(path: string, body: unknown) {
+    const res = await fetch(API + path, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(String(res.status));
+    return res.json();
+  }
+
+  function reveal(el: Element) {
+    const wrap = el.closest<HTMLElement>(
+      "[data-views-wrap], [data-likes-wrap]",
+    );
+    if (wrap) wrap.hidden = false;
+  }
+
+  function setViews(el: HTMLElement, views: number) {
+    if (views >= MIN_VIEWS) {
+      el.textContent = `${fmt(views)} ${views === 1 ? "view" : "views"}`;
+      reveal(el);
+    } else if (LOW_VIEWS_LABEL) {
+      el.textContent = LOW_VIEWS_LABEL;
+      reveal(el);
+    }
+  }
+
+  function setLikes(el: HTMLElement, likes: number) {
+    if (likes > 0) {
+      el.textContent = `♥ ${fmt(likes)}`;
+      reveal(el);
+    }
+  }
+
+  async function hydrateDetail(root: HTMLElement) {
+    const slug = root.dataset.slug;
+    if (!slug) return;
+
+    // Skip automated browsers (Puppeteer/Playwright/Selenium etc.); the Worker
+    // also filters bots by User-Agent.
+    if (!navigator.webdriver) {
+      try {
+        const key = `ddb-viewed:${slug}`;
+        if (!sessionStorage.getItem(key)) {
+          sessionStorage.setItem(key, "1");
+          postJSON("/view", { slug }).catch(() => {});
+        }
+      } catch {
+        /* sessionStorage unavailable — skip the guard */
+      }
+    }
+
+    let stats: { views: number; likes: number; liked: boolean };
+    try {
+      stats = await getJSON(`/stats?slug=${encodeURIComponent(slug)}`);
+    } catch {
+      return;
+    }
+
+    for (const el of document.querySelectorAll<HTMLElement>(
+      "[data-post-views]",
+    )) {
+      setViews(el, stats.views);
+    }
+
+    const btn = root.querySelector<HTMLButtonElement>("[data-post-like]");
+    const count = root.querySelector<HTMLElement>("[data-post-likes]");
+    if (!btn || !count) return;
+
+    let liked = Boolean(stats.liked);
+    const paint = () => {
+      count.textContent = fmt(stats.likes);
+      btn.setAttribute("aria-pressed", String(liked));
+      btn.classList.toggle("liked", liked);
+    };
+    paint();
+    btn.hidden = false;
+    btn.disabled = false;
+
+    if (!btn.dataset.bound) {
+      btn.dataset.bound = "1";
+      btn.addEventListener("click", async () => {
+        if (btn.disabled) return;
+        btn.disabled = true;
+        try {
+          const res = await postJSON("/like", { slug });
+          stats.likes = res.likes;
+          liked = res.liked;
+          paint();
+        } catch {
+          /* leave state as-is on failure */
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    }
+  }
+
+  async function hydrateLists() {
+    const viewEls = [
+      ...document.querySelectorAll<HTMLElement>("[data-post-views][data-slug]"),
+    ];
+    const likeEls = [
+      ...document.querySelectorAll<HTMLElement>("[data-post-likes][data-slug]"),
+    ];
+    if (viewEls.length === 0 && likeEls.length === 0) return;
+
+    const slugs = [
+      ...new Set(
+        [...viewEls, ...likeEls]
+          .map((el) => el.dataset.slug)
+          .filter((s): s is string => Boolean(s)),
+      ),
+    ];
+
+    let map: Record<string, { views: number; likes: number }>;
+    try {
+      map = await getJSON(
+        `/stats?slugs=${slugs.map((s) => encodeURIComponent(s)).join(",")}`,
+      );
+    } catch {
+      return;
+    }
+
+    for (const el of viewEls) {
+      const entry = el.dataset.slug ? map[el.dataset.slug] : undefined;
+      if (entry) setViews(el, entry.views);
+    }
+    for (const el of likeEls) {
+      const entry = el.dataset.slug ? map[el.dataset.slug] : undefined;
+      if (entry) setLikes(el, entry.likes);
+    }
+  }
+
+  function run() {
+    const detail = document.querySelector<HTMLElement>("[data-post-stats]");
+    if (detail) {
+      hydrateDetail(detail);
+    } else {
+      hydrateLists();
+    }
+  }
+
+  document.addEventListener("astro:page-load", run);
+  run();
+</script>

@@ -1,0 +1,29 @@
+---
+import type { CollectionEntry } from "astro:content";
+import FormattedDate from "@components/FormattedDate.astro";
+import MetaStats from "@components/MetaStats.astro";
+import { readingTime } from "@lib/utils";
+
+type Props = { entry: CollectionEntry<"blog"> };
+
+const { entry } = Astro.props;
+const tags = entry.data.tags ?? [];
+---
+
+<a class="card" href={`/blog/${entry.slug}`}>
+  <div class="body">
+    <h3 class="card-title">{entry.data.title}</h3>
+    <p class="card-sub">{entry.data.description}</p>
+    <div class="card-foot">
+      <span class="tags">
+        {tags.map((tag) => <span class="tag">#{tag}</span>)}
+      </span>
+      <span class="spacer"></span>
+      <span class="meta-bit"><FormattedDate date={entry.data.date} /></span>
+      <span class="meta-sep">·</span>
+      <span class="meta-bit">{readingTime(entry.body)}</span>
+      <MetaStats slug={`blog/${entry.slug}`} />
+    </div>
+  </div>
+  <span class="chev">›</span>
+</a>

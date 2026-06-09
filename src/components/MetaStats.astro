@@ -1,0 +1,17 @@
+---
+// Live view + like counts for a card/meta line. Both units are hidden until
+// StatsClient fills them (and stay hidden when below the configured threshold),
+// so nothing renders if the API is unavailable.
+type Props = { slug: string };
+
+const { slug } = Astro.props;
+---
+
+<span class="meta-stat" data-views-wrap hidden>
+  <span class="meta-sep">·</span>
+  <span class="meta-bit" data-post-views data-slug={slug}></span>
+</span>
+<span class="meta-stat" data-likes-wrap hidden>
+  <span class="meta-sep">·</span>
+  <span class="meta-bit" data-post-likes data-slug={slug}></span>
+</span>

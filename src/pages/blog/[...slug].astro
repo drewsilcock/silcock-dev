@@ -1,7 +1,6 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
-import Container from "@components/Container.astro";
 import FormattedDate from "@components/FormattedDate.astro";
 import {
   readingTime,
@@ -9,13 +8,11 @@ import {
   shouldListPage,
   iconForSocial,
 } from "@lib/utils";
-import BackToPrevious from "@components/BackToPrevious.astro";
 import PostNavigation from "@components/PostNavigation.astro";
 import TableOfContents from "@components/TableOfContents.astro";
-import Link from "@components/Link.astro";
 import Giscus from "@components/Giscus.astro";
-import FontSizeSelector from "@components/FontSizeSelector.astro";
 import Aside from "@components/Aside.astro";
+import PostStats from "@components/PostStats.astro";
 
 export async function getStaticPaths() {
   // Draft posts are excluded, but archived posts are included - they're just not
@@ -57,7 +54,7 @@ const socials = post.data.socials ?? [];
 <Layout
   title={post.data.title}
   description={post.data.description}
-  route={`${post.collection}/${post.id}`}
+  route={`${post.collection}/${post.slug}`}
   article={{
     title: post.data.title,
     publishedDate: post.data.date,
@@ -65,80 +62,65 @@ const socials = post.data.socials ?? [];
     tags: post.data.tags,
   }}
 >
-  <Container>
-    <div class="animate flex justify-between">
-      <BackToPrevious href="/blog">Back to blog</BackToPrevious>
-      <FontSizeSelector />
-    </div>
-    <div class="my-10 space-y-1">
-      <div class="animate flex items-center gap-1.5">
-        <div class="font-base text-sm">
-          <FormattedDate date={post.data.date} />
-        </div>
-        &bull;
-        <div class="font-base text-sm">
-          {readingTime(post.body)}
-        </div>
+  <a class="backlink" href="/blog">‹ Back to blog</a>
+
+  <article>
+    <div class="article-head">
+      <div class="article-meta">
+        <span><FormattedDate date={post.data.date} /></span>
+        <span class="sep">·</span>
+        <span>{readingTime(post.body)}</span>
+        <span class="meta-stat" data-views-wrap hidden>
+          <span class="sep">·</span>
+          <span data-post-views></span>
+        </span>
       </div>
-
-      <h1 class="animate text-3xl font-semibold text-black dark:text-white">
-        {post.data.title}
-      </h1>
-
-      {
-        post.data.description && (
-          <div class="mt-4 text-gray-600 dark:text-gray-300">
-            {post.data.description}
-          </div>
-        )
-      }
-
-      <nav class="animate flex gap-2 font-semibold">
-        {
-          tags.map((tag) => (
-            <Link
-              href={`/blog/tags/${tag}`}
-              className="text-gray-500 dark:text-gray-400"
-            >
-              #{tag}
-            </Link>
-          ))
-        }
-
+      <h1>{post.data.title}</h1>
+      <div class="article-tags">
+        {tags.map((tag) => <a href={`/blog/tags/${tag}`}>#{tag}</a>)}
         {
           socials.length > 0 && (
             <>
-              {tags.length > 0 && <span>&bull;</span>}
-              Discuss on
+              {tags.length > 0 && (
+                <span class="repo" style="color:var(--dim)">
+                  ·
+                </span>
+              )}
+              <span class="repo">Discuss on</span>
               {socials.toSorted().map((social) => (
-                <Link
+                <a
+                  class="repo discuss-link"
                   href={social}
-                  className="fill-black/75 dark:fill-white/75 hover:fill-black hover:dark:fill-white w-[1em]"
-                  external
-                  hideExternalIcon
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="Discuss"
                 >
-                  <span
-                    class="[&>svg]:inline [&>svg]:align-baseline"
-                    set:html={iconForSocial(social)}
-                  />
-                </Link>
+                  <span set:html={iconForSocial(social)} />
+                </a>
               ))}
             </>
           )
         }
-      </nav>
+      </div>
     </div>
 
     {headings.length > 0 && <TableOfContents headings={headings} />}
 
-    <article class="animate">
+    <div class="article">
       <Content components={{ Aside }} />
-      <div class="mt-24">
-        <PostNavigation prevPost={prevPost} nextPost={nextPost} />
+    </div>
+
+    <div class="article-foot">
+      <div class="article-tags">
+        {tags.map((tag) => <a href={`/blog/tags/${tag}`}>#{tag}</a>)}
       </div>
-      <div class="mt-24">
-        <Giscus />
-      </div>
-    </article>
-  </Container>
+      <PostStats slug={`blog/${post.slug}`} />
+      <PostNavigation prevPost={prevPost} nextPost={nextPost} />
+    </div>
+
+    <section class="comments">
+      <h3>Comments</h3>
+      <Giscus />
+    </section>
+  </article>
 </Layout>

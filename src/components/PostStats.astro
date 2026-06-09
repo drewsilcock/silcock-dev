@@ -1,0 +1,73 @@
+---
+type Props = { slug: string };
+
+const { slug } = Astro.props;
+---
+
+<div class="post-stats" data-post-stats data-slug={slug}>
+  <button
+    class="like-btn"
+    data-post-like
+    type="button"
+    aria-pressed="false"
+    aria-label="Like this"
+    disabled
+    hidden
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M12 20.3 4.6 13a4.6 4.6 0 0 1 0-6.5 4.6 4.6 0 0 1 6.5 0l.9.9.9-.9a4.6 4.6 0 0 1 6.5 0 4.6 4.6 0 0 1 0 6.5L12 20.3Z"
+      ></path>
+    </svg>
+    <span data-post-likes>0</span>
+  </button>
+</div>
+
+<style is:global>
+  .post-stats {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 28px;
+  }
+  .like-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: calc(13px * var(--fsm));
+    color: var(--mut);
+    background: var(--chip-bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition:
+      border-color 0.15s,
+      color 0.15s,
+      background 0.15s;
+  }
+  .like-btn:hover {
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+  .like-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+  }
+  .like-btn.liked {
+    color: var(--accent-text);
+    border-color: var(--accent);
+  }
+  .like-btn.liked svg {
+    fill: var(--accent);
+    stroke: var(--accent);
+  }
+  .like-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+</style>

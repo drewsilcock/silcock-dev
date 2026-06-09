@@ -1,131 +1,410 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import Container from "@components/Container.astro";
-import { SITE, HOME } from "@consts";
-import { shouldListPage } from "@lib/utils";
-import ArrowCard from "@components/ArrowCard.astro";
-import Link from "@components/Link.astro";
-import Socials from "@components/Socials.astro";
+import FormattedDate from "@components/FormattedDate.astro";
+import MetaStats from "@components/MetaStats.astro";
+import { HOME, SITE } from "@consts";
+import { shouldListPage, readingTime } from "@lib/utils";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 
-const blog = (await getCollection("blog"))
+const allPosts = (await getCollection("blog"))
   .filter(shouldListPage)
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-const projects: CollectionEntry<"projects">[] = (
+const totalPosts = allPosts.length;
+const posts = allPosts.slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
+
+const allProjects: CollectionEntry<"projects">[] = (
   await getCollection("projects")
 )
   .filter(shouldListPage)
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const projects = allProjects.slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
+
+// Topics: the most recently used tags across blog posts and projects, newest
+// first. Each links to that tag's page in the collection it last appeared in.
+const NUM_TOPICS = 8;
+const recentlyTagged = [...allPosts, ...allProjects].sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const seenTags = new Set<string>();
+const topics: { tag: string; href: string }[] = [];
+for (const entry of recentlyTagged) {
+  for (const tag of entry.data.tags ?? []) {
+    if (seenTags.has(tag)) {
+      continue;
+    }
+    seenTags.add(tag);
+    topics.push({ tag, href: `/${entry.collection}/tags/${tag}` });
+  }
+}
+const recentTopics = topics.slice(0, NUM_TOPICS);
 ---
 
 <Layout title={HOME.TITLE} description={HOME.DESCRIPTION} route="index">
-  <Container>
-    <h1 class="animate font-semibold text-black dark:text-white">
-      👋🏻 Welcome to drew's dev blog
+  <section class="hero">
+    <span class="hi">👋 Hey, I'm Drew</span>
+    <h1>
+      I like computers (most of the time) and write long-form deep dives about
+      them (sometimes)
     </h1>
-    <div class="space-y-16">
-      <section>
-        <article class="space-y-4">
-          <span class="animate">
-            <p>
-              Hi, I'm Drew! I'm a software engineer living in Liverpool in the
-              UK 🇬🇧
-            </p>
-            <p>I like talking and writing about technical things.</p>
-          </span>
-          <span class="animate">
-            <p>
-              Here's some things I like to write about:
-
-              <ul class="columns-2">
-                <li>🐭 Go</li>
-                <li>🦀 Rust</li>
-                <li>
-                  <img
-                    src="/images/svelte-logo.svg"
-                    alt="Svelte Logo"
-                    width="18"
-                    class="inline"
-                  /> Svelte
-                </li>
-                <li>
-                  <img
-                    src="/images/ts-logo.svg"
-                    alt="TypeScript Logo"
-                    width="18"
-                    class="inline"
-                  /> TypeScript
-                </li>
-                <li>🐍 Python</li>
-                <li>💬 Programming languages</li>
-                <li>🙌 Best practices</li>
-                <li>🚀 Continuous integration & deployment</li>
-                <li>🎮 Game development</li>
-                <li>⋯ Lots of other things!</li>
-              </ul>
-            </p>
-            <p>
-              If you like reading about any of these things, <Link href="/blog"
-                >check out some of my posts</Link
-              >.
-            </p>
-
-            <p>
-              You can also <Link href="/rss.xml">subscribe to my RSS feed</Link>
-              or <Link href="/about">read more about me</Link>.
-            </p>
-          </span>
-        </article>
-      </section>
-
-      <section class="animate space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-y-2">
-          <h2 class="font-semibold text-black dark:text-white">Latest posts</h2>
-          <Link href="/blog"> See all posts </Link>
-        </div>
-        <ul class="not-prose flex flex-col gap-4">
-          {
-            blog.map((post) => (
-              <li>
-                <ArrowCard entry={post} />
-              </li>
-            ))
-          }
-        </ul>
-      </section>
-
-      <section class="animate space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-y-2">
-          <h2 class="font-semibold text-black dark:text-white">
-            Recent projects
-          </h2>
-          <Link href="/projects"> See all projects </Link>
-        </div>
-        <ul class="not-prose flex flex-col gap-4">
-          {
-            projects.map((project) => (
-              <li>
-                <ArrowCard entry={project} />
-              </li>
-            ))
-          }
-        </ul>
-      </section>
-
-      <section class="animate space-y-4">
-        <h2 class="font-semibold text-black dark:text-white">Say hi 😎</h2>
-        <article>
-          <p>
-            If you want to get in touch with me about something or just to say
-            hi, reach out on social media or send me an email.
-          </p>
-        </article>
-        <Socials />
-      </section>
+    <p class="lede">
+      I'm a software engineer living in Portishead, UK. I like writing things
+      about software and computers. You might find them interesting.
+    </p>
+    <p class="lede">
+      During the day, I work as a Senior Research Software Engineer at STFC
+      Hartree Centre, where I put research into practice.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="/blog">Read the latest →</a>
+      <a class="btn btn-ghost" href="/rss.xml">Subscribe via RSS</a>
     </div>
-  </Container>
+    <div class="topics">
+      {
+        recentTopics.map((topic) => (
+          <a class="topic" href={topic.href}>
+            #{topic.tag}
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <div class="sec-head">
+    <h2>Latest posts</h2>
+    <span class="spacer"></span>
+    <a href="/blog">See all {totalPosts} →</a>
+  </div>
+  <section class="posts">
+    {
+      posts.map((post, i) => (
+        <a class="post" href={`/blog/${post.slug}`}>
+          <div class="post-top">
+            <span class="post-num">{String(i + 1).padStart(2, "0")}</span>
+            <h3 class="post-title">{post.data.title}</h3>
+            <span class="post-arrow">→</span>
+          </div>
+          <p class="post-sub">{post.data.description}</p>
+          <div class="post-meta">
+            <span class="tags">
+              {(post.data.tags ?? []).map((tag) => (
+                <span class="tag">#{tag}</span>
+              ))}
+            </span>
+            <span class="spacer" />
+            <span class="meta-bit">
+              <FormattedDate date={post.data.date} />
+            </span>
+            <span class="meta-sep">·</span>
+            <span class="meta-bit">{readingTime(post.body)}</span>
+            <MetaStats slug={`blog/${post.slug}`} />
+          </div>
+        </a>
+      ))
+    }
+  </section>
+
+  <div class="sec-head">
+    <h2>Recent projects</h2>
+    <span class="spacer"></span>
+    <a href="/projects">See all →</a>
+  </div>
+  <section class="proj-grid">
+    {
+      projects.map((project) => (
+        <a class="proj" href={`/projects/${project.slug}`}>
+          <div class="proj-top">
+            <span class="proj-dot" />
+            <h4 class="proj-name">{project.data.title}</h4>
+          </div>
+          <p class="proj-sub">{project.data.description}</p>
+          <div class="tags">
+            {(project.data.tags ?? []).map((tag) => (
+              <span class="tag">#{tag}</span>
+            ))}
+          </div>
+          <div class="proj-meta">
+            <span class="meta-bit">
+              <FormattedDate date={project.data.date} />
+            </span>
+            <MetaStats slug={`projects/${project.slug}`} />
+          </div>
+        </a>
+      ))
+    }
+  </section>
+
+  <div class="contact">
+    <div>
+      <h3>Say hi 😎</h3>
+      <p>Got a question or just want to chat? My inbox is open.</p>
+    </div>
+    <span class="spacer"></span>
+    <a class="email" href={SITE.EMAIL} aria-label="Email Drew">
+      <span class="email email-text">{SITE.EMAIL}</span>
+    </a>
+  </div>
 </Layout>
+
+<style is:global>
+  /* ============ HERO ============ */
+  .hero {
+    padding-top: 64px;
+  }
+  .hero .hi {
+    font-family: var(--mono);
+    font-size: calc(24px * var(--fsm));
+    color: var(--accent-text);
+  }
+  .hero h1 {
+    margin: 14px 0 18px;
+    font-size: calc(38px * var(--fsm));
+    line-height: 1.14;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    max-width: 640px;
+    text-wrap: balance;
+  }
+  .hero p.lede {
+    margin: 0 0 26px;
+    font-size: calc(16.5px * var(--fsm));
+    line-height: 1.6;
+    color: var(--mut);
+    max-width: 600px;
+    text-wrap: pretty;
+  }
+  .cta-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+  }
+  .topics {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-bottom: 56px;
+    border-bottom: 1px solid var(--line);
+  }
+  .topic {
+    font-family: var(--mono);
+    font-size: calc(12px * var(--fsm));
+    color: var(--mut);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 5px 12px;
+    text-decoration: none;
+    transition:
+      border-color 0.15s,
+      color 0.15s;
+  }
+  .topic:hover {
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+
+  /* ============ POST LIST (combined container) ============ */
+  .posts {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .post {
+    display: block;
+    text-decoration: none;
+    padding: 20px 22px;
+    border-bottom: 1px solid var(--line);
+    transition: background 0.15s;
+    position: relative;
+  }
+  .post:last-child {
+    border-bottom: 0;
+  }
+  .post:hover {
+    background: var(--card-hover);
+  }
+  .post-top {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 7px;
+  }
+  .post-num {
+    font-family: var(--mono);
+    font-size: calc(12px * var(--fsm));
+    color: var(--dim);
+    width: 24px;
+    flex: none;
+  }
+  .post-title {
+    margin: 0;
+    font-size: calc(18px * var(--fsm));
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    flex: 1;
+    line-height: 1.3;
+  }
+  .post-arrow {
+    color: var(--accent-text);
+    font-size: calc(16px * var(--fsm));
+    opacity: 0.7;
+    transition:
+      transform 0.15s,
+      opacity 0.15s;
+  }
+  .post:hover .post-arrow {
+    transform: translateX(3px);
+    opacity: 1;
+  }
+  .post-sub {
+    margin: 0 0 11px 36px;
+    font-size: calc(14.5px * var(--fsm));
+    line-height: 1.55;
+    color: var(--mut);
+    max-width: 560px;
+    text-wrap: pretty;
+  }
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: 36px;
+    flex-wrap: wrap;
+  }
+  .post-meta .spacer {
+    flex: 1;
+  }
+
+  /* ============ PROJECTS GRID ============ */
+  .proj-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+  }
+  .proj {
+    display: block;
+    text-decoration: none;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: var(--shadow);
+    transition:
+      border-color 0.15s,
+      background 0.15s;
+  }
+  .proj:hover {
+    border-color: var(--accent);
+    background: var(--card-hover);
+  }
+  .proj-top {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 8px;
+  }
+  .proj-name {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: calc(15px * var(--fsm));
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .proj-top .spacer {
+    flex: 1;
+  }
+  .proj-stars {
+    font-family: var(--mono);
+    font-size: calc(12px * var(--fsm));
+    color: var(--dim);
+  }
+  .proj-sub {
+    margin: 0 0 14px;
+    font-size: calc(13.5px * var(--fsm));
+    line-height: 1.5;
+    color: var(--mut);
+  }
+  .proj-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+
+  /* ============ CONTACT ============ */
+  .contact {
+    margin: 56px 0;
+    padding: 32px 0;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .contact h3 {
+    margin: 0 0 6px;
+    font-size: calc(19px * var(--fsm));
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .contact p {
+    margin: 0;
+    font-size: calc(14.5px * var(--fsm));
+    color: var(--mut);
+  }
+  .contact .spacer {
+    flex: 1;
+  }
+  .contact a.email {
+    font-family: var(--mono);
+    font-size: calc(13.5px * var(--fsm));
+    color: var(--accent-text);
+    text-decoration: none;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 16px;
+    transition: border-color 0.15s;
+  }
+  .contact a.email:hover {
+    border-color: var(--accent);
+  }
+
+  @media (max-width: 720px) {
+    .hero {
+      padding-top: 40px;
+    }
+    .hero h1 {
+      font-size: calc(30px * var(--fsm));
+    }
+    .proj-grid {
+      grid-template-columns: 1fr;
+    }
+    .contact {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+  }
+  @media (max-width: 420px) {
+    .post-sub,
+    .post-meta {
+      margin-left: 0;
+    }
+    .post-top {
+      gap: 9px;
+    }
+    .post-meta .spacer {
+      display: none;
+    }
+    .post-meta {
+      gap: 8px 12px;
+    }
+  }
+</style>

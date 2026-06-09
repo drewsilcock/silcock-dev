@@ -2,8 +2,13 @@
 import "../styles/global.css";
 import { ClientRouter } from "astro:transitions";
 
-import "@fontsource/geist-sans";
-import "@fontsource/geist-mono";
+import "@fontsource/hanken-grotesk/400.css";
+import "@fontsource/hanken-grotesk/500.css";
+import "@fontsource/hanken-grotesk/600.css";
+import "@fontsource/hanken-grotesk/700.css";
+import "@fontsource/jetbrains-mono/400.css";
+import "@fontsource/jetbrains-mono/500.css";
+import "@fontsource/jetbrains-mono/600.css";
 
 import { Schema } from "astro-seo-schema";
 import type { BlogPosting, Person, WebSite, WithContext } from "schema-dts";
@@ -75,9 +80,16 @@ const articleSchema: WithContext<BlogPosting> | undefined = article && {
 
 <link
   rel="icon"
-  sizes="any"
-  href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨🏻‍💻</text></svg>"
+  href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='1.4' y='1.4' width='29.2' height='29.2' rx='8' fill='none' stroke='%23F5A623' stroke-width='2.2'/%3E%3Cg fill='none' stroke='%23F5A623' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 11l4 5-4 5'/%3E%3C/g%3E%3Crect x='17.5' y='19.4' width='7.5' height='2.6' rx='1.3' fill='%23F5A623'/%3E%3C/svg%3E"
 />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#F5A623" />
+<link rel="manifest" href="/site.webmanifest" />
+<meta name="theme-color" content="#0D0D0F" />
+<meta name="msapplication-config" content="/browserconfig.xml" />
 
 <link
   rel="sitemap"
@@ -97,7 +109,19 @@ const articleSchema: WithContext<BlogPosting> | undefined = article && {
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:site_name" content={SITE.TITLE} />
-{absoluteImageUrl && <meta property="og:image" content={absoluteImageUrl} />}
+
+{
+  absoluteImageUrl && (
+    <>
+      <meta property="og:image" content={absoluteImageUrl} />
+      <meta property="og:image:type" content="image/png" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content={title} />
+    </>
+  )
+}
+
 {
   article && (
     <>
@@ -124,7 +148,14 @@ const articleSchema: WithContext<BlogPosting> | undefined = article && {
 <meta name="twitter:url" content={canonicalURL} />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
-{absoluteImageUrl && <meta name="twitter:image" content={absoluteImageUrl} />}
+{
+  absoluteImageUrl && (
+    <>
+      <meta name="twitter:image" content={absoluteImageUrl} />
+      <meta name="twitter:image:alt" content={title} />
+    </>
+  )
+}
 
 <!-- JSON-LD structured data -->
 <Schema item={websiteSchema} />
@@ -144,97 +175,209 @@ const articleSchema: WithContext<BlogPosting> | undefined = article && {
   crossorigin="anonymous"
 />
 
-<link rel="style" href="https://www.nerdfonts.com/assets/css/webfont.css" />
-
 <ClientRouter />
 
 <script is:inline>
-  function init() {
-    preloadTheme();
-    preloadFontSize();
-    animate();
-    updateThemeButtons();
-    setGiscusTheme();
-    decodeEmails();
+  const BRAND_MARK = `<svg width="28" height="28" viewBox="0 0 32 32"><rect x="1.4" y="1.4" width="29.2" height="29.2" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.2"/><g fill="none" stroke="var(--accent-text)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 11l4 5-4 5"/></g><rect x="17.5" y="19.4" width="7.5" height="2.6" rx="1.3" fill="var(--accent-text)"/></svg>`;
 
-    const backToTop = document.getElementById("back-to-top");
-    backToTop?.addEventListener("click", (event) => scrollToTop(event));
+  const SUN = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg>`;
+  const MOON = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 14.5A8 8 0 0 1 9.5 4 7 7 0 1 0 20 14.5z"/></svg>`;
+  const MONITOR = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`;
 
-    const backToPrev = document.getElementById("back-to-prev");
-    backToPrev?.addEventListener("click", () => window.history.back());
+  const THEMES = ["system", "light", "dark"];
 
-    const lightThemeButton = document.getElementById("light-theme-button");
-    lightThemeButton?.addEventListener("click", () => {
-      localStorage.setItem("theme", "light");
-      toggleTheme(false);
-      updateThemeButtons();
-    });
+  let scrollBound = false;
 
-    const darkThemeButton = document.getElementById("dark-theme-button");
-    darkThemeButton?.addEventListener("click", () => {
-      localStorage.setItem("theme", "dark");
-      toggleTheme(true);
-      updateThemeButtons();
-    });
+  function systemDark() {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
 
-    const systemThemeButton = document.getElementById("system-theme-button");
-    systemThemeButton?.addEventListener("click", () => {
-      localStorage.setItem("theme", "system");
-      toggleTheme(window.matchMedia("(prefers-color-scheme: dark)").matches);
-      updateThemeButtons();
-    });
+  function resolveTheme(choice) {
+    if (choice === "light" || choice === "dark") {
+      return choice;
+    }
+    return systemDark() ? "dark" : "light";
+  }
 
-    window
-      .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", (event) => {
-        if (localStorage.getItem("theme") === "system") {
-          toggleTheme(event.matches);
-        }
-      });
+  function updateThemeToggleIcon(choice) {
+    const btn = document.getElementById("themeToggle");
+    if (!btn) {
+      return;
+    }
+    btn.innerHTML =
+      choice === "light" ? SUN : choice === "dark" ? MOON : MONITOR;
+    btn.title = `Theme: ${choice} (click to change)`;
+  }
 
-    const fontSelectorButtons = document.getElementsByClassName(
-      "font-selector-button",
+  function applyTheme(choice) {
+    const css = document.createElement("style");
+    css.appendChild(
+      document.createTextNode(
+        `* {
+           -webkit-transition: none !important;
+           transition: none !important;
+        }`,
+      ),
     );
-    for (const el of fontSelectorButtons) {
-      el.addEventListener("click", () => {
-        const size = el.dataset.fontSize;
-        updateFontSize(size);
+    document.head.appendChild(css);
+
+    const resolved = resolveTheme(choice);
+    document.documentElement.setAttribute("data-theme", resolved);
+    document.documentElement.style.colorScheme = resolved;
+
+    window.getComputedStyle(css).opacity;
+    document.head.removeChild(css);
+
+    updateThemeToggleIcon(choice);
+    setGiscusTheme();
+  }
+
+  function preloadTheme() {
+    const legacy = localStorage.getItem("theme");
+    let choice = localStorage.getItem("ddb-theme");
+    if (!choice) {
+      choice = THEMES.includes(legacy) ? legacy : "system";
+    }
+    localStorage.setItem("ddb-theme", choice);
+    applyTheme(choice);
+  }
+
+  function bindThemeToggle() {
+    const btn = document.getElementById("themeToggle");
+    if (!btn || btn.dataset.bound) {
+      return;
+    }
+    btn.dataset.bound = "1";
+    btn.addEventListener("click", () => {
+      const current = localStorage.getItem("ddb-theme") || "system";
+      const next = THEMES[(THEMES.indexOf(current) + 1) % THEMES.length];
+      localStorage.setItem("ddb-theme", next);
+      applyTheme(next);
+    });
+  }
+
+  function applyFontSize(size) {
+    document.documentElement.setAttribute("data-fs", size);
+    for (const btn of document.querySelectorAll(".ctl-btn[data-fs]")) {
+      btn.classList.toggle("on", btn.dataset.fs === size);
+    }
+    localStorage.setItem("ddb-fs", size);
+  }
+
+  function preloadFontSize() {
+    const legacyMap = { small: "s", medium: "m", large: "l" };
+    const legacy = localStorage.getItem("fontSize");
+    const size =
+      (legacy && legacyMap[legacy]) || localStorage.getItem("ddb-fs") || "m";
+    applyFontSize(size);
+  }
+
+  function bindFontSize() {
+    for (const btn of document.querySelectorAll(".ctl-btn[data-fs]")) {
+      if (btn.dataset.bound) {
+        continue;
+      }
+      btn.dataset.bound = "1";
+      btn.addEventListener("click", () => applyFontSize(btn.dataset.fs));
+    }
+  }
+
+  function injectBrand() {
+    for (const el of document.querySelectorAll("#brandMark, .brand .mark")) {
+      if (el.dataset.brandInjected) {
+        continue;
+      }
+      el.dataset.brandInjected = "1";
+      el.innerHTML = BRAND_MARK;
+    }
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    for (const brand of document.querySelectorAll(".brand")) {
+      if (brand.dataset.twBound) {
+        continue;
+      }
+      brand.dataset.twBound = "1";
+      const word = brand.querySelector(".word");
+      if (!word) {
+        continue;
+      }
+      // Capture the wordmark once, before any animation rewrites the DOM.
+      // textContent includes the markup's newline/indent whitespace, so trim
+      // it; the ".dev" TLD is the tail and the rest is the plain prefix.
+      const tld = (word.querySelector(".tld")?.textContent || "").trim();
+      const fullText = word.textContent.trim();
+      const plain = fullText.slice(0, fullText.length - tld.length);
+      const total = fullText.length;
+      let busy = false;
+      brand.addEventListener("mouseenter", () => {
+        if (busy || reduceMotion) {
+          return;
+        }
+        busy = true;
+        // Reserve the wordmark's width so the brand link stays fully
+        // clickable even while the text is "deleted" mid-animation.
+        word.style.display = "inline-block";
+        word.style.minWidth = word.offsetWidth + "px";
+        let i = 0;
+        (function step() {
+          // Rebuild progressively so the ".dev" TLD keeps its accent colour
+          // as it's typed, instead of only after the animation finishes.
+          const plainShown = plain.slice(0, Math.min(i, plain.length));
+          const tldShown =
+            i > plain.length ? tld.slice(0, i - plain.length) : "";
+          word.innerHTML =
+            plainShown +
+            (tldShown ? `<span class="tld">${tldShown}</span>` : "") +
+            `<span class="caret"></span>`;
+          if (i < total) {
+            i++;
+            setTimeout(step, 26);
+          } else {
+            word.style.minWidth = "";
+            word.style.display = "";
+            busy = false;
+          }
+        })();
       });
     }
   }
 
-  function removeActiveButtonTheme(button) {
-    button?.classList.remove("bg-black/5");
-    button?.classList.remove("dark:bg-white/5");
-  }
+  function setupBackToTop() {
+    let btt = document.querySelector(".back-to-top");
+    if (!btt) {
+      btt = document.createElement("button");
+      btt.className = "back-to-top";
+      btt.setAttribute("aria-label", "Back to top");
+      btt.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V6M6 11l6-5 6 5"/></svg> Back to top`;
+      btt.addEventListener("click", () =>
+        window.scrollTo({ top: 0, behavior: "smooth" }),
+      );
+      document.body.appendChild(btt);
+    }
 
-  function addActiveButtonTheme(button) {
-    button?.classList.add("bg-black/5");
-    button?.classList.add("dark:bg-white/5");
-  }
-
-  function updateThemeButtons() {
-    const theme = localStorage.getItem("theme");
-    const lightThemeButton = document.getElementById("light-theme-button");
-    const darkThemeButton = document.getElementById("dark-theme-button");
-    const systemThemeButton = document.getElementById("system-theme-button");
-
-    removeActiveButtonTheme(lightThemeButton);
-    removeActiveButtonTheme(darkThemeButton);
-    removeActiveButtonTheme(systemThemeButton);
-
-    if (theme === "light") {
-      addActiveButtonTheme(lightThemeButton);
-    } else if (theme === "dark") {
-      addActiveButtonTheme(darkThemeButton);
-    } else {
-      addActiveButtonTheme(systemThemeButton);
+    if (!scrollBound) {
+      scrollBound = true;
+      let ticking = false;
+      window.addEventListener("scroll", () => {
+        if (ticking) {
+          return;
+        }
+        ticking = true;
+        requestAnimationFrame(() => {
+          document
+            .querySelector(".back-to-top")
+            ?.classList.toggle("show", window.scrollY > 600);
+          ticking = false;
+        });
+      });
     }
   }
 
   function animate() {
     const animateElements = document.querySelectorAll(".animate");
-
     animateElements.forEach((element, index) => {
       setTimeout(() => {
         element.classList.add("show");
@@ -242,193 +385,105 @@ const articleSchema: WithContext<BlogPosting> | undefined = article && {
     });
   }
 
-  function scrollToTop(event) {
-    event.preventDefault();
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  }
-
-  function toggleTheme(dark) {
-    const css = document.createElement("style");
-
-    css.appendChild(
-      document.createTextNode(
-        `* {
-             -webkit-transition: none !important;
-             -moz-transition: none !important;
-             -o-transition: none !important;
-             -ms-transition: none !important;
-             transition: none !important;
-          }
-        `,
-      ),
-    );
-
-    document.head.appendChild(css);
-
-    if (dark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-
-    window.getComputedStyle(css).opacity;
-    document.head.removeChild(css);
-
-    setGiscusTheme();
-  }
-
-  function preloadTheme() {
-    const userTheme = localStorage.getItem("theme");
-
-    if (userTheme === "light" || userTheme === "dark") {
-      toggleTheme(userTheme === "dark");
-    } else {
-      toggleTheme(window.matchMedia("(prefers-color-scheme: dark)").matches);
-    }
-  }
-
-  function preloadFontSize() {
-    const userFontSize = localStorage.getItem("fontSize") || "medium";
-    updateFontSize(userFontSize);
-  }
-
-  function updateFontSize(size) {
-    for (const el of document.getElementsByClassName("font-selector-button")) {
-      if (el.dataset.fontSize === size) {
-        addActiveButtonTheme(el);
-      } else {
-        removeActiveButtonTheme(el);
-      }
-    }
-
-    const fontSizes = {
-      small: { article: "0.85rem", code: "0.7rem", toc: "0.75rem" },
-      medium: { article: "1rem", code: "0.85rem", toc: "0.875rem" },
-      large: { article: "1.25rem", code: "1rem", toc: "1.05rem" },
-    };
-
-    const lineHeights = {
-      small: { article: "1.25rem", code: "1.15rem", toc: "1.18rem" },
-      medium: { article: "1.5rem", code: "1.24rem", toc: "1.25rem" },
-      large: { article: "1.75rem", code: "1.5rem", toc: "1.55" },
-    };
-
-    const docStyle = document.documentElement.style;
-
-    docStyle.setProperty("--article-font-size", fontSizes[size].article);
-    docStyle.setProperty("--code-font-size", fontSizes[size].code);
-    docStyle.setProperty("--toc-font-size", fontSizes[size].toc);
-
-    docStyle.setProperty("--article-line-height", lineHeights[size].article);
-    docStyle.setProperty("--code-line-height", lineHeights[size].code);
-    docStyle.setProperty("--toc-line-height", lineHeights[size].toc);
-
-    localStorage.setItem("fontSize", size);
-  }
+  let giscusLoaded = false;
 
   function setGiscusTheme() {
     const giscus = document.querySelector(".giscus-frame");
-
-    const isDark = document.documentElement.classList.contains("dark");
-
-    if (giscus) {
-      const url = new URL(giscus.src);
-      url.searchParams.set("theme", isDark ? "dark" : "light");
-      giscus.src = url.toString();
+    if (!giscus?.contentWindow || !giscusLoaded) {
+      return;
     }
+
+    const isDark =
+      document.documentElement.getAttribute("data-theme") === "dark";
+
+    giscus.contentWindow.postMessage(
+      { giscus: { setConfig: { theme: isDark ? "dark" : "light" } } },
+      "https://giscus.app",
+    );
   }
 
-  // Inspired by https://spencermortensen.com/articles/email-obfuscation/#link-xor
+  window.addEventListener("message", (e) => {
+    if (
+      e.origin !== "https://giscus.app" ||
+      e.data?.giscus === undefined ||
+      giscusLoaded
+    ) {
+      return;
+    }
 
-  // 0 <= baseXorDecodeKey <= 255
+    giscusLoaded = true;
+    setGiscusTheme();
+  });
+
   const baseXorDecodeKey = 103;
 
-  /**
-   * Convert numeric character code to hexadecimal string.
-   * @param {number} charCode Numeric representation of a character.
-   */
-  function charCodeToHex(charCode) {
-    let hex = charCode.toString(16);
-
-    if (charCode < 16) {
-      hex = "0" + hex;
-    }
-
-    return hex;
-  }
-
-  /**
-   * Convert hexadecimal string to numeric character code.
-   * @param {string} hex
-   */
   function hexToCharCode(hex) {
     return parseInt(hex, 16);
   }
 
-  /**
-   * Decode text encoded with a simple XOR-based cipher.
-   * @param {string} encodedText Xor-encoded text to decode.
-   */
   function xorDecode(encodedText) {
     let decoded = "";
-
     for (let i = 0; i < encodedText.length; i += 2) {
       const decodeKey = (baseXorDecodeKey + i / 2) % 255;
-      const hexInput = encodedText.substring(i, i + 2);
-      const charCodeInput = hexToCharCode(hexInput);
-      const charCodeOutput = charCodeInput ^ decodeKey;
-      decoded += String.fromCharCode(charCodeOutput);
+      const charCodeInput = hexToCharCode(encodedText.substring(i, i + 2));
+      decoded += String.fromCharCode(charCodeInput ^ decodeKey);
     }
-
     return decoded;
   }
 
-  /**
-   * This function encodes an email address using a simple XOR cipher. It's not needed
-   * for the site's runtime, but it's useful to generate the encoded emails to put into
-   * the site.
-   * @param {string} textToEncode Email address to xor encode.
-   */
-  window.xorEncode = function (textToEncode) {
-    let encoded = "";
-
-    for (let i = 0; i < textToEncode.length; i++) {
-      const decodeKey = (baseXorDecodeKey + i) % 255;
-      const charCode = textToEncode.charCodeAt(i);
-      const encodedCharCode = charCode ^ decodeKey;
-      encoded += charCodeToHex(encodedCharCode);
-    }
-
-    return encoded;
-  };
-
-  const decodeEmails = () => {
+  function decodeEmails() {
     const emailElements = document.querySelectorAll(".email");
-
     for (const emailElement of emailElements) {
       const isContent = emailElement.classList.contains("email-text");
       const encodedEmail = isContent
         ? emailElement.textContent.trim()
         : emailElement.getAttribute("href");
 
-      if (encodedEmail === null) {
+      if (encodedEmail === null || emailElement.dataset.decoded) {
         continue;
       }
+      emailElement.dataset.decoded = "1";
 
       const decodedEmail = xorDecode(encodedEmail);
-
       if (isContent) {
         emailElement.textContent = decodedEmail;
       } else {
         emailElement.setAttribute("href", `mailto:${decodedEmail}`);
       }
     }
-  };
+  }
+
+  function updateActiveNav() {
+    const path = window.location.pathname;
+    for (const link of document.querySelectorAll(".nav-links a")) {
+      const href = link.getAttribute("href");
+      const active = href === "/" ? path === "/" : path.startsWith(href);
+      link.classList.toggle("active", active);
+    }
+  }
+
+  function init() {
+    preloadTheme();
+    preloadFontSize();
+    injectBrand();
+    bindThemeToggle();
+    bindFontSize();
+    setupBackToTop();
+    updateActiveNav();
+    animate();
+    decodeEmails();
+  }
+
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", () => {
+      if ((localStorage.getItem("ddb-theme") || "system") === "system") {
+        applyTheme("system");
+      }
+    });
 
   document.addEventListener("DOMContentLoaded", () => init());
   document.addEventListener("astro:after-swap", () => init());
   preloadTheme();
+  preloadFontSize();
 </script>

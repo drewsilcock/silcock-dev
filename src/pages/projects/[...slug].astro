@@ -1,12 +1,15 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
-import Container from "@components/Container.astro";
 import FormattedDate from "@components/FormattedDate.astro";
-import { iconForSocial, readingTime, shouldRenderPage } from "@lib/utils";
-import BackToPrevious from "@components/BackToPrevious.astro";
-import Link from "@components/Link.astro";
+import {
+  iconForSocial,
+  readingTime,
+  shouldListPage,
+  shouldRenderPage,
+} from "@lib/utils";
 import TableOfContents from "@components/TableOfContents.astro";
+import PostStats from "@components/PostStats.astro";
 
 export async function getStaticPaths() {
   const projects = (await getCollection("projects"))
@@ -22,19 +25,17 @@ type Props = CollectionEntry<"projects">;
 
 const project = Astro.props;
 const { Content, headings } = await project.render();
+
+const projects = (await getCollection("projects"))
+  .filter(shouldListPage)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const projectIndex = projects.findIndex((p) => p.slug === project.slug);
+const nextProject = projects[projectIndex + 1];
+
 const links = [
-  project.data.demoURL && {
-    href: project.data.demoURL,
-    text: "demo",
-  },
-  project.data.repoURL && {
-    href: project.data.repoURL,
-    text: "repo",
-  },
-  project.data.packageURL && {
-    href: project.data.packageURL,
-    text: "package",
-  },
+  project.data.demoURL && { href: project.data.demoURL, text: "demo" },
+  project.data.repoURL && { href: project.data.repoURL, text: "repo" },
+  project.data.packageURL && { href: project.data.packageURL, text: "package" },
 ].filter(Boolean) as { href: string; text: string }[];
 
 const tags = project.data.tags ?? [];
@@ -44,7 +45,7 @@ const socials = project.data.socials ?? [];
 <Layout
   title={project.data.title}
   description={project.data.description}
-  route={`${project.collection}/${project.id}`}
+  route={`${project.collection}/${project.slug}`}
   article={{
     title: project.data.title,
     publishedDate: project.data.date,
@@ -52,72 +53,91 @@ const socials = project.data.socials ?? [];
     tags: project.data.tags,
   }}
 >
-  <Container>
-    <div class="animate">
-      <BackToPrevious href="/projects">Back to projects</BackToPrevious>
-    </div>
-    <div class="animate my-10 space-y-1">
-      <div class="flex items-center gap-1.5">
-        <div class="font-base text-sm">
-          <FormattedDate date={project.data.date} />
-        </div>
-        &bull;
-        <div class="font-base text-sm">
-          {readingTime(project.body)}
-        </div>
-      </div>
-      <h1 class="text-3xl font-semibold text-black dark:text-white">
-        {project.data.title}
-      </h1>
+  <a class="backlink" href="/projects">‹ Back to projects</a>
 
-      <nav class="flex gap-2">
+  <article>
+    <div class="article-head">
+      <div class="article-meta">
+        <span><FormattedDate date={project.data.date} /></span>
+        <span class="sep">·</span>
+        <span>{readingTime(project.body)}</span>
+        <span class="meta-stat" data-views-wrap hidden>
+          <span class="sep">·</span>
+          <span data-post-views></span>
+        </span>
+      </div>
+      <h1>{project.data.title}</h1>
+      <div class="article-tags">
+        {tags.map((tag) => <a href={`/projects/tags/${tag}`}>#{tag}</a>)}
         {
-          tags.map((tag) => (
-            <Link
-              href={`/projects/tags/${tag}`}
-              className="font-semibold text-gray-500 dark:text-gray-400"
-            >
-              #{tag}
-            </Link>
-          ))
+          (links.length > 0 || socials.length > 0) && tags.length > 0 && (
+            <span class="repo" style="color:var(--dim)">
+              ·
+            </span>
+          )
         }
-        {tags.length > 0 && links.length > 0 && <span>&bull;</span>}
         {
-          links.length > 0 &&
-            links
-              .map(({ href, text }) => (
-                <Link href={href} external>
-                  {text}
-                </Link>
-              ))
-              .reduce((prev, curr) => [prev, " / ", curr])
+          links.map((link) => (
+            <a class="repo" href={link.href} target="_blank" rel="noopener">
+              {link.text}
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M7 17 17 7M9 7h8v8" />
+              </svg>
+            </a>
+          ))
         }
         {
           socials.length > 0 && (
             <>
-              {(links.length > 0 || tags.length > 0) && <span>&bull;</span>}
-              Discuss on
+              <span class="repo">Discuss on</span>
               {socials.toSorted().map((social) => (
-                <Link
+                <a
+                  class="repo discuss-link"
                   href={social}
-                  className="fill-black/75 dark:fill-white/75 hover:fill-black hover:dark:fill-white w-[1em]"
-                  external
-                  hideExternalIcon
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="Discuss"
                 >
-                  <span
-                    class="[&>svg]:inline [&>svg]:align-baseline"
-                    set:html={iconForSocial(social)}
-                  />
-                </Link>
+                  <span set:html={iconForSocial(social)} />
+                </a>
               ))}
             </>
           )
         }
-      </nav>
+      </div>
     </div>
-    <TableOfContents headings={headings} />
-    <article class="animate">
+
+    {headings.length > 0 && <TableOfContents headings={headings} />}
+
+    <div class="article">
       <Content />
-    </article>
-  </Container>
+    </div>
+
+    <div class="article-foot">
+      <PostStats slug={`projects/${project.slug}`} />
+      <div class="prevnext">
+        <a class="pn prev" href="/projects">
+          <span class="dir">‹ All projects</span>
+          <span class="t">Back to the full list</span>
+        </a>
+        {
+          nextProject && (
+            <a class="pn next" href={`/projects/${nextProject.slug}`}>
+              <span class="dir">Next project ›</span>
+              <span class="t">{nextProject.data.title}</span>
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </article>
 </Layout>

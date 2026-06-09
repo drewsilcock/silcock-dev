@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+# Deployment is handled by Cloudflare:
+#   - the Pages site via the Cloudflare Git integration (builds `pnpm build`
+#     and serves `dist/`),
+#   - the Worker via Cloudflare Workers Builds (root directory `worker/`).
+# This workflow only runs the checks; it holds no Cloudflare credentials.
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint (prettier)
+        run: pnpm lint
+
+      - name: Type-check (astro check)
+        run: pnpm check
+
+      - name: Build
+        run: pnpm build
