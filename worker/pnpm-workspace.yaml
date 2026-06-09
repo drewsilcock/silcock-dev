@@ -1,0 +1,13 @@
+# This Worker is a standalone pnpm project. This file marks `worker/` as its own
+# pnpm workspace root so `pnpm install` / `pnpm deploy` here operate on the
+# Worker's package.json instead of being absorbed into the parent site's
+# pnpm workspace (../pnpm-workspace.yaml).
+
+# wrangler needs esbuild + workerd to build their native binaries. sharp is a
+# transitive dep the Worker doesn't use, so its build is skipped.
+allowBuilds:
+  esbuild: true
+  workerd: true
+  sharp: false
+minimumReleaseAgeExclude:
+  - "@cloudflare/workers-types@4.20260608.1"

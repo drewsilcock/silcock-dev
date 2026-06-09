@@ -9,7 +9,6 @@ const baseSchema = z.object({
   archive: z.boolean().optional(),
   tags: z.array(z.string()).optional(),
   socials: z.array(z.string()).optional(),
-  views: z.number().optional(),
 });
 
 const blog = defineCollection({
@@ -23,8 +22,6 @@ const projects = defineCollection({
     demoURL: z.string().optional(),
     repoURL: z.string().optional(),
     packageURL: z.string().optional(),
-    stars: z.number().optional(),
-    language: z.string().optional(),
   }),
 });
 

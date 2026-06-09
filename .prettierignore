@@ -17,6 +17,10 @@ dist/
 # generated types
 .astro/
 
+# wrangler (Cloudflare Worker) build/dev artefacts
+.wrangler/
+worker/pnpm-lock.yaml
+
 # dependencies
 node_modules/
 

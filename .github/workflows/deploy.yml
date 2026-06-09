@@ -1,0 +1,42 @@
+name: CI & Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint (prettier)
+        run: pnpm lint
+
+      - name: Type-check (astro check)
+        run: pnpm check
+
+      - name: Build
+        run: pnpm build
+
+      # Only deploys on pushes to main; pull requests stop after the checks above.
+      - name: Deploy to Cloudflare Pages
+        if: github.ref == 'refs/heads/main'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=silcock-dev --branch=main

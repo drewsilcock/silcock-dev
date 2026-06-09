@@ -304,16 +304,19 @@ const articleSchema: WithContext<BlogPosting> | undefined = article && {
       if (!word) {
         continue;
       }
+      // Capture the wordmark once, before any animation rewrites the DOM.
+      // textContent includes the markup's newline/indent whitespace, so trim
+      // it; the ".dev" TLD is the tail and the rest is the plain prefix.
+      const tld = (word.querySelector(".tld")?.textContent || "").trim();
+      const fullText = word.textContent.trim();
+      const plain = fullText.slice(0, fullText.length - tld.length);
+      const total = fullText.length;
       let busy = false;
       brand.addEventListener("mouseenter", () => {
         if (busy || reduceMotion) {
           return;
         }
         busy = true;
-        const fullText = word.textContent;
-        const tld = word.querySelector(".tld")?.textContent || "";
-        const plain = fullText.slice(0, fullText.length - tld.length);
-        const total = fullText.length;
         // Reserve the wordmark's width so the brand link stays fully
         // clickable even while the text is "deleted" mid-animation.
         word.style.display = "inline-block";

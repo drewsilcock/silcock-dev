@@ -1,6 +1,8 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { displayStars, displayLanguage } from "@lib/utils";
+import FormattedDate from "@components/FormattedDate.astro";
+import MetaStats from "@components/MetaStats.astro";
+import { readingTime } from "@lib/utils";
 
 type Props = { entry: CollectionEntry<"projects"> };
 
@@ -25,9 +27,10 @@ const tags = entry.data.tags ?? [];
         {tags.map((tag) => <span class="tag">#{tag}</span>)}
       </span>
       <span class="spacer"></span>
-      <span class="meta-bit">{displayLanguage(entry)}</span>
+      <span class="meta-bit"><FormattedDate date={entry.data.date} /></span>
       <span class="meta-sep">·</span>
-      <span class="meta-bit">★ {displayStars(entry)}</span>
+      <span class="meta-bit">{readingTime(entry.body)}</span>
+      <MetaStats slug={`projects/${entry.slug}`} />
     </div>
   </div>
   <span class="chev">›</span>

@@ -48,3 +48,241 @@ const isActive = (prefix: string) =>
     </button>
   </div>
 </header>
+
+<style is:global>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 16px 44px;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-nav);
+    backdrop-filter: blur(10px);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    text-decoration: none;
+  }
+  .brand .mark {
+    display: flex;
+    position: relative;
+  }
+  .brand .word {
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: calc(15px * var(--fsm));
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .brand .word .tld {
+    color: var(--accent-text);
+  }
+  /* fun: colour radiates out from the top-right corner on hover */
+  @property --brand-angle {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+  }
+  .brand .mark::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.45s ease;
+    animation: brand-roll 4.5s linear infinite;
+    animation-play-state: paused;
+    background: conic-gradient(
+      from var(--brand-angle) at 100% 0%,
+      #f5a623,
+      #ff5e5b,
+      #d65bff,
+      #4ab0ff,
+      #4be08a,
+      #f5a623
+    );
+    -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20x='1.4'%20y='1.4'%20width='29.2'%20height='29.2'%20rx='8'%20fill='none'%20stroke='black'%20stroke-width='2.2'/%3E%3Cg%20fill='none'%20stroke='black'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M11%2011l4%205-4%205'/%3E%3C/g%3E%3Crect%20x='17.5'%20y='19.4'%20width='7.5'%20height='2.6'%20rx='1.3'%20fill='black'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20x='1.4'%20y='1.4'%20width='29.2'%20height='29.2'%20rx='8'%20fill='none'%20stroke='black'%20stroke-width='2.2'/%3E%3Cg%20fill='none'%20stroke='black'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M11%2011l4%205-4%205'/%3E%3C/g%3E%3Crect%20x='17.5'%20y='19.4'%20width='7.5'%20height='2.6'%20rx='1.3'%20fill='black'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .brand:hover .mark::after {
+      opacity: 1;
+      animation-play-state: running;
+    }
+  }
+  @keyframes brand-roll {
+    to {
+      --brand-angle: 360deg;
+    }
+  }
+  .brand .word .caret {
+    display: none;
+    width: 0.55em;
+    height: 1em;
+    margin-left: 2px;
+    vertical-align: -0.12em;
+    border-radius: 1px;
+    background: var(--accent);
+  }
+  .brand:hover .word .caret {
+    display: inline-block;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .brand:hover .word .caret {
+      animation: ddb-caret 0.7s steps(1) infinite;
+    }
+  }
+  @keyframes ddb-caret {
+    0%,
+    50% {
+      opacity: 1;
+    }
+    50.01%,
+    100% {
+      opacity: 0;
+    }
+  }
+  .nav .spacer {
+    flex: 1;
+  }
+  .nav-links {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+  .nav-links a {
+    font-size: calc(14.5px * var(--fsm));
+    text-decoration: none;
+    color: var(--mut);
+    transition: color 0.15s;
+  }
+  .nav-links a:hover {
+    color: var(--ink);
+  }
+  .nav-links a.active {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ctl-group {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 3px;
+    background: var(--chip-bg);
+  }
+  .ctl-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 26px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--mut);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-weight: 600;
+    line-height: 1;
+    transition:
+      background 0.15s,
+      color 0.15s;
+    padding: 0;
+  }
+  .ctl-btn:hover {
+    color: var(--ink);
+  }
+  .ctl-btn.on {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+  .ctl-btn svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+  .ctl-btn.fs-s {
+    font-size: 11px;
+  }
+  .ctl-btn.fs-m {
+    font-size: 13px;
+  }
+  .ctl-btn.fs-l {
+    font-size: 16px;
+  }
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: calc(12.5px * var(--fsm));
+    color: var(--dim);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 7px 11px;
+    background: var(--chip-bg);
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .search:hover {
+    border-color: var(--accent);
+  }
+  .search .kbd {
+    color: var(--dim);
+    opacity: 0.8;
+  }
+
+  @media (max-width: 720px) {
+    .nav {
+      padding: 12px 18px;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+    }
+    .nav .spacer {
+      display: none;
+    }
+    .brand {
+      order: 1;
+    }
+    .controls {
+      order: 2;
+      margin-left: auto;
+      gap: 6px;
+    }
+    .nav-links {
+      order: 3;
+      width: 100%;
+      justify-content: center;
+      gap: 22px;
+      padding-top: 11px;
+      border-top: 1px solid var(--line);
+    }
+    .nav-links a {
+      font-size: calc(15px * var(--fsm));
+    }
+    .search {
+      display: none;
+    }
+  }
+  @media (max-width: 420px) {
+    .nav-links {
+      gap: 16px;
+    }
+  }
+</style>

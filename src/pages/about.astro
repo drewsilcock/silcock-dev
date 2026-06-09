@@ -61,7 +61,7 @@ const sshKey = `ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFduo05erKfMKFmHa3ioLVMEiiFR
 
 <Layout title="About me" description="All about me, Drew" route="about">
   <div class="page-head">
-    <h1 class="page-title">About me 🧑‍💻</h1>
+    <h1 class="page-title">About me</h1>
   </div>
 
   <div class="prose">
@@ -236,6 +236,98 @@ const sshKey = `ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFduo05erKfMKFmHa3ioLVMEiiFR
     <div class="keyblock"><pre id="ssh" set:text={sshKey} /></div>
   </div>
 </Layout>
+
+<style is:global>
+  .prose h2 {
+    margin: 40px 0 14px;
+    font-size: calc(22px * var(--fsm));
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .prose p {
+    margin: 16px 0;
+    font-size: calc(16.5px * var(--fsm));
+    line-height: 1.7;
+    color: var(--reading);
+    text-wrap: pretty;
+  }
+  .prose a {
+    color: var(--accent-text);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .social-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 8px 0;
+  }
+  .social-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    padding: 10px 12px;
+    border-radius: 10px;
+    transition: background 0.15s;
+  }
+  .social-row:hover {
+    background: var(--card-hover);
+  }
+  .social-row .ic {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: var(--chip-bg);
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink);
+    flex: none;
+  }
+  .social-row .ic svg {
+    width: 17px;
+    height: 17px;
+  }
+  .social-row .lbl {
+    font-size: calc(15px * var(--fsm));
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .social-row .handle {
+    font-family: var(--mono);
+    font-size: calc(12.5px * var(--fsm));
+    color: var(--mut);
+    white-space: nowrap;
+  }
+  .keyblock {
+    margin: 14px 0 26px;
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    box-shadow: var(--shadow);
+  }
+  .keyblock pre {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: calc(12px * var(--fsm));
+    line-height: 1.5;
+    color: var(--code-ink);
+    white-space: pre;
+  }
+  .keylabel {
+    font-family: var(--mono);
+    font-size: calc(12px * var(--fsm));
+    color: var(--mut);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 22px 0 0;
+  }
+</style>
 
 <script>
   function bindCopyKeys() {

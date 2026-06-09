@@ -1,0 +1,28 @@
+name: Deploy Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "worker/**"
+      - ".github/workflows/deploy-worker.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # wrangler-action provides wrangler and bundles src/index.ts itself, so
+      # the Worker's own deps don't need installing here. The SALT secret lives
+      # on the deployed Worker (set once via `wrangler secret put SALT`).
+      - name: Deploy Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: worker
+          command: deploy

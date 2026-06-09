@@ -32,9 +32,6 @@ importers:
       '@fontsource/jetbrains-mono':
         specifier: ^5.2.8
         version: 5.2.8
-      '@tailwindcss/vite':
-        specifier: ^4.3.0
-        version: 4.3.0(vite@6.4.3(@types/node@20.19.41)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
       astro:
         specifier: ^5.18.2
         version: 5.18.2(@types/node@20.19.41)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.61.0)(typescript@5.9.3)(yaml@2.9.0)
@@ -47,9 +44,6 @@ importers:
       astro-seo-schema:
         specifier: ^6.0.0
         version: 6.0.0(astro@5.18.2(@types/node@20.19.41)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.61.0)(typescript@5.9.3)(yaml@2.9.0))(schema-dts@2.0.0(typescript@5.9.3))
-      clsx:
-        specifier: ^2.1.1
-        version: 2.1.1
       rehype-autolink-headings:
         specifier: ^7.1.0
         version: 7.1.0
@@ -71,19 +65,10 @@ importers:
       sharp:
         specifier: ^0.34.5
         version: 0.34.5
-      tailwind-merge:
-        specifier: ^2.6.1
-        version: 2.6.1
-      tailwindcss:
-        specifier: ^4.3.0
-        version: 4.3.0
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
     devDependencies:
-      '@tailwindcss/typography':
-        specifier: ^0.5.19
-        version: 0.5.19(tailwindcss@4.3.0)
       '@types/node':
         specifier: ^20.19.41
         version: 20.19.41
@@ -99,9 +84,6 @@ importers:
       prettier-plugin-organize-imports:
         specifier: ^3.2.4
         version: 3.2.4(prettier@3.8.3)(typescript@5.9.3)
-      prettier-plugin-tailwindcss:
-        specifier: ^0.8.0
-        version: 0.8.0(prettier-plugin-astro@0.13.0)(prettier-plugin-organize-imports@3.2.4(prettier@3.8.3)(typescript@5.9.3))(prettier@3.8.3)
       schema-dts:
         specifier: ^2.0.0
         version: 2.0.0(typescript@5.9.3)
@@ -699,21 +681,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@jridgewell/gen-mapping@0.3.13':
-    resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
-
-  '@jridgewell/remapping@2.3.5':
-    resolution: {integrity: sha512-LI9u/+laYG4Ds1TDKSJW2YPrIlcVYOwi2fUC6xB43lueCjgxV4lffOCZCtYFiH6TNOX+tQKXx97T4IKHbhyHEQ==}
-
-  '@jridgewell/resolve-uri@3.1.2':
-    resolution: {integrity: sha512-bRISgCIjP20/tbWSPWMEi54QVPRZExkuD9lJL+UIxUKtwVJA8wW1Trb1jMs1RFXo1CBTNZ/5hpC9QvmKWdopKw==}
-    engines: {node: '>=6.0.0'}
-
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
-
-  '@jridgewell/trace-mapping@0.3.31':
-    resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
   '@mdx-js/mdx@3.1.1':
     resolution: {integrity: sha512-f6ZO2ifpwAQIpzGWaBQT2TXxPv6z3RBzQKpVftEWN78Vl/YweF1uwussDx8ECAXVtr3Rs89fKyG9YlzUs9DyGQ==}
@@ -955,105 +924,6 @@ packages:
     resolution: {integrity: sha512-3NgmNyH3l/Hv6EvsWJbsvpcpUba6R8IREQ83nH83cyakCw7uM1arZKNfHwv1Wz6jgqrF/j4x5ELvR6PnK9nTcA==}
     engines: {node: '>= 8.0.0'}
     hasBin: true
-
-  '@tailwindcss/node@4.3.0':
-    resolution: {integrity: sha512-aFb4gUhFOgdh9AXo4IzBEOzBkkAxm9VigwDJnMIYv3lcfXCJVesNfbEaBl4BNgVRyid92AmdviqwBUBRKSeY3g==}
-
-  '@tailwindcss/oxide-android-arm64@4.3.0':
-    resolution: {integrity: sha512-TJPiq67tKlLuObP6RkwvVGDoxCMBVtDgKkLfa/uyj7/FyxvQwHS+UOnVrXXgbEsfUaMgiVvC4KbJnRr26ho4Ng==}
-    engines: {node: '>= 20'}
-    cpu: [arm64]
-    os: [android]
-
-  '@tailwindcss/oxide-darwin-arm64@4.3.0':
-    resolution: {integrity: sha512-oMN/WZRb+SO37BmUElEgeEWuU8E/HXRkiODxJxLe1UTHVXLrdVSgfaJV7pSlhRGMSOiXLuxTIjfsF3wYvz8cgQ==}
-    engines: {node: '>= 20'}
-    cpu: [arm64]
-    os: [darwin]
-
-  '@tailwindcss/oxide-darwin-x64@4.3.0':
-    resolution: {integrity: sha512-N6CUmu4a6bKVADfw77p+iw6Yd9Q3OBhe0veaDX+QazfuVYlQsHfDgxBrsjQ/IW+zywL8mTrNd0SdJT/zgtvMdA==}
-    engines: {node: '>= 20'}
-    cpu: [x64]
-    os: [darwin]
-
-  '@tailwindcss/oxide-freebsd-x64@4.3.0':
-    resolution: {integrity: sha512-zDL5hBkQdH5C6MpqbK3gQAgP80tsMwSI26vjOzjJtNCMUo0lFgOItzHKBIupOZNQxt3ouPH7RPhvNhiTfCe5CQ==}
-    engines: {node: '>= 20'}
-    cpu: [x64]
-    os: [freebsd]
-
-  '@tailwindcss/oxide-linux-arm-gnueabihf@4.3.0':
-    resolution: {integrity: sha512-R06HdNi7A7OEoMsf6d4tjZ71RCWnZQPHj2mnotSFURjNLdBC+cIgXQ7l81CqeoiQftjf6OOblxXMInMgN2VzMA==}
-    engines: {node: '>= 20'}
-    cpu: [arm]
-    os: [linux]
-
-  '@tailwindcss/oxide-linux-arm64-gnu@4.3.0':
-    resolution: {integrity: sha512-qTJHELX8jetjhRQHCLilkVLmybpzNQAtaI/gaoVoidn/ufbNDbAo8KlK2J+yPoc8wQxvDxCmh/5lr8nC1+lTbg==}
-    engines: {node: '>= 20'}
-    cpu: [arm64]
-    os: [linux]
-    libc: [glibc]
-
-  '@tailwindcss/oxide-linux-arm64-musl@4.3.0':
-    resolution: {integrity: sha512-Z6sukiQsngnWO+l39X4pPbiWT81IC+PLKF+PHxIlyZbGNb9MODfYlXEVlFvej5BOZInWX01kVyzeLvHsXhfczQ==}
-    engines: {node: '>= 20'}
-    cpu: [arm64]
-    os: [linux]
-    libc: [musl]
-
-  '@tailwindcss/oxide-linux-x64-gnu@4.3.0':
-    resolution: {integrity: sha512-DRNdQRpSGzRGfARVuVkxvM8Q12nh19l4BF/G7zGA1oe+9wcC6saFBHTISrpIcKzhiXtSrlSrluCfvMuledoCTQ==}
-    engines: {node: '>= 20'}
-    cpu: [x64]
-    os: [linux]
-    libc: [glibc]
-
-  '@tailwindcss/oxide-linux-x64-musl@4.3.0':
-    resolution: {integrity: sha512-Z0IADbDo8bh6I7h2IQMx601AdXBLfFpEdUotft86evd/8ZPflZe9COPO8Q1vw+pfLWIUo9zN/JGZvwuAJqduqg==}
-    engines: {node: '>= 20'}
-    cpu: [x64]
-    os: [linux]
-    libc: [musl]
-
-  '@tailwindcss/oxide-wasm32-wasi@4.3.0':
-    resolution: {integrity: sha512-HNZGOUxEmElksYR7S6sC5jTeNGpobAsy9u7Gu0AskJ8/20FR9GqebUyB+HBcU/ax6BHuiuJi+Oda4B+YX6H1yA==}
-    engines: {node: '>=14.0.0'}
-    cpu: [wasm32]
-    bundledDependencies:
-      - '@napi-rs/wasm-runtime'
-      - '@emnapi/core'
-      - '@emnapi/runtime'
-      - '@tybys/wasm-util'
-      - '@emnapi/wasi-threads'
-      - tslib
-
-  '@tailwindcss/oxide-win32-arm64-msvc@4.3.0':
-    resolution: {integrity: sha512-Pe+RPVTi1T+qymuuRpcdvwSVZjnll/f7n8gBxMMh3xLTctMDKqpdfGimbMyioqtLhUYZxdJ9wGNhV7MKHvgZsQ==}
-    engines: {node: '>= 20'}
-    cpu: [arm64]
-    os: [win32]
-
-  '@tailwindcss/oxide-win32-x64-msvc@4.3.0':
-    resolution: {integrity: sha512-Mvrf2kXW/yeW/OTezZlCGOirXRcUuLIBx/5Y12BaPM7wJoryG6dfS/NJL8aBPqtTEx/Vm4T4vKzFUcKDT+TKUA==}
-    engines: {node: '>= 20'}
-    cpu: [x64]
-    os: [win32]
-
-  '@tailwindcss/oxide@4.3.0':
-    resolution: {integrity: sha512-F7HZGBeN9I0/AuuJS5PwcD8xayx5ri5GhjYUDBEVYUkexyA/giwbDNjRVrxSezE3T250OU2K/wp/ltWx3UOefg==}
-    engines: {node: '>= 20'}
-
-  '@tailwindcss/typography@0.5.19':
-    resolution: {integrity: sha512-w31dd8HOx3k9vPtcQh5QHP9GwKcgbMp87j58qi6xgiBnFFtKEAgCWnDw4qUT8aHwkCp8bKvb/KGKWWHedP0AAg==}
-    peerDependencies:
-      tailwindcss: '>=3.0.0 || insiders || >=4.0.0-alpha.20 || >=4.0.0-beta.1'
-
-  '@tailwindcss/vite@4.3.0':
-    resolution: {integrity: sha512-t6J3OrB5Fc0ExuhohouH0fWUGMYL6PTLhW+E7zIk/pdbnJARZDCwjBznFnkh5ynRnIRSI4YjtTH0t6USjJISrw==}
-    peerDependencies:
-      vite: ^5.2.0 || ^6 || ^7 || ^8
 
   '@types/debug@4.1.13':
     resolution: {integrity: sha512-KSVgmQmzMwPlmtljOomayoR89W4FynCAi3E8PPs7vmDVPe84hT+vGPKkJfThkmXs0x0jAaa9U8uW8bbfyS2fWw==}
@@ -1440,10 +1310,6 @@ packages:
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
 
-  enhanced-resolve@5.22.2:
-    resolution: {integrity: sha512-0rxICaFZ7NQho/sHely2bvOPRP0Eu2B0NZ9zM54YvRvWMn7jfz3DmnOZDR9LlXDdDcqntAVc6Hfy4gr/tdH/Ag==}
-    engines: {node: '>=10.13.0'}
-
   entities@4.5.0:
     resolution: {integrity: sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==}
     engines: {node: '>=0.12'}
@@ -1566,9 +1432,6 @@ packages:
 
   github-slugger@2.0.0:
     resolution: {integrity: sha512-IaOQ9puYtjrkq7Y0Ygl9KDZnrf/aiUJYUpVf89y8kyaxbRG7Y1SrX/jaumrv81vc61+kiMempujsM3Yw7w5qcw==}
-
-  graceful-fs@4.2.11:
-    resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
 
   h3@1.15.11:
     resolution: {integrity: sha512-L3THSe2MPeBwgIZVSH5zLdBBU90TOxarvhK9d04IDY2AmVS8j2Jz2LIWtwsGOU3lu2I5jCN7FNvVfY2+XyF+mg==}
@@ -2088,10 +1951,6 @@ packages:
     peerDependencies:
       postcss: ^8.2.14
 
-  postcss-selector-parser@6.0.10:
-    resolution: {integrity: sha512-IQ7TZdoaqbT+LCpShg46jnZVlhWD2w6iQYAcYXfHARZ7X1t/UGhhceQDs5X0cGqKvYlHNOuv7Oa1xmb0oQuA3w==}
-    engines: {node: '>=4'}
-
   postcss-selector-parser@6.1.2:
     resolution: {integrity: sha512-Q8qQfPiZ+THO/3ZrOrO0cJJKfpYCagtMUkXbnEfmgUjwXg6z/WBeOyS9APBBPCTSiDV+s4SwQGu8yFsiMRIudg==}
     engines: {node: '>=4'}
@@ -2118,61 +1977,6 @@ packages:
       '@volar/vue-language-plugin-pug':
         optional: true
       '@volar/vue-typescript':
-        optional: true
-
-  prettier-plugin-tailwindcss@0.8.0:
-    resolution: {integrity: sha512-V8ITGH87yuBDF6JpEZTOVlUz/saAwqb8f3HRgUj8Lh+tGCcrmorhsLpYqzygwFwK0PE2Ib6Mv3M7T/uE2tZV1g==}
-    engines: {node: '>=20.19'}
-    peerDependencies:
-      '@ianvs/prettier-plugin-sort-imports': '*'
-      '@prettier/plugin-hermes': '*'
-      '@prettier/plugin-oxc': '*'
-      '@prettier/plugin-pug': '*'
-      '@shopify/prettier-plugin-liquid': '*'
-      '@trivago/prettier-plugin-sort-imports': '*'
-      '@zackad/prettier-plugin-twig': '*'
-      prettier: ^3.0
-      prettier-plugin-astro: '*'
-      prettier-plugin-css-order: '*'
-      prettier-plugin-jsdoc: '*'
-      prettier-plugin-marko: '*'
-      prettier-plugin-multiline-arrays: '*'
-      prettier-plugin-organize-attributes: '*'
-      prettier-plugin-organize-imports: '*'
-      prettier-plugin-sort-imports: '*'
-      prettier-plugin-svelte: '*'
-    peerDependenciesMeta:
-      '@ianvs/prettier-plugin-sort-imports':
-        optional: true
-      '@prettier/plugin-hermes':
-        optional: true
-      '@prettier/plugin-oxc':
-        optional: true
-      '@prettier/plugin-pug':
-        optional: true
-      '@shopify/prettier-plugin-liquid':
-        optional: true
-      '@trivago/prettier-plugin-sort-imports':
-        optional: true
-      '@zackad/prettier-plugin-twig':
-        optional: true
-      prettier-plugin-astro:
-        optional: true
-      prettier-plugin-css-order:
-        optional: true
-      prettier-plugin-jsdoc:
-        optional: true
-      prettier-plugin-marko:
-        optional: true
-      prettier-plugin-multiline-arrays:
-        optional: true
-      prettier-plugin-organize-attributes:
-        optional: true
-      prettier-plugin-organize-imports:
-        optional: true
-      prettier-plugin-sort-imports:
-        optional: true
-      prettier-plugin-svelte:
         optional: true
 
   prettier@3.8.3:
@@ -2420,16 +2224,6 @@ packages:
     resolution: {integrity: sha512-XDpWUOPC6FEibaLzjfe0ucaV0YrOjYotGJO1WpF0Zd+n6ZGEQUsSugaoLq9QkEZtAfQIxT42UChcssDVPP3+/w==}
     engines: {node: '>=16'}
     hasBin: true
-
-  tailwind-merge@2.6.1:
-    resolution: {integrity: sha512-Oo6tHdpZsGpkKG88HJ8RR1rg/RdnEkQEfMoEk2x1XRI3F1AxeU+ijRXpiVUF4UbLfcxxRGw6TbUINKYdWVsQTQ==}
-
-  tailwindcss@4.3.0:
-    resolution: {integrity: sha512-y6nxMGB1nMW9R6k96e5gdIFzcfL/gTJRNaqGes1YvkLnPVXzWgbqFF2yLC0T8G774n24cx3Pe8XrKoniCOAH+Q==}
-
-  tapable@2.3.3:
-    resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
-    engines: {node: '>=6'}
 
   tiny-inflate@1.0.3:
     resolution: {integrity: sha512-pkY1fj1cKHb2seWDy0B16HeWyczlJA9/WW3u3c4z/NiWDsO3DOU5D7nhTLE9CF0yXv/QZFY7sEJmj24dK+Rrqw==}
@@ -3303,24 +3097,7 @@ snapshots:
   '@img/sharp-win32-x64@0.34.5':
     optional: true
 
-  '@jridgewell/gen-mapping@0.3.13':
-    dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.5
-      '@jridgewell/trace-mapping': 0.3.31
-
-  '@jridgewell/remapping@2.3.5':
-    dependencies:
-      '@jridgewell/gen-mapping': 0.3.13
-      '@jridgewell/trace-mapping': 0.3.31
-
-  '@jridgewell/resolve-uri@3.1.2': {}
-
   '@jridgewell/sourcemap-codec@1.5.5': {}
-
-  '@jridgewell/trace-mapping@0.3.31':
-    dependencies:
-      '@jridgewell/resolve-uri': 3.1.2
-      '@jridgewell/sourcemap-codec': 1.5.5
 
   '@mdx-js/mdx@3.1.1':
     dependencies:
@@ -3534,79 +3311,6 @@ snapshots:
     dependencies:
       fflate: 0.7.4
       string.prototype.codepointat: 0.2.1
-
-  '@tailwindcss/node@4.3.0':
-    dependencies:
-      '@jridgewell/remapping': 2.3.5
-      enhanced-resolve: 5.22.2
-      jiti: 2.7.0
-      lightningcss: 1.32.0
-      magic-string: 0.30.21
-      source-map-js: 1.2.1
-      tailwindcss: 4.3.0
-
-  '@tailwindcss/oxide-android-arm64@4.3.0':
-    optional: true
-
-  '@tailwindcss/oxide-darwin-arm64@4.3.0':
-    optional: true
-
-  '@tailwindcss/oxide-darwin-x64@4.3.0':
-    optional: true
-
-  '@tailwindcss/oxide-freebsd-x64@4.3.0':
-    optional: true
-
-  '@tailwindcss/oxide-linux-arm-gnueabihf@4.3.0':
-    optional: true
-
-  '@tailwindcss/oxide-linux-arm64-gnu@4.3.0':
-    optional: true
-
-  '@tailwindcss/oxide-linux-arm64-musl@4.3.0':
-    optional: true
-
-  '@tailwindcss/oxide-linux-x64-gnu@4.3.0':
-    optional: true
-
-  '@tailwindcss/oxide-linux-x64-musl@4.3.0':
-    optional: true
-
-  '@tailwindcss/oxide-wasm32-wasi@4.3.0':
-    optional: true
-
-  '@tailwindcss/oxide-win32-arm64-msvc@4.3.0':
-    optional: true
-
-  '@tailwindcss/oxide-win32-x64-msvc@4.3.0':
-    optional: true
-
-  '@tailwindcss/oxide@4.3.0':
-    optionalDependencies:
-      '@tailwindcss/oxide-android-arm64': 4.3.0
-      '@tailwindcss/oxide-darwin-arm64': 4.3.0
-      '@tailwindcss/oxide-darwin-x64': 4.3.0
-      '@tailwindcss/oxide-freebsd-x64': 4.3.0
-      '@tailwindcss/oxide-linux-arm-gnueabihf': 4.3.0
-      '@tailwindcss/oxide-linux-arm64-gnu': 4.3.0
-      '@tailwindcss/oxide-linux-arm64-musl': 4.3.0
-      '@tailwindcss/oxide-linux-x64-gnu': 4.3.0
-      '@tailwindcss/oxide-linux-x64-musl': 4.3.0
-      '@tailwindcss/oxide-wasm32-wasi': 4.3.0
-      '@tailwindcss/oxide-win32-arm64-msvc': 4.3.0
-      '@tailwindcss/oxide-win32-x64-msvc': 4.3.0
-
-  '@tailwindcss/typography@0.5.19(tailwindcss@4.3.0)':
-    dependencies:
-      postcss-selector-parser: 6.0.10
-      tailwindcss: 4.3.0
-
-  '@tailwindcss/vite@4.3.0(vite@6.4.3(@types/node@20.19.41)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))':
-    dependencies:
-      '@tailwindcss/node': 4.3.0
-      '@tailwindcss/oxide': 4.3.0
-      tailwindcss: 4.3.0
-      vite: 6.4.3(@types/node@20.19.41)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0)
 
   '@types/debug@4.1.13':
     dependencies:
@@ -4059,11 +3763,6 @@ snapshots:
 
   emoji-regex@8.0.0: {}
 
-  enhanced-resolve@5.22.2:
-    dependencies:
-      graceful-fs: 4.2.11
-      tapable: 2.3.3
-
   entities@4.5.0: {}
 
   entities@6.0.1: {}
@@ -4235,8 +3934,6 @@ snapshots:
   get-east-asian-width@1.6.0: {}
 
   github-slugger@2.0.0: {}
-
-  graceful-fs@4.2.11: {}
 
   h3@1.15.11:
     dependencies:
@@ -4460,7 +4157,8 @@ snapshots:
     dependencies:
       is-inside-container: 1.0.0
 
-  jiti@2.7.0: {}
+  jiti@2.7.0:
+    optional: true
 
   js-yaml@4.2.0:
     dependencies:
@@ -4528,6 +4226,7 @@ snapshots:
       lightningcss-linux-x64-musl: 1.32.0
       lightningcss-win32-arm64-msvc: 1.32.0
       lightningcss-win32-x64-msvc: 1.32.0
+    optional: true
 
   linebreak@1.1.0:
     dependencies:
@@ -5127,11 +4826,6 @@ snapshots:
       postcss: 8.5.15
       postcss-selector-parser: 6.1.2
 
-  postcss-selector-parser@6.0.10:
-    dependencies:
-      cssesc: 3.0.0
-      util-deprecate: 1.0.2
-
   postcss-selector-parser@6.1.2:
     dependencies:
       cssesc: 3.0.0
@@ -5155,13 +4849,6 @@ snapshots:
     dependencies:
       prettier: 3.8.3
       typescript: 5.9.3
-
-  prettier-plugin-tailwindcss@0.8.0(prettier-plugin-astro@0.13.0)(prettier-plugin-organize-imports@3.2.4(prettier@3.8.3)(typescript@5.9.3))(prettier@3.8.3):
-    dependencies:
-      prettier: 3.8.3
-    optionalDependencies:
-      prettier-plugin-astro: 0.13.0
-      prettier-plugin-organize-imports: 3.2.4(prettier@3.8.3)(typescript@5.9.3)
 
   prettier@3.8.3: {}
 
@@ -5579,12 +5266,6 @@ snapshots:
       csso: 5.0.5
       picocolors: 1.1.1
       sax: 1.6.0
-
-  tailwind-merge@2.6.1: {}
-
-  tailwindcss@4.3.0: {}
-
-  tapable@2.3.3: {}
 
   tiny-inflate@1.0.3: {}
 

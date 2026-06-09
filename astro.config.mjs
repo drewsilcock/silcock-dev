@@ -2,7 +2,6 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
-import tailwindcss from "@tailwindcss/vite";
 import expressiveCode from "astro-expressive-code";
 import pagefind from "astro-pagefind";
 import { defineConfig } from "astro/config";
@@ -10,14 +9,10 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
 import remarkMath from "remark-math";
-import defaultTheme from "tailwindcss/defaultTheme";
 
 // https://astro.build/config
 export default defineConfig({
   site: "https://drew.silcock.dev",
-  vite: {
-    plugins: [tailwindcss()],
-  },
   // The order of integrations is important here.
   integrations: [
     sitemap(),
@@ -28,10 +23,8 @@ export default defineConfig({
       useDarkModeMediaQuery: false,
       plugins: [pluginLineNumbers(), pluginCollapsibleSections()],
       styleOverrides: {
-        codeFontFamily: [
-          '"JetBrains Mono"',
-          ...defaultTheme.fontFamily.mono,
-        ].join(", "),
+        codeFontFamily:
+          '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
         borderRadius: "12px",
         codePaddingInline: "20px",
         codePaddingBlock: "18px",

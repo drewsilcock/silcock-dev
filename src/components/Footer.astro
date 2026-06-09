@@ -24,3 +24,41 @@ const year = new Date().getFullYear();
     <a href="/rss.xml">RSS</a>
   </div>
 </footer>
+
+<style is:global>
+  .footer {
+    border-top: 1px solid var(--line);
+    padding: 22px 44px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 64px;
+  }
+  .footer .copy {
+    font-family: var(--mono);
+    font-size: calc(12.5px * var(--fsm));
+    color: var(--dim);
+  }
+  .footer .spacer {
+    flex: 1;
+  }
+  .footer-links {
+    display: flex;
+    gap: 18px;
+  }
+  .footer-links a {
+    font-family: var(--mono);
+    font-size: calc(12.5px * var(--fsm));
+    color: var(--mut);
+    text-decoration: none;
+  }
+  .footer-links a:hover {
+    color: var(--accent-text);
+  }
+  @media (max-width: 720px) {
+    .footer {
+      padding: 22px 20px;
+    }
+  }
+</style>

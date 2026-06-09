@@ -7,9 +7,9 @@ import {
   readingTime,
   shouldListPage,
   shouldRenderPage,
-  displayStars,
 } from "@lib/utils";
 import TableOfContents from "@components/TableOfContents.astro";
+import PostStats from "@components/PostStats.astro";
 
 export async function getStaticPaths() {
   const projects = (await getCollection("projects"))
@@ -61,8 +61,10 @@ const socials = project.data.socials ?? [];
         <span><FormattedDate date={project.data.date} /></span>
         <span class="sep">·</span>
         <span>{readingTime(project.body)}</span>
-        <span class="sep">·</span>
-        <span>★ {displayStars(project)}</span>
+        <span class="meta-stat" data-views-wrap hidden>
+          <span class="sep">·</span>
+          <span data-post-views></span>
+        </span>
       </div>
       <h1>{project.data.title}</h1>
       <div class="article-tags">
@@ -121,6 +123,7 @@ const socials = project.data.socials ?? [];
     </div>
 
     <div class="article-foot">
+      <PostStats slug={`projects/${project.slug}`} />
       <div class="prevnext">
         <a class="pn prev" href="/projects">
           <span class="dir">‹ All projects</span>

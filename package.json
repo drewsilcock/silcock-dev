@@ -3,6 +3,7 @@
   "type": "module",
   "private": true,
   "version": "0.0.1",
+  "packageManager": "pnpm@11.5.1",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "dev": "astro dev",
@@ -24,12 +25,10 @@
     "@expressive-code/plugin-line-numbers": "^0.35.6",
     "@fontsource/hanken-grotesk": "^5.2.8",
     "@fontsource/jetbrains-mono": "^5.2.8",
-    "@tailwindcss/vite": "^4.3.0",
     "astro": "^5.18.2",
     "astro-expressive-code": "^0.35.6",
     "astro-pagefind": "^1.8.6",
     "astro-seo-schema": "^6.0.0",
-    "clsx": "^2.1.1",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-katex": "^7.0.1",
     "rehype-slug": "^6.0.0",
@@ -37,18 +36,14 @@
     "satori": "^0.26.0",
     "satori-html": "^0.3.2",
     "sharp": "^0.34.5",
-    "tailwind-merge": "^2.6.1",
-    "tailwindcss": "^4.3.0",
     "typescript": "^5.9.3"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^20.19.41",
     "pagefind": "^1.5.2",
     "prettier": "^3.8.3",
     "prettier-plugin-astro": "^0.13.0",
     "prettier-plugin-organize-imports": "^3.2.4",
-    "prettier-plugin-tailwindcss": "^0.8.0",
     "schema-dts": "^2.0.0"
   }
 }

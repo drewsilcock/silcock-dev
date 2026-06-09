@@ -3,6 +3,7 @@ import Head from "@components/Head.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
 import PageFind from "@components/PageFind.astro";
+import StatsClient from "@components/StatsClient.astro";
 import { SITE } from "@consts";
 
 export type ArticleMeta = {
@@ -39,5 +40,6 @@ const { title, description, route, article } = Astro.props;
     </main>
     <Footer />
     <PageFind />
+    <StatsClient />
   </body>
 </html>
