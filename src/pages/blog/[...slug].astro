@@ -64,58 +64,71 @@ const socials = post.data.socials ?? [];
 >
   <a class="backlink" href="/blog">‹ Back to blog</a>
 
-  <article>
-    <div class="article-head">
-      <div class="article-meta">
-        <span><FormattedDate date={post.data.date} /></span>
-        <span class="sep">·</span>
-        <span>{readingTime(post.body)}</span>
-        <span class="meta-stat" data-views-wrap hidden>
-          <span class="sep">·</span>
-          <span data-post-views></span>
-        </span>
-      </div>
-      <h1>{post.data.title}</h1>
-      <div class="article-tags">
-        {tags.map((tag) => <a href={`/blog/tags/${tag}`}>#{tag}</a>)}
-        {
-          socials.length > 0 && (
-            <>
-              {tags.length > 0 && (
-                <span class="repo" style="color:var(--dim)">
-                  ·
-                </span>
-              )}
-              <span class="repo">Discuss on</span>
-              {socials.toSorted().map((social) => (
-                <a
-                  class="repo discuss-link"
-                  href={social}
-                  target="_blank"
-                  rel="noopener"
-                  aria-label="Discuss"
-                >
-                  <span set:html={iconForSocial(social)} />
-                </a>
-              ))}
-            </>
-          )
-        }
-      </div>
-    </div>
-
-    {headings.length > 0 && <TableOfContents headings={headings} />}
-
-    <div class="article">
-      <Content components={{ Aside }} />
-    </div>
-
-    <div class="article-foot">
-      <div class="article-tags">
-        {tags.map((tag) => <a href={`/blog/tags/${tag}`}>#{tag}</a>)}
-      </div>
+  <article class="post-grid">
+    <aside class="post-aside">
+      {headings.length > 0 && <TableOfContents headings={headings} />}
       <PostStats slug={`blog/${post.slug}`} />
-      <PostNavigation prevPost={prevPost} nextPost={nextPost} />
+    </aside>
+
+    <div class="post-main">
+      <div class="article-head">
+        <div class="article-meta">
+          <span><FormattedDate date={post.data.date} /></span>
+          <span class="sep">·</span>
+          <span>{readingTime(post.body)}</span>
+          <span class="meta-stat" data-views-wrap hidden>
+            <span class="sep">·</span>
+            <span data-post-views></span>
+          </span>
+          <span
+            class="meta-stat live-stat"
+            data-live
+            data-slug={`blog/${post.slug}`}
+            hidden
+          >
+            <span class="sep">·</span>
+            <span data-live-count></span>
+          </span>
+        </div>
+        <h1>{post.data.title}</h1>
+        <div class="article-tags">
+          {tags.map((tag) => <a href={`/blog/tags/${tag}`}>#{tag}</a>)}
+          {
+            socials.length > 0 && (
+              <>
+                {tags.length > 0 && (
+                  <span class="repo" style="color:var(--dim)">
+                    ·
+                  </span>
+                )}
+                <span class="repo">Discuss on</span>
+                {socials.toSorted().map((social) => (
+                  <a
+                    class="repo discuss-link"
+                    href={social}
+                    target="_blank"
+                    rel="noopener"
+                    aria-label="Discuss"
+                  >
+                    <span set:html={iconForSocial(social)} />
+                  </a>
+                ))}
+              </>
+            )
+          }
+        </div>
+      </div>
+
+      <div class="article">
+        <Content components={{ Aside }} />
+      </div>
+
+      <div class="article-foot">
+        <div class="article-tags">
+          {tags.map((tag) => <a href={`/blog/tags/${tag}`}>#{tag}</a>)}
+        </div>
+        <PostNavigation prevPost={prevPost} nextPost={nextPost} />
+      </div>
     </div>
 
     <section class="comments">

@@ -4,6 +4,7 @@ import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
 import PageFind from "@components/PageFind.astro";
 import StatsClient from "@components/StatsClient.astro";
+import LiveClient from "@components/LiveClient.astro";
 import { SITE } from "@consts";
 
 export type ArticleMeta = {
@@ -35,11 +36,12 @@ const { title, description, route, article } = Astro.props;
   </head>
   <body>
     <Header />
-    <main class="wrap">
+    <main class:list={["wrap", article && "wrap--wide"]}>
       <slot />
     </main>
     <Footer />
     <PageFind />
     <StatsClient />
+    <LiveClient />
   </body>
 </html>

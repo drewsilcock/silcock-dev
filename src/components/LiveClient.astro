@@ -1,0 +1,109 @@
+---
+// Opens a WebSocket to the stats Worker's /live endpoint and shows how many
+// people are reading the current post. Included once in the layout; a no-op on
+// pages without a [data-live] element.
+---
+
+<script>
+  const API = import.meta.env.PUBLIC_STATS_API || "/api";
+
+  let socket: WebSocket | null = null;
+  let pingTimer: ReturnType<typeof setInterval> | null = null;
+  let retries = 0;
+
+  function liveURL(slug: string): string {
+    // Turn the (possibly relative) API base into a ws/wss URL.
+    let base: string;
+    if (/^https?:/i.test(API)) {
+      base = API.replace(/^http/i, "ws");
+    } else {
+      const proto = location.protocol === "https:" ? "wss:" : "ws:";
+      base = `${proto}//${location.host}${API}`;
+    }
+    return `${base.replace(/\/$/, "")}/live?slug=${encodeURIComponent(slug)}`;
+  }
+
+  function render(wrap: HTMLElement, count: number) {
+    const el = wrap.querySelector<HTMLElement>("[data-live-count]");
+    if (!el) return;
+    if (count >= 1) {
+      el.textContent = `${count} reading now`;
+      wrap.hidden = false;
+    } else {
+      wrap.hidden = true;
+    }
+  }
+
+  function teardown() {
+    if (pingTimer) {
+      clearInterval(pingTimer);
+      pingTimer = null;
+    }
+    if (socket) {
+      const s = socket;
+      socket = null;
+      try {
+        s.close();
+      } catch {
+        /* already closed */
+      }
+    }
+  }
+
+  function init() {
+    teardown();
+    retries = 0;
+
+    const wrap = document.querySelector<HTMLElement>("[data-live][data-slug]");
+    const slug = wrap?.dataset.slug;
+    if (!wrap || !slug) return;
+
+    const connect = () => {
+      let ws: WebSocket;
+      try {
+        ws = new WebSocket(liveURL(slug));
+      } catch {
+        return;
+      }
+      socket = ws;
+
+      ws.addEventListener("open", () => {
+        retries = 0;
+      });
+
+      ws.addEventListener("message", (e) => {
+        if (typeof e.data !== "string" || e.data === "pong") return;
+        try {
+          const data = JSON.parse(e.data);
+          if (typeof data.count === "number") render(wrap, data.count);
+        } catch {
+          /* ignore malformed frames */
+        }
+      });
+
+      ws.addEventListener("close", () => {
+        if (socket !== ws) return; // superseded by a newer connection
+        socket = null;
+        wrap.hidden = true;
+        if (retries < 5) {
+          retries++;
+          const delay = Math.min(1000 * 2 ** retries, 15000);
+          setTimeout(() => {
+            if (!socket) connect();
+          }, delay);
+        }
+      });
+    };
+
+    connect();
+
+    // Keep the connection warm through proxies; the Worker auto-answers "ping".
+    pingTimer = setInterval(() => {
+      if (socket && socket.readyState === WebSocket.OPEN) socket.send("ping");
+    }, 30000);
+  }
+
+  document.addEventListener("astro:page-load", init);
+  document.addEventListener("astro:before-swap", teardown);
+  init();
+</script>

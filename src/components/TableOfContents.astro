@@ -84,8 +84,79 @@ function buildToc(headings: Heading[]) {
   .toc a {
     color: var(--mut);
     text-decoration: none;
+    transition: color 0.15s;
   }
   .toc a:hover {
     color: var(--accent-text);
   }
+  .toc a.active {
+    color: var(--accent-text);
+    font-weight: 600;
+  }
 </style>
+
+<script>
+  // Scroll-spy: highlight the ToC link for the section currently in view. The
+  // "current" heading is the last one whose top has scrolled past a trigger
+  // line just below the sticky nav.
+  let teardown: (() => void) | null = null;
+
+  function initTocSpy() {
+    teardown?.();
+    teardown = null;
+
+    const toc = document.querySelector<HTMLElement>(".toc");
+    if (!toc) return;
+    // Hidden on narrow screens — nothing to highlight.
+    if (toc.offsetParent === null) return;
+
+    const links = [...toc.querySelectorAll<HTMLAnchorElement>("a[href^='#']")];
+    if (links.length === 0) return;
+
+    const linkById = new Map<string, HTMLAnchorElement>();
+    for (const link of links) {
+      const id = decodeURIComponent(link.hash.slice(1));
+      if (id) linkById.set(id, link);
+    }
+
+    const headings = [...linkById.keys()]
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+    if (headings.length === 0) return;
+
+    let activeId: string | null = null;
+    const setActive = (id: string | null) => {
+      if (id === activeId) return;
+      activeId = id;
+      for (const link of links) link.classList.remove("active");
+      if (id) linkById.get(id)?.classList.add("active");
+    };
+
+    const update = () => {
+      const triggerY = 100;
+      let current = headings[0].id;
+      for (const h of headings) {
+        if (h.getBoundingClientRect().top <= triggerY) current = h.id;
+        else break;
+      }
+      setActive(current);
+    };
+
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        update();
+        ticking = false;
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    update();
+    teardown = () => window.removeEventListener("scroll", onScroll);
+  }
+
+  document.addEventListener("astro:page-load", initTocSpy);
+  initTocSpy();
+</script>

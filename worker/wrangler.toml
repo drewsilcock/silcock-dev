@@ -18,6 +18,16 @@ binding = "DB"
 database_name = "silcock-dev-db"
 database_id = "0064f4fb-22fb-46d9-9e72-5045b454b46f"
 
+# Live "reading now" presence. One Durable Object per post tracks open WebSocket
+# connections. SQLite-backed so it's available on the Workers free plan.
+[[durable_objects.bindings]]
+name = "LIVE"
+class_name = "LiveCounter"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["LiveCounter"]
+
 [vars]
 # Origins allowed to call the API with CORS (same-origin prod calls don't send
 # an Origin header, so they're always fine; this matters for local dev).

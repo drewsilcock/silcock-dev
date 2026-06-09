@@ -15,6 +15,7 @@ interface Env {
   DB: D1Database;
   SALT: string;
   ALLOWED_ORIGINS?: string;
+  LIVE: DurableObjectNamespace;
 }
 
 const SLUG_RE = /^[a-z0-9][a-z0-9/_-]{0,128}$/;
@@ -213,6 +214,26 @@ async function handleLike(
   return json({ likes: row?.likes ?? 0, liked }, 200, cors);
 }
 
+// Live "reading now" presence. Each post slug maps to one Durable Object that
+// holds the open WebSocket connections for that post; the count of connections
+// is the number of people currently reading. Routed by slug so all readers of a
+// post share the same object.
+function handleLive(
+  url: URL,
+  req: Request,
+  env: Env,
+): Response | Promise<Response> {
+  const slug = url.searchParams.get("slug");
+  if (!slug || !SLUG_RE.test(slug)) {
+    return new Response("bad slug", { status: 400 });
+  }
+  if (req.headers.get("Upgrade") !== "websocket") {
+    return new Response("expected websocket", { status: 426 });
+  }
+  const id = env.LIVE.idFromName(slug);
+  return env.LIVE.get(id).fetch(req);
+}
+
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
@@ -232,6 +253,9 @@ export default {
       if (url.pathname === "/api/like" && req.method === "POST") {
         return await handleLike(req, env, cors);
       }
+      if (url.pathname === "/api/live" && req.method === "GET") {
+        return handleLive(url, req, env);
+      }
       return json({ error: "not found" }, 404, cors);
     } catch {
       return json({ error: "server error" }, 500, cors);
@@ -247,3 +271,48 @@ export default {
       .run();
   },
 };
+
+// One instance per post slug. Tracks live readers as open WebSocket
+// connections, using the hibernation API so the object can sleep between
+// join/leave events (no compute billed while idle). Connections are kept warm
+// by a client ping that the runtime auto-answers with "pong" without waking us.
+export class LiveCounter implements DurableObject {
+  constructor(private readonly ctx: DurableObjectState) {
+    this.ctx.setWebSocketAutoResponse(
+      new WebSocketRequestResponsePair("ping", "pong"),
+    );
+  }
+
+  async fetch(req: Request): Promise<Response> {
+    if (req.headers.get("Upgrade") !== "websocket") {
+      return new Response("expected websocket", { status: 426 });
+    }
+    const { 0: client, 1: server } = new WebSocketPair();
+    this.ctx.acceptWebSocket(server);
+    this.broadcast();
+    return new Response(null, { status: 101, webSocket: client });
+  }
+
+  webSocketClose(ws: WebSocket): void {
+    this.broadcast(ws);
+  }
+
+  webSocketError(ws: WebSocket): void {
+    this.broadcast(ws);
+  }
+
+  // Send the current reader count to everyone. `leaving` is the socket that is
+  // closing (still listed by getWebSockets() at this point), excluded so the
+  // count is accurate.
+  private broadcast(leaving?: WebSocket): void {
+    const sockets = this.ctx.getWebSockets().filter((ws) => ws !== leaving);
+    const message = JSON.stringify({ count: sockets.length });
+    for (const ws of sockets) {
+      try {
+        ws.send(message);
+      } catch {
+        /* socket already gone */
+      }
+    }
+  }
+}

@@ -33,11 +33,19 @@ See [Privacy & anti-abuse](#privacy--anti-abuse).
 | GET    | `/api/stats` | `?slugs=blog/a,projects/b`   | `{ "blog/a": { views, likes }, … }` |
 | POST   | `/api/view`  | `{ "slug": "blog/my-post" }` | `{ views }`                         |
 | POST   | `/api/like`  | `{ "slug": "blog/my-post" }` | `{ likes, liked }`                  |
+| GET    | `/api/live`  | `?slug=blog/my-post` (WS)    | WebSocket streaming `{ count }`     |
 
 A `slug` is a post key of the form `"<collection>/<slug>"`, e.g.
 `blog/fixing-a-bug-in-sveltekit`. `POST /api/like` toggles the caller's like.
 
+`/api/live` is a WebSocket upgrade: the connection stays open while the reader is
+on the page, and the server pushes `{ count }` (the number of people currently
+reading that post) whenever someone joins or leaves. Clients send `"ping"`
+periodically to keep the socket warm; the runtime auto-answers `"pong"`.
+
 ## Data model
+
+Views and likes live in D1; live presence lives in a Durable Object (no storage).
 
 `schema.sql` defines three tables:
 
@@ -47,6 +55,12 @@ A `slug` is a post key of the form `"<collection>/<slug>"`, e.g.
 - `view_dedup` – `(slug, visitor, day)` rows used to count one view per visitor
   per day. This is the only table that grows unbounded, so a daily cron prunes
   rows older than two days.
+
+The `LiveCounter` Durable Object (one instance per slug, addressed by
+`idFromName(slug)`) holds the open WebSockets for a post using the hibernation
+API, so it sleeps between join/leave events and bills no compute while idle. The
+reader count is simply how many sockets it currently holds — nothing is
+persisted. It's declared as a SQLite-backed class so it runs on the free plan.
 
 ## Configuration (`wrangler.toml`)
 

@@ -8,6 +8,7 @@
   --mono: "JetBrains Mono", ui-monospace, monospace;
   --fsm: 1; /* font-size multiplier, set by [data-fs] */
   --maxw: 760px;
+  --maxw-wide: 1060px; /* article pages with the ToC rail (desktop only) */
 
   /* code surface — themed (see html[data-theme] blocks); matches Expressive Code */
   --tok-kw: #c792ea;
@@ -91,6 +92,12 @@ html {
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
 }
+/* Smooth anchor jumps (ToC, heading links) — skipped for reduced-motion users. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
 html,
 body {
   padding: 0;
@@ -152,6 +159,13 @@ ul {
   max-width: var(--maxw);
   margin: 0 auto;
   padding: 0 44px;
+}
+/* Article pages get a wider container so the ToC rail has room; the reading
+   column itself stays ~760px (see .post-grid). Narrow screens keep --maxw. */
+@media (min-width: 1120px) {
+  .wrap--wide {
+    max-width: var(--maxw-wide);
+  }
 }
 .page-head {
   padding-top: 60px;
@@ -419,6 +433,92 @@ a.tag:hover {
   flex: none;
 }
 
+/* ============ ARTICLE LAYOUT (ToC rail) ============ */
+/* The rail holds the Table of Contents and the like button. On wide screens it
+   sits in a sticky right column beside the reading column. On narrow screens a
+   ToC just costs vertical space, so it's hidden and only the like button
+   remains — dropped to the end of the article via flex order. */
+.post-grid {
+  display: flex;
+  flex-direction: column;
+}
+.post-main {
+  order: 1;
+}
+.post-aside {
+  order: 2;
+  display: flex;
+  flex-direction: column;
+}
+.post-grid > .comments {
+  order: 3;
+}
+.post-aside .toc {
+  display: none;
+}
+.post-aside .post-stats {
+  margin-top: 18px;
+}
+@media (min-width: 1120px) {
+  .post-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 248px;
+    column-gap: 52px;
+    align-items: start;
+  }
+  .post-main {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+  }
+  .post-grid > .comments {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .post-aside {
+    grid-column: 2;
+    grid-row: 1;
+    position: sticky;
+    top: 80px;
+    align-self: start;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    padding-bottom: 4px;
+  }
+  /* In the rail the ToC is a permanent list, so drop the boxed-card chrome and
+     present it as a sidebar heading + links. */
+  .post-aside .toc {
+    display: block;
+    margin: 4px 0 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+  }
+  .post-aside .toc > summary {
+    padding: 0 0 10px;
+    background: transparent;
+    border-bottom: 1px solid var(--line);
+    font-size: calc(11.5px * var(--fsm));
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--mut);
+  }
+  .post-aside .toc > summary .caret {
+    display: none;
+  }
+  /* Only the top-level list needs the offset below the heading; nested lists
+     are spaced by their own margin (see .toc ol ol). */
+  .post-aside .toc > ol {
+    padding: 12px 0 0 2px;
+  }
+  .post-aside .toc ol ol {
+    padding-left: 14px;
+  }
+}
+
 /* ============ ARTICLE ============ */
 .article-head {
   padding-top: 28px;
@@ -490,9 +590,6 @@ a.tag:hover {
   letter-spacing: -0.02em;
   color: var(--ink);
   line-height: 1.2;
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
   scroll-margin-top: 80px;
 }
 .article h2 .hash {
@@ -772,6 +869,37 @@ a.tag:hover {
   display: inline-flex;
   align-items: center;
   gap: 12px;
+}
+/* live "reading now" presence indicator */
+.live-stat [data-live-count] {
+  display: inline-flex;
+  align-items: center;
+  color: var(--mut);
+}
+.live-stat [data-live-count]::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: #46d369;
+  flex: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .live-stat [data-live-count]::before {
+    animation: live-pulse 2s ease-out infinite;
+  }
+}
+@keyframes live-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(70, 211, 105, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(70, 211, 105, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(70, 211, 105, 0);
+  }
 }
 /* ============ BACK TO TOP ============ */
 .back-to-top {

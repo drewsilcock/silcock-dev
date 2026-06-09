@@ -55,88 +55,101 @@ const socials = project.data.socials ?? [];
 >
   <a class="backlink" href="/projects">‹ Back to projects</a>
 
-  <article>
-    <div class="article-head">
-      <div class="article-meta">
-        <span><FormattedDate date={project.data.date} /></span>
-        <span class="sep">·</span>
-        <span>{readingTime(project.body)}</span>
-        <span class="meta-stat" data-views-wrap hidden>
-          <span class="sep">·</span>
-          <span data-post-views></span>
-        </span>
-      </div>
-      <h1>{project.data.title}</h1>
-      <div class="article-tags">
-        {tags.map((tag) => <a href={`/projects/tags/${tag}`}>#{tag}</a>)}
-        {
-          (links.length > 0 || socials.length > 0) && tags.length > 0 && (
-            <span class="repo" style="color:var(--dim)">
-              ·
-            </span>
-          )
-        }
-        {
-          links.map((link) => (
-            <a class="repo" href={link.href} target="_blank" rel="noopener">
-              {link.text}
-              <svg
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M7 17 17 7M9 7h8v8" />
-              </svg>
-            </a>
-          ))
-        }
-        {
-          socials.length > 0 && (
-            <>
-              <span class="repo">Discuss on</span>
-              {socials.toSorted().map((social) => (
-                <a
-                  class="repo discuss-link"
-                  href={social}
-                  target="_blank"
-                  rel="noopener"
-                  aria-label="Discuss"
-                >
-                  <span set:html={iconForSocial(social)} />
-                </a>
-              ))}
-            </>
-          )
-        }
-      </div>
-    </div>
-
-    {headings.length > 0 && <TableOfContents headings={headings} />}
-
-    <div class="article">
-      <Content />
-    </div>
-
-    <div class="article-foot">
+  <article class="post-grid">
+    <aside class="post-aside">
+      {headings.length > 0 && <TableOfContents headings={headings} />}
       <PostStats slug={`projects/${project.slug}`} />
-      <div class="prevnext">
-        <a class="pn prev" href="/projects">
-          <span class="dir">‹ All projects</span>
-          <span class="t">Back to the full list</span>
-        </a>
-        {
-          nextProject && (
-            <a class="pn next" href={`/projects/${nextProject.slug}`}>
-              <span class="dir">Next project ›</span>
-              <span class="t">{nextProject.data.title}</span>
-            </a>
-          )
-        }
+    </aside>
+
+    <div class="post-main">
+      <div class="article-head">
+        <div class="article-meta">
+          <span><FormattedDate date={project.data.date} /></span>
+          <span class="sep">·</span>
+          <span>{readingTime(project.body)}</span>
+          <span class="meta-stat" data-views-wrap hidden>
+            <span class="sep">·</span>
+            <span data-post-views></span>
+          </span>
+          <span
+            class="meta-stat live-stat"
+            data-live
+            data-slug={`projects/${project.slug}`}
+            hidden
+          >
+            <span class="sep">·</span>
+            <span data-live-count></span>
+          </span>
+        </div>
+        <h1>{project.data.title}</h1>
+        <div class="article-tags">
+          {tags.map((tag) => <a href={`/projects/tags/${tag}`}>#{tag}</a>)}
+          {
+            (links.length > 0 || socials.length > 0) && tags.length > 0 && (
+              <span class="repo" style="color:var(--dim)">
+                ·
+              </span>
+            )
+          }
+          {
+            links.map((link) => (
+              <a class="repo" href={link.href} target="_blank" rel="noopener">
+                {link.text}
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M7 17 17 7M9 7h8v8" />
+                </svg>
+              </a>
+            ))
+          }
+          {
+            socials.length > 0 && (
+              <>
+                <span class="repo">Discuss on</span>
+                {socials.toSorted().map((social) => (
+                  <a
+                    class="repo discuss-link"
+                    href={social}
+                    target="_blank"
+                    rel="noopener"
+                    aria-label="Discuss"
+                  >
+                    <span set:html={iconForSocial(social)} />
+                  </a>
+                ))}
+              </>
+            )
+          }
+        </div>
+      </div>
+
+      <div class="article">
+        <Content />
+      </div>
+
+      <div class="article-foot">
+        <div class="prevnext">
+          <a class="pn prev" href="/projects">
+            <span class="dir">‹ All projects</span>
+            <span class="t">Back to the full list</span>
+          </a>
+          {
+            nextProject && (
+              <a class="pn next" href={`/projects/${nextProject.slug}`}>
+                <span class="dir">Next project ›</span>
+                <span class="t">{nextProject.data.title}</span>
+              </a>
+            )
+          }
+        </div>
       </div>
     </div>
   </article>
