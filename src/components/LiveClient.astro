@@ -23,14 +23,16 @@
     return `${base.replace(/\/$/, "")}/live?slug=${encodeURIComponent(slug)}`;
   }
 
-  function render(wrap: HTMLElement, count: number) {
-    const el = wrap.querySelector<HTMLElement>("[data-live-count]");
-    if (!el) return;
-    if (count >= 1) {
-      el.textContent = `${count} reading now`;
-      wrap.hidden = false;
-    } else {
-      wrap.hidden = true;
+  function render(wraps: HTMLElement[], count: number) {
+    for (const wrap of wraps) {
+      const el = wrap.querySelector<HTMLElement>("[data-live-count]");
+      if (!el) continue;
+      if (count >= 1) {
+        el.textContent = `${count} reading now`;
+        wrap.hidden = false;
+      } else {
+        wrap.hidden = true;
+      }
     }
   }
 
@@ -54,9 +56,11 @@
     teardown();
     retries = 0;
 
-    const wrap = document.querySelector<HTMLElement>("[data-live][data-slug]");
-    const slug = wrap?.dataset.slug;
-    if (!wrap || !slug) return;
+    const wraps = [
+      ...document.querySelectorAll<HTMLElement>("[data-live][data-slug]"),
+    ];
+    const slug = wraps[0]?.dataset.slug;
+    if (wraps.length === 0 || !slug) return;
 
     const connect = () => {
       let ws: WebSocket;
@@ -75,7 +79,7 @@
         if (typeof e.data !== "string" || e.data === "pong") return;
         try {
           const data = JSON.parse(e.data);
-          if (typeof data.count === "number") render(wrap, data.count);
+          if (typeof data.count === "number") render(wraps, data.count);
         } catch {
           /* ignore malformed frames */
         }
@@ -84,7 +88,7 @@
       ws.addEventListener("close", () => {
         if (socket !== ws) return; // superseded by a newer connection
         socket = null;
-        wrap.hidden = true;
+        for (const w of wraps) w.hidden = true;
         if (retries < 5) {
           retries++;
           const delay = Math.min(1000 * 2 ** retries, 15000);

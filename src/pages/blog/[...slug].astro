@@ -68,6 +68,14 @@ const socials = post.data.socials ?? [];
     <aside class="post-aside">
       {headings.length > 0 && <TableOfContents headings={headings} />}
       <PostStats slug={`blog/${post.slug}`} />
+      <span
+        class="meta-stat live-stat live-rail"
+        data-live
+        data-slug={`blog/${post.slug}`}
+        hidden
+      >
+        <span data-live-count></span>
+      </span>
     </aside>
 
     <div class="post-main">
@@ -86,7 +94,6 @@ const socials = post.data.socials ?? [];
             data-slug={`blog/${post.slug}`}
             hidden
           >
-            <span class="sep">·</span>
             <span data-live-count></span>
           </span>
         </div>

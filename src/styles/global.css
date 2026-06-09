@@ -518,6 +518,17 @@ a.tag:hover {
   .post-aside .toc ol ol {
     padding-left: 14px;
   }
+  /* Move the "reading now" indicator from the meta line into the rail, just
+     below the like button. */
+  .article-meta .live-stat {
+    display: none;
+  }
+  .post-aside .live-rail {
+    display: inline-flex;
+    margin-top: 14px;
+    font-family: var(--mono);
+    font-size: calc(12px * var(--fsm));
+  }
 }
 
 /* ============ ARTICLE ============ */
@@ -877,6 +888,11 @@ a.tag:hover {
   align-items: center;
   color: var(--mut);
 }
+/* Two placements: the article meta line (mobile) and the ToC rail next to the
+   like button (desktop). Only one shows at a time — see the rail @media. */
+.live-rail {
+  display: none;
+}
 .live-stat [data-live-count]::before {
   content: "";
   width: 7px;
@@ -906,7 +922,10 @@ a.tag:hover {
 .back-to-top {
   position: fixed;
   right: 26px;
-  bottom: 26px;
+  /* iOS: a transform on a position:fixed element breaks viewport tracking
+     during scroll, so this reveals with opacity/visibility only — no transform.
+     env() keeps it clear of the home-indicator safe area. */
+  bottom: calc(26px + env(safe-area-inset-bottom, 0px));
   z-index: 30;
   display: inline-flex;
   align-items: center;
@@ -920,17 +939,17 @@ a.tag:hover {
   cursor: pointer;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
   opacity: 0;
-  transform: translateY(8px);
+  visibility: hidden;
   pointer-events: none;
   transition:
     opacity 0.25s,
-    transform 0.25s,
+    visibility 0.25s,
     border-color 0.15s,
     color 0.15s;
 }
 .back-to-top.show {
   opacity: 1;
-  transform: translateY(0);
+  visibility: visible;
   pointer-events: auto;
 }
 .back-to-top:hover {
@@ -1009,9 +1028,12 @@ html[data-theme="light"] img.image-dark {
   .article h2 {
     font-size: calc(23px * var(--fsm));
   }
+  .backlink {
+    margin-top: 26px;
+  }
   .back-to-top {
     right: 16px;
-    bottom: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   }
 }
 @media (max-width: 420px) {
