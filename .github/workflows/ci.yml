@@ -1,4 +1,4 @@
-name: CI & Deploy
+name: CI
 
 on:
   push:
@@ -8,8 +8,13 @@ on:
 permissions:
   contents: read
 
+# Deployment is handled by Cloudflare:
+#   - the Pages site via the Cloudflare Git integration (builds `pnpm build`
+#     and serves `dist/`),
+#   - the Worker via Cloudflare Workers Builds (root directory `worker/`).
+# This workflow only runs the checks; it holds no Cloudflare credentials.
 jobs:
-  site:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,12 +36,3 @@ jobs:
 
       - name: Build
         run: pnpm build
-
-      # Only deploys on pushes to main; pull requests stop after the checks above.
-      - name: Deploy to Cloudflare Pages
-        if: github.ref == 'refs/heads/main'
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=silcock-dev --branch=main

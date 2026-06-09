@@ -83,6 +83,11 @@ required.
 Requires a Cloudflare account (the Workers and D1 free tiers are sufficient and
 need no payment method).
 
+### One-time setup
+
+The database and the `SALT` secret are created once from your machine (they
+aren't part of the automated build):
+
 ```bash
 pnpm install
 pnpm wrangler login
@@ -92,8 +97,23 @@ pnpm wrangler d1 create silcock-dev-db
 
 pnpm run db:init                 # create the tables in the remote D1
 pnpm wrangler secret put SALT    # e.g. paste `openssl rand -hex 32`
-pnpm run deploy
 ```
+
+### Continuous deployment (Workers Builds)
+
+The Worker is deployed by [Cloudflare Workers
+Builds](https://developers.cloudflare.com/workers/ci-cd/builds/) straight from
+Git — no `wrangler deploy` from your machine and no CI secrets. Connect the repo
+once in the Cloudflare dashboard (Workers & Pages → the Worker → Settings →
+Build):
+
+- **Root directory:** `worker`
+- **Deploy command:** `pnpx wrangler deploy`
+- **Build watch path:** `worker/*` (so it only rebuilds when the Worker changes)
+
+Each push to `main` then builds and deploys the Worker automatically. To deploy
+by hand instead (e.g. before CD is connected), run `pnpm deploy` from this
+directory.
 
 Inspect data or follow logs at any time:
 
