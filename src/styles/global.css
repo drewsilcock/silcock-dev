@@ -9,6 +9,7 @@
   --fsm: 1; /* font-size multiplier, set by [data-fs] */
   --maxw: 760px;
   --maxw-wide: 1060px; /* article pages with the ToC rail (desktop only) */
+  --heart: #ff4d6d; /* like button — a warm red, works in both themes */
 
   /* code surface — themed (see html[data-theme] blocks); matches Expressive Code */
   --tok-kw: #c792ea;

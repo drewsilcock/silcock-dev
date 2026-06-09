@@ -14,11 +14,13 @@ const { slug } = Astro.props;
     disabled
     hidden
   >
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        d="M12 20.3 4.6 13a4.6 4.6 0 0 1 0-6.5 4.6 4.6 0 0 1 6.5 0l.9.9.9-.9a4.6 4.6 0 0 1 6.5 0 4.6 4.6 0 0 1 0 6.5L12 20.3Z"
-      ></path>
-    </svg>
+    <span class="heart-ico">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M12 20.3 4.6 13a4.6 4.6 0 0 1 0-6.5 4.6 4.6 0 0 1 6.5 0l.9.9.9-.9a4.6 4.6 0 0 1 6.5 0 4.6 4.6 0 0 1 0 6.5L12 20.3Z"
+        ></path>
+      </svg>
+    </span>
     <span data-post-likes>0</span>
   </button>
 </div>
@@ -45,11 +47,22 @@ const { slug } = Astro.props;
     transition:
       border-color 0.15s,
       color 0.15s,
-      background 0.15s;
+      background 0.15s,
+      transform 0.1s ease;
   }
   .like-btn:hover {
-    border-color: var(--accent);
+    border-color: var(--heart);
     color: var(--ink);
+  }
+  .like-btn:active {
+    transform: scale(0.94);
+  }
+  .like-btn:disabled {
+    cursor: default;
+  }
+  .heart-ico {
+    position: relative;
+    display: inline-flex;
   }
   .like-btn svg {
     width: 16px;
@@ -57,17 +70,65 @@ const { slug } = Astro.props;
     fill: none;
     stroke: currentColor;
     stroke-width: 2;
+    transition: fill 0.15s ease;
   }
   .like-btn.liked {
-    color: var(--accent-text);
-    border-color: var(--accent);
+    color: var(--heart);
+    border-color: var(--heart);
   }
   .like-btn.liked svg {
-    fill: var(--accent);
-    stroke: var(--accent);
+    fill: var(--heart);
+    stroke: var(--heart);
   }
-  .like-btn:disabled {
-    opacity: 0.6;
-    cursor: default;
+
+  /* satisfying squish-then-spring when you like */
+  .heart-ico.pop svg {
+    animation: heart-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes heart-pop {
+    0% {
+      transform: scale(1);
+    }
+    25% {
+      transform: scale(0.8);
+    }
+    50% {
+      transform: scale(1.35);
+    }
+    75% {
+      transform: scale(0.95);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* a little burst of hearts that floats up and fades (JS spawns these) */
+  .heart-particle {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    line-height: 1;
+    color: var(--heart);
+    pointer-events: none;
+    will-change: transform, opacity;
+    animation: heart-fly 0.72s ease-out forwards;
+  }
+  @keyframes heart-fly {
+    0% {
+      transform: translate(-50%, -50%) scale(0.2) rotate(0deg);
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    100% {
+      transform: translate(
+          calc(-50% + var(--tx, 0px)),
+          calc(-50% + var(--ty, -30px))
+        )
+        scale(var(--s, 1)) rotate(var(--r, 0deg));
+      opacity: 0;
+    }
   }
 </style>

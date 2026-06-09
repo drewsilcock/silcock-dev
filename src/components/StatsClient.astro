@@ -16,6 +16,41 @@
     return n >= 1000 ? `${(n / 1000).toFixed(n < 10000 ? 1 : 0)}k` : String(n);
   }
 
+  // Whimsy: squish-then-spring the heart and float a little burst of hearts up
+  // and out. Skipped for visitors who prefer reduced motion.
+  function likeBurst(btn: HTMLElement) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const ico = btn.querySelector<HTMLElement>(".heart-ico");
+    if (!ico) return;
+
+    ico.classList.remove("pop");
+    void ico.offsetWidth; // reflow so the animation restarts on every like
+    ico.classList.add("pop");
+
+    // Clear any leftover particles before spawning a fresh burst.
+    for (const old of ico.querySelectorAll(".heart-particle")) old.remove();
+
+    for (let i = 0; i < 8; i++) {
+      const p = document.createElement("span");
+      p.className = "heart-particle";
+      p.textContent = "♥";
+      const angle = ((-90 + (Math.random() * 110 - 55)) * Math.PI) / 180;
+      const dist = 24 + Math.random() * 28;
+      p.style.setProperty("--tx", `${Math.cos(angle) * dist}px`);
+      p.style.setProperty("--ty", `${Math.sin(angle) * dist}px`);
+      p.style.setProperty("--s", (0.5 + Math.random() * 0.9).toFixed(2));
+      p.style.setProperty("--r", `${Math.round(Math.random() * 70 - 35)}deg`);
+      p.style.fontSize = `${9 + Math.random() * 7}px`;
+      p.style.animationDelay = `${Math.round(Math.random() * 70)}ms`;
+      // Remove on animation end, with a timeout fallback so a particle can
+      // never be left behind if the animation doesn't fire.
+      const remove = () => p.remove();
+      p.addEventListener("animationend", remove);
+      setTimeout(remove, 1200);
+      ico.appendChild(p);
+    }
+  }
+
   async function getJSON(path: string) {
     const res = await fetch(API + path);
     if (!res.ok) throw new Error(String(res.status));
@@ -105,6 +140,15 @@
       btn.dataset.bound = "1";
       btn.addEventListener("click", async () => {
         if (btn.disabled) return;
+        const willLike = !liked;
+
+        // Optimistic: update + animate instantly, reconcile with the server
+        // response (and revert if it fails).
+        liked = willLike;
+        stats.likes = Math.max(0, stats.likes + (willLike ? 1 : -1));
+        paint();
+        if (willLike) likeBurst(btn);
+
         btn.disabled = true;
         try {
           const res = await postJSON("/like", { slug });
@@ -112,7 +156,9 @@
           liked = res.liked;
           paint();
         } catch {
-          /* leave state as-is on failure */
+          liked = !willLike;
+          stats.likes = Math.max(0, stats.likes + (willLike ? -1 : 1));
+          paint();
         } finally {
           btn.disabled = false;
         }
