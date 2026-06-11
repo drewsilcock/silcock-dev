@@ -1,0 +1,22 @@
+---
+import { getRepoStars, formatStars } from "@lib/github";
+
+type Props = { repoURL?: string };
+
+const { repoURL } = Astro.props;
+const stars = await getRepoStars(repoURL);
+---
+
+{
+  stars !== null && (
+    <span class="meta-stat" title={`${stars} stars on GitHub`}>
+      <span class="meta-sep">·</span>
+      <span class="meta-bit repo-stars">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="m12 2 2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.1-1.01z" />
+        </svg>
+        {formatStars(stars)}
+      </span>
+    </span>
+  )
+}

@@ -359,6 +359,21 @@ a.tag:hover {
   color: var(--dim);
   opacity: 0.5;
 }
+/* the heart in a card's like count */
+.like-heart {
+  color: var(--heart);
+}
+/* GitHub star count (projects with a repo) */
+.repo-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.repo-stars svg {
+  width: 12px;
+  height: 12px;
+  fill: var(--accent);
+}
 
 /* ============ POST CARD (index pages — standalone) ============ */
 .card-list {
@@ -1036,11 +1051,16 @@ html[data-theme="light"] img.image-dark {
     bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   }
 }
-@media (max-width: 420px) {
+@media (max-width: 560px) {
+  /* Stack the card footer: tags on their own line, then the
+     timestamp · reading time · likes line below them. */
+  .card-foot {
+    gap: 8px 12px;
+  }
   .card-foot .spacer {
     display: none;
   }
-  .card-foot {
-    gap: 8px 12px;
+  .card-foot .tags {
+    flex-basis: 100%;
   }
 }

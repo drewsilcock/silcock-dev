@@ -9,7 +9,8 @@ routes = [
   { pattern = "drew.silcock.dev/api/*", zone_name = "silcock.dev" }
 ]
 
-# Daily prune of the view-dedup table.
+# Daily housekeeping: prune the view-dedup table and (if PAGES_DEPLOY_HOOK is
+# set) trigger a Pages rebuild so build-time snapshots refresh once a day.
 [triggers]
 crons = ["0 4 * * *"]
 
@@ -33,5 +34,7 @@ new_sqlite_classes = ["LiveCounter"]
 # an Origin header, so they're always fine; this matters for local dev).
 ALLOWED_ORIGINS = "https://drew.silcock.dev,http://localhost:4321"
 
-# SALT is a secret, NOT a var. Set it with:
-#   wrangler secret put SALT
+# These are secrets, NOT vars. Set each with `wrangler secret put <NAME>`:
+#   SALT               – salt for hashing visitor IPs
+#   PAGES_DEPLOY_HOOK  – (optional) Pages Deploy Hook URL; the daily cron POSTs
+#                        to it to rebuild the site and refresh build-time data

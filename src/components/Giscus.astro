@@ -1,13 +1,17 @@
+---
+import { GISCUS } from "@consts";
+---
+
 <div class="giscus"></div>
 
 <script
   is:inline
   data-astro-rerun
   src="https://giscus.app/client.js"
-  data-repo="drewsilcock/silcock-dev"
-  data-repo-id="R_kgDOITJwGg"
-  data-category="Announcements"
-  data-category-id="DIC_kwDOITJwGs4CSLCt"
+  data-repo={GISCUS.REPO}
+  data-repo-id={GISCUS.REPO_ID}
+  data-category={GISCUS.CATEGORY}
+  data-category-id={GISCUS.CATEGORY_ID}
   data-mapping="pathname"
   data-strict="0"
   data-reactions-enabled="1"

@@ -43,11 +43,14 @@ on the page, and the server pushes `{ count }` (the number of people currently
 reading that post) whenever someone joins or leaves. Clients send `"ping"`
 periodically to keep the socket warm; the runtime auto-answers `"pong"`.
 
+GitHub star counts for projects are baked in at build time (and refreshed by the
+daily rebuild), so the Worker isn't involved in those.
+
 ## Data model
 
 Views and likes live in D1; live presence lives in a Durable Object (no storage).
 
-`schema.sql` defines three tables:
+`schema.sql` defines these tables:
 
 - `counters` – the durable totals (`slug`, `views`, `likes`), one row per post.
 - `likes_by` – one row per `(slug, visitor)` that has liked; a row's presence is
@@ -73,6 +76,13 @@ persisted. It's declared as a SQLite-backed class so it runs on the free plan.
   only matters for local development.
 - `SALT` – a **secret** (not a var) used to hash visitor IPs. Set it with
   `wrangler secret put SALT`.
+- `PAGES_DEPLOY_HOOK` – an optional **secret** holding a [Pages Deploy
+  Hook](https://developers.cloudflare.com/pages/configuration/deploy-hooks/) URL.
+  When set, the daily cron POSTs to it to rebuild the site, refreshing the
+  build-time snapshots (star/view/like/comment counts baked into the static HTML
+  and JSON-LD). Set it with `wrangler secret put PAGES_DEPLOY_HOOK`; when unset,
+  the cron just prunes the dedup table. Create the hook in the Pages project:
+  **Settings → Builds & deployments → Deploy hooks** (branch `main`).
 
 ## Local development
 
@@ -109,9 +119,13 @@ pnpm wrangler login
 # Create the database, then copy the printed id into wrangler.toml
 pnpm wrangler d1 create silcock-dev-db
 
-pnpm run db:init                 # create the tables in the remote D1
-pnpm wrangler secret put SALT    # e.g. paste `openssl rand -hex 32`
+pnpm run db:init                           # create the tables in the remote D1
+pnpm wrangler secret put SALT              # e.g. paste `openssl rand -hex 32`
+pnpm wrangler secret put PAGES_DEPLOY_HOOK # optional — daily rebuild of the site
 ```
+
+`db:init` uses `create table if not exists`, so re-running it on an existing
+database just adds any new tables without touching data.
 
 ### Continuous deployment (Workers Builds)
 

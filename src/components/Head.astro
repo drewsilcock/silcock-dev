@@ -11,9 +11,17 @@ import "@fontsource/jetbrains-mono/500.css";
 import "@fontsource/jetbrains-mono/600.css";
 
 import { Schema } from "astro-seo-schema";
-import type { BlogPosting, Person, WebSite, WithContext } from "schema-dts";
+import type {
+  BlogPosting,
+  InteractionCounter,
+  Person,
+  WebSite,
+  WithContext,
+} from "schema-dts";
 
 import { SITE, SOCIALS } from "@consts";
+import { getStats } from "@lib/stats";
+import { getCommentCount } from "@lib/comments";
 import type { ArticleMeta } from "@layouts/Layout.astro";
 
 interface Props {
@@ -51,6 +59,35 @@ const websiteSchema: WithContext<WebSite> = {
   author,
 };
 
+// Engagement counts (views, likes, comments) for the post's structured data.
+// These are read at build time, so they're a snapshot that refreshes on deploy;
+// only counts greater than zero are emitted.
+const counter = (
+  action: "ViewAction" | "LikeAction" | "CommentAction",
+  count: number,
+): InteractionCounter => ({
+  "@type": "InteractionCounter",
+  interactionType: { "@type": action },
+  userInteractionCount: count,
+});
+
+let interactionStatistic: InteractionCounter[] | undefined;
+let commentCount: number | undefined;
+if (article) {
+  const statsSlug = canonicalURL.pathname.replace(/^\/+|\/+$/g, "");
+  const stats = await getStats(statsSlug);
+  const comments = await getCommentCount(canonicalURL.pathname);
+
+  const counters: InteractionCounter[] = [];
+  if (stats?.views) counters.push(counter("ViewAction", stats.views));
+  if (stats?.likes) counters.push(counter("LikeAction", stats.likes));
+  if (comments) {
+    commentCount = comments;
+    counters.push(counter("CommentAction", comments));
+  }
+  if (counters.length > 0) interactionStatistic = counters;
+}
+
 const articleSchema: WithContext<BlogPosting> | undefined = article && {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
@@ -67,6 +104,8 @@ const articleSchema: WithContext<BlogPosting> | undefined = article && {
   publisher: author,
   ...(absoluteImageUrl ? { image: absoluteImageUrl } : {}),
   ...(article.tags?.length ? { keywords: article.tags.join(", ") } : {}),
+  ...(interactionStatistic ? { interactionStatistic } : {}),
+  ...(commentCount !== undefined ? { commentCount } : {}),
 };
 ---
 

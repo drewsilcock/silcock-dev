@@ -2,6 +2,7 @@
 import Layout from "@layouts/Layout.astro";
 import FormattedDate from "@components/FormattedDate.astro";
 import MetaStats from "@components/MetaStats.astro";
+import RepoStars from "@components/RepoStars.astro";
 import { HOME, SITE } from "@consts";
 import { shouldListPage, readingTime } from "@lib/utils";
 import { getCollection } from "astro:content";
@@ -132,6 +133,7 @@ const recentTopics = topics.slice(0, NUM_TOPICS);
               <FormattedDate date={project.data.date} />
             </span>
             <MetaStats slug={`projects/${project.slug}`} />
+            <RepoStars repoURL={project.data.repoURL} />
           </div>
         </a>
       ))
@@ -394,6 +396,19 @@ const recentTopics = topics.slice(0, NUM_TOPICS);
       gap: 16px;
     }
   }
+  @media (max-width: 560px) {
+    /* Stack the post footer: tags on their own line, then the
+       timestamp · reading time · likes line below them. */
+    .post-meta {
+      gap: 8px 12px;
+    }
+    .post-meta .spacer {
+      display: none;
+    }
+    .post-meta .tags {
+      flex-basis: 100%;
+    }
+  }
   @media (max-width: 420px) {
     .post-sub,
     .post-meta {
@@ -401,12 +416,6 @@ const recentTopics = topics.slice(0, NUM_TOPICS);
     }
     .post-top {
       gap: 9px;
-    }
-    .post-meta .spacer {
-      display: none;
-    }
-    .post-meta {
-      gap: 8px 12px;
     }
   }
 </style>

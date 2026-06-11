@@ -86,7 +86,12 @@
 
   function setLikes(el: HTMLElement, likes: number) {
     if (likes > 0) {
-      el.textContent = `♥ ${fmt(likes)}`;
+      // Split the heart into its own span so it can be coloured red while the
+      // count stays muted like the rest of the meta line.
+      const heart = document.createElement("span");
+      heart.className = "like-heart";
+      heart.textContent = "♥";
+      el.replaceChildren(heart, ` ${fmt(likes)}`);
       reveal(el);
     }
   }

@@ -45,6 +45,18 @@ credentials stored in GitHub:
 GitHub Actions (`.github/workflows/ci.yml`) only runs the checks — `pnpm lint`,
 `pnpm check`, `pnpm build` — on every push and pull request. It does not deploy.
 
+### Build-time data
+
+The build fetches a few things to bake into the static output: GitHub **star
+counts** for projects, and **view/like/comment counts** for each post's JSON-LD
+(a snapshot that refreshes on each deploy). These are best-effort — failures are
+ignored and the value is simply omitted.
+
+Set an optional `GITHUB_TOKEN` in the **Pages build environment** (a fine-grained
+token, public read-only is enough) to lift the GitHub rate limit for star counts
+and to enable comment counts (the GitHub GraphQL API used for Giscus discussion
+counts requires auth). View/like counts come from the Worker and need no token.
+
 ## Stats API (`worker/`)
 
 The site is fully static, so per-post **view and like counts** are handled by a

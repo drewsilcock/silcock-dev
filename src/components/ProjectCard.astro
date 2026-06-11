@@ -2,6 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import FormattedDate from "@components/FormattedDate.astro";
 import MetaStats from "@components/MetaStats.astro";
+import RepoStars from "@components/RepoStars.astro";
 import { readingTime } from "@lib/utils";
 
 type Props = { entry: CollectionEntry<"projects"> };
@@ -31,6 +32,7 @@ const tags = entry.data.tags ?? [];
       <span class="meta-sep">·</span>
       <span class="meta-bit">{readingTime(entry.body)}</span>
       <MetaStats slug={`projects/${entry.slug}`} />
+      <RepoStars repoURL={entry.data.repoURL} />
     </div>
   </div>
   <span class="chev">›</span>

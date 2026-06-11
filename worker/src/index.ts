@@ -16,6 +16,7 @@ interface Env {
   SALT: string;
   ALLOWED_ORIGINS?: string;
   LIVE: DurableObjectNamespace;
+  PAGES_DEPLOY_HOOK?: string;
 }
 
 const SLUG_RE = /^[a-z0-9][a-z0-9/_-]{0,128}$/;
@@ -262,13 +263,23 @@ export default {
     }
   },
 
-  // Daily prune of the view-dedup table (it's the only table that grows
-  // without bound). Counters and likes are kept forever.
+  // Daily housekeeping: prune the view-dedup table (the only table that grows
+  // without bound; counters and likes are kept forever) and trigger a Pages
+  // rebuild so the build-time snapshots (star/view/like/comment counts baked
+  // into the static HTML and JSON-LD) refresh once a day.
   async scheduled(_event: ScheduledEvent, env: Env): Promise<void> {
     const cutoff = dayString(Date.now() - 2 * 86_400_000);
     await env.DB.prepare("delete from view_dedup where day < ?1")
       .bind(cutoff)
       .run();
+
+    if (env.PAGES_DEPLOY_HOOK) {
+      try {
+        await fetch(env.PAGES_DEPLOY_HOOK, { method: "POST" });
+      } catch {
+        /* a failed rebuild trigger just means yesterday's snapshot lingers */
+      }
+    }
   },
 };
 

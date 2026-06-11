@@ -1,7 +1,8 @@
 import type { Metadata, Site, Socials } from "@types";
 
 export const SITE: Site = {
-  TITLE: "drew's dev blog",
+  TITLE: "Drew's Dev Blog",
+  URL: "https://drew.silcock.dev",
   AUTHOR: "Drew Silcock",
   DESCRIPTION:
     "Drew's Dev Blog featuring thoughts and explainers on tech, software engineering, databases, programming languages and more.",
@@ -10,6 +11,22 @@ export const SITE: Site = {
   NUM_POSTS_ON_HOMEPAGE: 5,
   NUM_PROJECTS_ON_HOMEPAGE: 3,
 };
+
+// GitHub account that owns the projects (used for build-time star counts) and
+// the discussions repo behind comments.
+export const GITHUB_USERNAME = "drewsilcock";
+
+// User-Agent sent with build-time GitHub API requests.
+export const USER_AGENT = "silcock-dev";
+
+// Giscus / GitHub Discussions config for blog comments. These must match the
+// data attributes in src/components/Giscus.astro.
+export const GISCUS = {
+  REPO: `${GITHUB_USERNAME}/silcock-dev`,
+  REPO_ID: "R_kgDOITJwGg",
+  CATEGORY: "Announcements",
+  CATEGORY_ID: "DIC_kwDOITJwGs4CSLCt",
+} as const;
 
 export const HOME: Metadata = {
   TITLE: "Home",
