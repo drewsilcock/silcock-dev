@@ -5,7 +5,7 @@ export const SITE: Site = {
   URL: "https://drew.silcock.dev",
   AUTHOR: "Drew Silcock",
   DESCRIPTION:
-    "Drew's Dev Blog featuring thoughts and explainers on tech, software engineering, databases, programming languages and more.",
+    "I'm a software engineer living in Portishead, UK. I like writing things about software and computers. You might find them interesting.",
   EMAIL: "031a0c1d2b1f04020c1f12195d101000",
   TWITTER_HANDLE: "@drewlhsilcock",
   NUM_POSTS_ON_HOMEPAGE: 5,
@@ -28,15 +28,20 @@ export const GISCUS = {
   CATEGORY_ID: "DIC_kwDOITJwGs4CSLCt",
 } as const;
 
+// The home page's hero headline. Lives here because the home page's social
+// card uses it as its title too, and the two must not drift apart.
+export const HOME_HEADLINE =
+  "I like computers (most of the time) and write long-form deep dives about them (sometimes)";
+
 export const HOME: Metadata = {
   TITLE: "Home",
-  DESCRIPTION:
-    "Welcome to drew's dev blog, where I post about tech and tools I'm interested in.",
+  DESCRIPTION: `${HOME_HEADLINE}.`,
 };
 
 export const BLOG: Metadata = {
   TITLE: "Blog",
-  DESCRIPTION: "A collection of articles on topics I'm interested in.",
+  DESCRIPTION:
+    "Databases, compilers, git internals, and more. Filter by tag, or just start scrolling.",
 };
 
 export const BLOG_TAGS: Metadata = {
@@ -46,8 +51,7 @@ export const BLOG_TAGS: Metadata = {
 
 export const PROJECTS: Metadata = {
   TITLE: "Projects",
-  DESCRIPTION:
-    "A collection of my projects with links to repositories and live demos.",
+  DESCRIPTION: "Things I've built for funsies. Read about them, if you fancy.",
 };
 
 export const PROJECT_TAGS: Metadata = {

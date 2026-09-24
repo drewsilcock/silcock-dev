@@ -3,7 +3,7 @@ import Layout from "@layouts/Layout.astro";
 import FormattedDate from "@components/FormattedDate.astro";
 import MetaStats from "@components/MetaStats.astro";
 import RepoStars from "@components/RepoStars.astro";
-import { HOME, SITE } from "@consts";
+import { HOME, HOME_HEADLINE, SITE } from "@consts";
 import { shouldListPage, readingTime } from "@lib/utils";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
@@ -46,10 +46,7 @@ const recentTopics = topics.slice(0, NUM_TOPICS);
 <Layout title={HOME.TITLE} description={HOME.DESCRIPTION} route="index">
   <section class="hero">
     <span class="hi">👋 Hey, I'm Drew</span>
-    <h1>
-      I like computers (most of the time) and write long-form deep dives about
-      them (sometimes)
-    </h1>
+    <h1>{HOME_HEADLINE}</h1>
     <p class="lede">
       I'm a software engineer living in Portishead, UK. I like writing things
       about software and computers. You might find them interesting.

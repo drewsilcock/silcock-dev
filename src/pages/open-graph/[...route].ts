@@ -1,3 +1,4 @@
+import { HOME_HEADLINE } from "@consts";
 import { readingTime } from "@lib/utils";
 import type { APIRoute, GetStaticPaths } from "astro";
 import type { CollectionEntry } from "astro:content";
@@ -94,10 +95,8 @@ async function buildCards(): Promise<Card[]> {
     {
       key: "index",
       eyebrow: "dev blog",
-      title:
-        "I write deep dives into the parts of the stack most people skim past.",
-      description:
-        "Software engineer in Liverpool — databases, compilers and cursed git tricks.",
+      title: HOME_HEADLINE,
+      description: "I'm a software engineer living in Portishead, UK",
       tags: [],
       meta: "drew.silcock.dev",
     },
@@ -105,8 +104,7 @@ async function buildCards(): Promise<Card[]> {
       key: "blog",
       eyebrow: "dev blog",
       title: "Posts",
-      description:
-        "Deep dives — databases, compilers, git internals and whatever else.",
+      description: "Databases, compilers, git internals, and more",
       tags: [],
       meta: "drew.silcock.dev",
     },
@@ -114,8 +112,7 @@ async function buildCards(): Promise<Card[]> {
       key: "projects",
       eyebrow: "dev blog",
       title: "Projects",
-      description:
-        "Things I've built because the tool I wanted didn't exist yet.",
+      description: "Things I've built for funsies",
       tags: [],
       meta: "drew.silcock.dev",
     },
@@ -123,16 +120,15 @@ async function buildCards(): Promise<Card[]> {
       key: "about",
       eyebrow: "dev blog",
       title: "About me",
-      description:
-        "Senior Research Software Engineer in Liverpool. Go, Rust, Python, TypeScript.",
+      description: "Senior Research Software Engineer at STFC Hartree Centre",
       tags: [],
       meta: "drew.silcock.dev",
     },
     {
       key: "404",
       eyebrow: "dev blog",
-      title: "Page not found",
-      description: "That page doesn't exist, or it wandered off somewhere.",
+      title: "404 — page not found",
+      description: "That page doesn't exist, or it wandered off somewhere",
       tags: [],
       meta: "drew.silcock.dev",
     },

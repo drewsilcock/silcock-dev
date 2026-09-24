@@ -1,7 +1,7 @@
 {
   "name": "drew's dev blog",
   "short_name": "drew.dev",
-  "description": "Deep dives into the parts of the stack most people skim past.",
+  "description": "I'm a software engineer living in Portishead, UK. I like writing things about software and computers. You might find them interesting.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
