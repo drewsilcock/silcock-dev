@@ -1,0 +1,127 @@
+---
+title: Building a high-performance wombat dating simulator in Zig
+description: How to win reality TV dating show using maths, and using this knowledge to make a wombat dating game
+date: 2026-06-04T17:45:00
+updated: 2026-06-04T17:45:00
+draft: true
+tags:
+  - zig
+  - maths
+socials: []
+---
+
+import { Image } from "astro:assets";
+
+import truthBoothImage from "@/assets/wombat-dating-simulator/truth-booth.avif";
+import matchupCeremonyImage from "@/assets/wombat-dating-simulator/matchup-ceremony.png";
+import guessWhoImage from "@/assets/wombat-dating-simulator/guess-who.jpg";
+
+## Outline:
+
+- Introduction to "Are You The One"? Introduce the context, propose the problem.
+- Introduction to information theory
+  - Shannons/bits, self-surprisal, entropy
+- Truth booths - rules and game plans
+- Matchups
+  - Rules
+  - Pub quiz problem & derangements (interactive web version of this game to illustrate the scenario?)
+  - Aside: derangement etymology
+  - Game plans
+- There's a way to win big, but how do we get there...
+
+Maybe end of part 1?
+
+- Modelling mathematically
+- Lehmer coding
+- Factorial number systems (interactive demo)
+- Inversion tables
+- Season 8 bisexual/sexually fluid
+  - Double factorial
+  - Double factoradic
+  - Easier or harder than other seasons?
+
+Maybe end of part 2?
+
+- Are You The Wombat
+  - Why wombats
+  - What are the rules of the game
+  - State representation
+  - Applying truth booths/matchups
+- Calculating optimal tactics
+  - Truth booths
+  - Matchup ceremonies
+- Interactive web-based demo? (Could compile lib to wasm)
+- Some kind of conclusion that ties it together?
+- Reading
+
+“Are You The One” is a hit MTV (then Paramount+) reality TV show whereby men and women are matched up using some kind of "secret matchmaking algorithm" (read: what the producers think will make the most drama) into "perfect matches".
+
+Back in January 2014 when these MTV execs sat down for the series premier, they believed that they had greenlit a classic formula for popular reality television: conventionally attractive people drinking and arguing over who kissed whom. And yet, they had also unwittingly created an extended exercise in combinatorics that would spawn a small (but statistically significant) community of mathematics enthusiasts who would follow each episode with enthusiasm, live-blogging their mathematical workings, probability tables, and predictions. (TODO: add links)
+
+In the process of analysing the rules of this show, these enthusiasts have discovered what is essentially a trick for free money (with a very caveats).
+
+What are the secret mathematical tricks and techniques that these people are using, and what does any of this have to do with wombats? Let's find out...
+
+## The rules of the game
+
+There are either 20 or 22 contestants (depending on the season, ignoring S8 which we will discuss later), half of which are men and half of which are women (again, we'll come back to this later when discussing S8). These people are often conventionally attractive and have an eye on a future career flogging scented candles and/or [ethically questionable petrostates](https://www.theguardian.com/world/2021/apr/17/in-this-world-social-media-is-everything-how-dubai-became-the-planets-influencer-capital) on their Instagram accounts, but that's not required for the mathematical formulation.
+
+The "secret dating algorithm" matches each man to one woman, and vice-versa. If the contestants can successfully identify all of the matches between all pairs of people, they win a cash prize of \$1m (which when split among the winners and after income and state taxes will likely come out in the range of \$32-42k per person).
+
+The contestants are sequestered in a house for 10 weeks, where each episode generally corresponds to one week – sometimes they drag a single week into multiple episodes, but you get the idea.
+
+Each week, they go on a "date" (i.e. an opportunity for drama and humour, not relevant to the combinatoric analysis and thus excluded from this post). They then have a "truth booth", ending the episode with a "matchup ceremony".
+
+These two tools are how the contestants learn about who is or is not matched with whom.
+
+### The truth booth
+
+In the truth booth, the house votes two people to go into the truth booth (which for some reason looks like a budget sci-fi spaceship from an 80s TV show, complete with oversized laser scanner that makes the prospective couple look like a poorly chosen meal deal).
+
+This will tell the house whether this individual couple is a perfect match or not.
+
+<figure>
+  <Image
+    alt="A couple standing in the 'truth booth'."
+    src={truthBoothImage}
+  />
+  <figcaption>Image courtesy of Music Television (MTV) via [E! News](https://www.eonline.com/news/1052074/tv-s-first-sexually-fluid-cast-no-privacy-and-1-shared-bed-secrets-revealed-about-are-you-the-one.)</figcaption>
+</figure>
+
+### The matchup ceremony
+
+In the matchup ceremony, the contestants sit together in pairs, where each contestant is encouraged to sit next to who they believe is their perfect match (although as we will see later, this is not generally optimal).
+
+After the contractually obligatory inter-personal conflict, once they have all agreed their pairings, the host reveals behind them a number of beams of light (we've lost the 80s sci-fi theme now, unfortunately). The number of beams of light tells you the number of pairs in the matchup ceremony which are perfect matches. Importantly, this does *not* tell you who the perfect matches are among the pairs.
+
+<figure>
+  <Image
+    alt="Host Ryan Devlin stands in front of a full house of beams in a matchup ceremony"
+    src={matchupCeremonyImage}
+  />
+  <figcaption>Image courtesy of Music Television (MTV) via [Observer](https://observer.com/2016/08/ayto-host-ryan-devlin-takes-us-behind-the-scenes-and-dishes-on-the-season-4-finale/)</figcaption>
+</figure>
+
+## Introduction to information theory
+
+Now that we understand how to play the game, we can start to build the mathematical tools necessary to win the game.
+
+The first thing to notice is that, when analysing the number of possible perfect matchup pairings at a particular point in time, absolute numbers are not enormously helpful. By looking at a graph charting the number of possible solutions over time, we can see that the number collapses from many millions down to a few thousands within a couple of episodes, are which everything hugs the x-axis. (TODO: add a graph here?)
+
+This makes sense – we can understand this by thinking about popular two-player board game [Guess Who?](https://en.wikipedia.org/wiki/Guess_Who%3F)[^guess-who-fact]. If you find out that your opponents person is wearing a hat and half of your remaining options are wearing hats, this reduces the size of the solution space by half. If you are at the beginning of the game, you will eliminate a lot more options that towards the end of the game, but either way you are gaining the same amount of new information.
+
+[^guess-who-fact]: Guess Who? was designed and created by Theo (1928–2019) and Ora (1931–2021) Coster. Theo Coster (born Maurice Simon) was a classmate of Anne Frank and survived the holocaust by hiding with a non-Jewish family and changing his name. Ora Coster was a sniper in the 1948 Palestine war. The couple would later go in to invent those squidgy silicone fidget toys where you pop the bubbles. The couple's tombstones were designed to look like Guess Who tiles.
+
+<figure>
+  <Image
+    alt="Children playing hit two-player board game Guess Who?"
+    src={guessWhoImage}
+  />
+  <figcaption>Courtesy of Roland Balik via [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Dover_AFB_Youth_Center_Camps_140627-F-BO262-106_(cropped).jpg), public domain</figcaption>
+</figure>
+
+It then feels justified to use a logarithmic scale when thinking about the number of solutions. There no universal agreement on what base to use for this. The ones that people commonly use are:
+
+- Base 2 – these are generally called either bits or **shannons**. To avoid confusion with the more common usage of "bit" (i.e. a 1 or a 0 in some string of data, which has some obvious overlap with this meaning but is in itself a distinct concept), we will use the term **shannon**. Shannons are by far the most commonly used base in information theory.
+- Base 10 – these are called "hartleys", "bans", or "dits", depeneding on who you're talking to and when.
+- Base e – these are called "nats", i.e. "natural unit of information". Turing called them "natural bans".
