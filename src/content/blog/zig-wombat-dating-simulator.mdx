@@ -122,6 +122,62 @@ This makes sense – we can understand this by thinking about popular two-player
 
 It then feels justified to use a logarithmic scale when thinking about the number of solutions. There no universal agreement on what base to use for this. The ones that people commonly use are:
 
-- Base 2 – these are generally called either bits or **shannons**. To avoid confusion with the more common usage of "bit" (i.e. a 1 or a 0 in some string of data, which has some obvious overlap with this meaning but is in itself a distinct concept), we will use the term **shannon**. Shannons are by far the most commonly used base in information theory.
+- Base 2 – these are generally called either bits or **shannons**. To avoid confusion with the more common usage of "bit" (i.e. a 1 or a 0 in some string of data, which has some obvious overlap with this meaning but is in itself a distinct concept), we will use the term **shannon**. Shannons are the most commonly used unit in information theory.
 - Base 10 – these are called "hartleys", "bans", or "dits", depeneding on who you're talking to and when.
 - Base e – these are called "nats", i.e. "natural unit of information". Turing called them "natural bans".
+
+To see how much information we learned from a specific event, we look at the remaining number of solutions before and after the event. Sticking with Guess Who!, we start with 24 character tiles. If we ask "do they have a moustache" and the response is "yes", we flip down 15 of these tiles and are left with 9 tiles remaining. In log space, we started off at $log_2(24) = 4.58$ and went down to $log_2(9) = 3.17$, meaning we have gained 1.42 shannons of information with our question.
+
+We call this number telling us how much we learnt from an event the "self-information" or "surprisal". I'm particularly fond of the latter as I think it's a wonderful word, and it makes instinctive sense as well – the more surprising an event is, the more information you learn from it.
+
+We've been looking at the number of possible solution above, but assuming each possible match is equally likely (which is not necessarily true but close enough to the truth in our case), we could equally be thinking about probabilities. With 24 possible options, I can see that 9 of them have moustaches and 15 do not. That means that an affirmative response has a probability of 9/24 = 37.5%. Taking $log_2(0.375) ≈ -1.42$. As probabilities are 0–1, the logs will always be negative to we put a minus in front of the log to make it easier to work with. Hence, we say
+
+$$
+\text{surprisal} = -\log_2(p)
+$$
+
+Where $p$ is the probability of the event.
+
+## Information entropy
+
+We can see an important trade-off here. By asking a question which is lopsided, i.e. much more characters have no moustache than do, we are making a gamble – an affirmative response gives us more information but is less likely while a negative response gives us less information but is more likely.
+
+What then is the "best tactic" for Guess Who? Is it to gamble on a very surprising event, or to play it safe and try to split the pack 50-50 each time?
+
+If you're not already familiar with the answer to this, take a moment to pause and think about what makes the best tactic in the long-term, based on playing loads of different games.
+
+To understand the best tactic, we think about what we would expect to happen on average if you played millions of games, i.e. each time you played, you added up the shannons of information that you gained and multiplied by how many times that event happened, a.k.a. what is the expectation value of the surprisal.
+
+This is called the "information entropy" or $H(X)$ (also known as Shannon entropy). It's a different concept to thermodynamic entropy but the two are very much deeply related[^thermo-entropy], hence borrowing the letter from [Boltzmann's H-theorem](https://en.wikipedia.org/wiki/H-theorem).
+
+[^thermo-entropy]: Those familiar with thermodynamic entropy may remember Gibbs' formula for entropy based on the concept of microstates: $S = -k_B \sum_i p_i \ln(p_i)$. This will look very similar to our equation for information entropy,  using $\ln()$ instead of $\log()$ and putting the Boltzmann constant $k_B$ at the front.
+
+$$
+H(X) = - \sum_i p_i\log_2(p_i)
+$$
+
+The story goes that when Shannon came up with the concept, he could not figure out what to call it. He toyed with "information" or "uncertainty" but neither quite worked, so he turned to his friend John von Neumann ([also known for other academic contributions](https://en.wikipedia.org/wiki/List_of_things_named_after_John_von_Neumann)) who is reported to have said:
+
+> You should call it entropy, for two reasons. In the first place your uncertainty function has been used in statistical mechanics under that name, so it already has a name. In the second place, and more important, nobody knows what entropy really is, so in a debate you will always have the advantage.
+
+So now when we ask "what's the best move?", we can be a bit more precise and say "what move has the largest entropy"?
+
+## Binary entropy function
+
+In the case of Guess Who? this is fairly simple, as we have only two possible responses for every question: yes or no. If we say that the probability of a yes is $p$, the probability of no is $1 - p$ and so
+
+$$
+H(X) = -\log_2(p) - (1 - p)\log_2(1 - p)
+$$
+
+This is a simple equation which we can plot! It's called the Binary Entropy Function.
+
+TODO: add diagram showing H(p, 1-p) against p
+
+Looking at the diagram, we can see that the best move, i.e. the most that gives you the most expected information gain, is the one that splits the possibilities exactly in half. giving $H(X) = -\frac{1}{2}\log(\frac{1}{2}) - \frac{1}{2} \log_2(\frac{1}{2}) = \frac{1}{2} + \frac{1}{2} = 1$
+
+While we've been talking about Guess Who?, everything we discussed translates directly over to the truth booth – any given pair is either a perfect match or isn't, and so the exact same binary entropy function applies in either case.
+
+This means the exact same game plan applies – instead of choosing the couple you most believe is a perfect match (as the show encourages its contestants to do), they should instead be choosing a potential match that has a probability as close as possible to 50%.
+
+In practice, this means keeping track of all possible solutions, and checking how many options are eliminated by each potential truth booth choice, then choosing the pair that eliminates the closest to half the remaining solutions.
