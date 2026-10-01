@@ -15,6 +15,7 @@ import { Image } from "astro:assets";
 import truthBoothImage from "@/assets/wombat-dating-simulator/truth-booth.avif";
 import matchupCeremonyImage from "@/assets/wombat-dating-simulator/matchup-ceremony.png";
 import guessWhoImage from "@/assets/wombat-dating-simulator/guess-who.jpg";
+import BinaryEntropyPlot from "@/components/BinaryEntropyPlot.astro";
 
 ## Outline:
 
@@ -150,7 +151,7 @@ To understand the best tactic, we think about what we would expect to happen on 
 
 This is called the "information entropy" or $H(X)$ (also known as Shannon entropy). It's a different concept to thermodynamic entropy but the two are very much deeply related[^thermo-entropy], hence borrowing the letter from [Boltzmann's H-theorem](https://en.wikipedia.org/wiki/H-theorem).
 
-[^thermo-entropy]: Those familiar with thermodynamic entropy may remember Gibbs' formula for entropy based on the concept of microstates: $S = -k_B \sum_i p_i \ln(p_i)$. This will look very similar to our equation for information entropy,  using $\ln()$ instead of $\log()$ and putting the Boltzmann constant $k_B$ at the front.
+[^thermo-entropy]: Those familiar with thermodynamic entropy may remember Gibbs' formula for entropy based on the concept of microstates: $S = -k_B \sum_i p_i \ln(p_i)$. This will look very similar to our equation for information entropy,  using base e instead of base 2 and putting the Boltzmann constant $k_B$ at the front.
 
 $$
 H(X) = - \sum_i p_i\log_2(p_i)
@@ -172,7 +173,7 @@ $$
 
 This is a simple equation which we can plot! It's called the Binary Entropy Function.
 
-TODO: add diagram showing H(p, 1-p) against p
+<BinaryEntropyPlot>Plot showing the Binary Entropy Function.</BinaryEntropyPlot>
 
 Looking at the diagram, we can see that the best move, i.e. the most that gives you the most expected information gain, is the one that splits the possibilities exactly in half. giving $H(X) = -\frac{1}{2}\log(\frac{1}{2}) - \frac{1}{2} \log_2(\frac{1}{2}) = \frac{1}{2} + \frac{1}{2} = 1$
 
@@ -181,3 +182,112 @@ While we've been talking about Guess Who?, everything we discussed translates di
 This means the exact same game plan applies – instead of choosing the couple you most believe is a perfect match (as the show encourages its contestants to do), they should instead be choosing a potential match that has a probability as close as possible to 50%.
 
 In practice, this means keeping track of all possible solutions, and checking how many options are eliminated by each potential truth booth choice, then choosing the pair that eliminates the closest to half the remaining solutions.
+
+## Pub quiz problem
+
+Next, we need a game plan for how to handle the matchup ceremonies.
+
+To formulate this, we need to talk about pub quizzes[^pub-quizzes].
+
+[^pub-quizzes]: This problem is also sometimes formulated as giving people the wrong hats back ("hat check problem") or as secretaries addressing letters incorrectly ("secretary problem", not to be confused with the other secretary problem). I don't like either of these because a) they don't really make any sense – why would you want to hand give people the wrong hats and letters, and b) they both seem at best outdated.
+
+Let's say you have N teams in a pub quiz, where N > the number of answer sheets the host can be bothered to mark. The host gathers all the answer sheets to hand to other teams so that they can mark each other's work, but realises he forgot which sheet was for which team.
+
+Being lazy, he decides to just randomly hand them back and hope for the best.
+
+What are the chances that everyone gets another team's answer sheet back, thus preventing anyone from cheating? How does this change with N?
+
+This has a special name and even a symbol: $!n$ is the number of **derangements** of n, also called the subfactorial for reasons which will become clear soon. A derangement is an ordering that differs from the original ordering, i.e. it has been "disordered". Deranged and derangement come from the French *déranger*, where *ranger* comes from the same Old French word *reng* meaning place or position, from which we also get the words "range" and "rank".[^deranged]
+
+[^deranged]: Historically, "deranged" was used as a medical term to indicated a disoredered or disrupted state of mind, eventually gaining a negative or derogatory connotation and being replaced in the medical community with more specific, objective terminology (although the phrase ["disordered thinking"](https://www.nhs.uk/mental-health/conditions/psychosis/overview/) is still commonly used). Derangement remains the terminology used in combinatorics and is what we will continue to use here.
+
+It's worth laying out explicitly why this is a problem about ordering, as it's not immediately obvious. The best way to do this is to pretend that all of our puz quiz teams are laid out in a neat line and that we label them all A, B, C, etc. The host doesn't know which answer sheet is for which team but we do, so we can label them with their team letters. Thus, the original situation where each team has their own answer sheet looks like:
+
+A B C D E F
+
+A derangement is then a permutation of this list of letters where the i-th letter in this permutation is different from the original list for every team in the list. For instance:
+
+B A D C F E
+
+Is a derangement, whereas
+
+E F C B A D
+
+Is not as the "C" is in the 3rd place for both lists.
+
+When a letter is in the same place as the original permutation, this is called a **fixed point**. A derangement is therefore a permutation with no fixed points.
+
+So the answer to the pub quiz problem is "of the total number of possible permutation of N teams, how many of those are derangements?"
+
+To answer this, we can think about picking out a generic derangement from all possible permutations. Let's start with the first letter. Now, we can choose any letter other than A for this and still have a derangement, so we have $N-1$ options to choose from.
+
+For the second letter, we can't choose the same letter that we chose for the first letter as that's already used up. We also can't choose B otherwise it'd be a fixed point. It's tempting to say we have $N-2$ options left, but that ignores the possibility that we chose B as the first letter of our permutation.
+
+To work around this, we can instead jump from the first letter not to the second but to the i-th letter, where we chose letter i as the first letter of our sequence. For argument's sake, let's say we chose D as the first letter of our permutation, meaning we then jump straight to the 4th letter. We now have two options left: choose A or choose any other letter (remember: we've already chosen D).
+
+**Option 1:**
+
+If we choose A, then A and D point to each other, meaning we can essentially ignore them and the instead look at the derangements of $N-2$ teams, i.e. "B C E F". As we know A and D point to each other, they form their own little circular reference and none of the other elements can be involved in their reference chain at all. In this case, the number of derangements $D_N = (N-1)D_{N-2}$ (the $N-1$ comes from the initial choice we had to make).
+
+**Option 2:**
+
+If we choose any other letter, we can rephrase our situation using three statements:
+
+- For the first position, we've already made our choice so we can ignore that one.
+- For any position i that's not 4, we can choose any letter that's not the i-th letter (the normal derangement rules).
+- For position 4, we can choose any letter that's not A. (Remember: D has already been taken out of the mix.)
+
+We then have what is mathematically the same as if we started with $N-1$ letters and tried to find the number of derangements of that list. The only difference is that for position 4 we can't choose A instead of D, but as D has already been removed it is functionally the same. Hence, the number of derangements in this case is $(N-1)D_{N-1}$.
+
+To get the total number of derangements, we simply add up the two possibilities:
+
+$$
+\begin{align}
+D_N &= (N-1)D_{N-1} + (N-1)D_{N-2} \\
+    &= (N-1)(D_{N-1} + D_{N-2})
+\end{align}
+$$
+
+Now all we need is to define the base cases $D_0$ and $D_1$ and we can calculated it for and $N$! For $D_1$ this is fairly obvious – if the list has one letter in it, there's no way you can rearrange that list without any fixed points, so $D_1 = 0$. For empty lists, $D_0 = 1$, i.e. there is precisely one way to rearrange an empty list with no fixed points. Instinctively, this makes sense. The list (A) can be arranged in precisely one way: (A). This permutation has one fixed point. The empty list () can also be arranged in precisely one way: (). This permutation has no fixed points. This seems natural to people who have encountered $0! = 1$ before and is true for precisely the same reason.
+
+I leave it as an exercise for the reader[^exercise-for-reader] to move from the iterative form to the closed form, which turns out to be:
+
+$$
+D_N = \text{round}(n!/e)
+$$
+
+[^exercise-for-reader]: Read: this post is already far too long.
+
+Where $e$ is our old friend Euler's number $e \approx 2.718$. In other words, the number of derangements is equal to the closest rounded whole number to $n!/e$. We can see now why this is also called the "subfactorial" – it is very closely related to the normal factorial that we are used to.
+
+Looking at probabilities, the probability of a random permutation being a derangement is n# derangements / total n# permutations. The total number of permutations is $n!$ which means
+
+$$
+P(\text{derangement}) = \frac{!n}{n!} = \frac{\text{round}(n!/e)}{n!}
+$$
+
+For large enough $n$, $\text{round}(n!/e)$ is the same as $n!/e$ and we end up with just $1/e \approx 37\%$. We can see this pattern appear over time:
+
+| $n$ |                   $D_n$ | $P(\text{derangement})$ |
+| --: | ----------------------: | ----------------------: |
+|   0 |                       1 |             100.000000% |
+|   1 |                       0 |               0.000000% |
+|   2 |                       1 |              50.000000% |
+|   3 |                       2 |              33.333333% |
+|   4 |                       9 |              37.500000% |
+|   5 |                      44 |              36.666667% |
+|   6 |                     265 |              36.805556% |
+|   7 |                   1,854 |              36.785714% |
+|   8 |                  14,833 |              36.788194% |
+|   9 |                 133,496 |              36.787919% |
+|  10 |               1,334,961 |              36.787946% |
+|  11 |              14,684,570 |              36.787944% |
+|  12 |             176,214,841 |              36.787944% |
+|  13 |           2,290,792,932 |              36.787944% |
+|  14 |          32,071,101,049 |              36.787944% |
+|  15 |         481,066,515,734 |              36.787944% |
+|  16 |       7,697,064,251,745 |              36.787944% |
+|  17 |     130,850,092,279,664 |              36.787944% |
+|  18 |   2,355,301,661,033,953 |              36.787944% |
+|  19 |  44,750,731,559,645,106 |              36.787944% |
+|  20 | 895,014,631,192,902,121 |              36.787944% |
