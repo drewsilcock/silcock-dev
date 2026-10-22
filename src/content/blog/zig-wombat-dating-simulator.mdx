@@ -103,7 +103,9 @@ After the contractually obligatory inter-personal conflict, once they have all a
   <figcaption>Image courtesy of Music Television (MTV) via [Observer](https://observer.com/2016/08/ayto-host-ryan-devlin-takes-us-behind-the-scenes-and-dishes-on-the-season-4-finale/)</figcaption>
 </figure>
 
-## Introduction to information theory
+## Game strategy
+
+### Introduction to information theory
 
 Now that we understand how to play the game, we can start to build the mathematical tools necessary to win the game.
 
@@ -111,7 +113,7 @@ The first thing to notice is that, when analysing the number of possible perfect
 
 This makes sense – we can understand this by thinking about popular two-player board game [Guess Who?](https://en.wikipedia.org/wiki/Guess_Who%3F)[^guess-who-fact]. If you find out that your opponents person is wearing a hat and half of your remaining options are wearing hats, this reduces the size of the solution space by half. If you are at the beginning of the game, you will eliminate a lot more options that towards the end of the game, but either way you are gaining the same amount of new information.
 
-[^guess-who-fact]: Guess Who? was designed and created by Theo (1928–2019) and Ora (1931–2021) Coster. Theo Coster (born Maurice Simon) was a classmate of Anne Frank and survived the holocaust by hiding with a non-Jewish family and changing his name. Ora Coster was a sniper in the 1948 Palestine war. The couple would later go in to invent those squidgy silicone fidget toys where you pop the bubbles. The couple's tombstones were designed to look like Guess Who tiles.
+[^guess-who-fact]: Guess Who? was designed and created by Theo (1928–2019) and Ora (1931–2021) Coster. Theo Coster (born Maurice Simon) was a classmate of Anne Frank. He survived the holocaust by hiding with a non-Jewish family and changing his name. Ora Coster was a sniper in the Israeli Ground Forces and fought in the 1948 Palestine war. The couple would later go in to invent the silicone bubble fidget toy. The couple's tombstones were designed to look like Guess Who tiles. Their story is fascinating, and you can read about it here: https://medium.com/@solidi/theo-and-ora-toy-craft-from-israel-317112446e05
 
 <figure>
   <Image
@@ -139,7 +141,7 @@ $$
 
 Where $p$ is the probability of the event.
 
-## Information entropy
+### Information entropy
 
 We can see an important trade-off here. By asking a question which is lopsided, i.e. much more characters have no moustache than do, we are making a gamble – an affirmative response gives us more information but is less likely while a negative response gives us less information but is more likely.
 
@@ -163,7 +165,7 @@ The story goes that when Shannon came up with the concept, he could not figure o
 
 So now when we ask "what's the best move?", we can be a bit more precise and say "what move has the largest entropy"?
 
-## Binary entropy function
+### Binary entropy function
 
 In the case of Guess Who? this is fairly simple, as we have only two possible responses for every question: yes or no. If we say that the probability of a yes is $p$, the probability of no is $1 - p$ and so
 
@@ -183,7 +185,7 @@ This means the exact same game plan applies – instead of choosing the couple y
 
 In practice, this means keeping track of all possible solutions, and checking how many options are eliminated by each potential truth booth choice, then choosing the pair that eliminates the closest to half the remaining solutions.
 
-## Pub quiz problem
+### Pub quiz problem
 
 Next, we need a game plan for how to handle the matchup ceremonies.
 
@@ -200,6 +202,79 @@ What are the chances that everyone gets another team's answer sheet back, thus p
 This has a special name and even a symbol: $!n$ is the number of **derangements** of n, also called the subfactorial for reasons which will become clear soon. A derangement is an ordering that differs from the original ordering, i.e. it has been "disordered". Deranged and derangement come from the French *déranger*, where *ranger* comes from the same Old French word *reng* meaning place or position, from which we also get the words "range" and "rank".[^deranged]
 
 [^deranged]: Historically, "deranged" was used as a medical term to indicated a disoredered or disrupted state of mind, eventually gaining a negative or derogatory connotation and being replaced in the medical community with more specific, objective terminology (although the phrase ["disordered thinking"](https://www.nhs.uk/mental-health/conditions/psychosis/overview/) is still commonly used). Derangement remains the terminology used in combinatorics and is what we will continue to use here.
+
+It's quite simple to show that the number of derangements, $D_n = \text{round}(n!/e)$, where $e$ is our old friend Euler's number $e \approx 2.718$. In other words, the number of derangements is equal to the closest rounded whole number to $n!/e$. We can see now why this is also called the "subfactorial" – it is very closely related to the normal factorial that we are used to.
+
+I originally had the full derivation of this (which isn't complicated) in here but it got a bit too long so I stuck it in [Appendix A](#appendix-a--derivation-of-derangements).
+
+Looking at probabilities, the probability of a random permutation being a derangement is n# derangements / total n# permutations. The total number of permutations is $n!$ which means
+
+$$
+P(\text{derangement}) = \frac{!n}{n!} = \frac{\text{round}(n!/e)}{n!}
+$$
+
+For large enough $n$, $\text{round}(n!/e)$ is the same as $n!/e$ and we end up with just $1/e \approx 37\%$. We can see this pattern appear over time:
+
+| $n$ |                   $D_n$ | $P(\text{derangement})$ |
+| --: | ----------------------: | ----------------------: |
+|   0 |                       1 |             100.000000% |
+|   1 |                       0 |               0.000000% |
+|   2 |                       1 |              50.000000% |
+|   3 |                       2 |              33.333333% |
+|   4 |                       9 |              37.500000% |
+|   5 |                      44 |              36.666667% |
+|   6 |                     265 |              36.805556% |
+|   7 |                   1,854 |              36.785714% |
+|   8 |                  14,833 |              36.788194% |
+|   9 |                 133,496 |              36.787919% |
+|  10 |               1,334,961 |              36.787946% |
+|  11 |              14,684,570 |              36.787944% |
+|  12 |             176,214,841 |              36.787944% |
+|  13 |           2,290,792,932 |              36.787944% |
+|  14 |          32,071,101,049 |              36.787944% |
+|  15 |         481,066,515,734 |              36.787944% |
+
+The number 37% also appears in other combinatorics problems like the [Secretary problem](https://en.wikipedia.org/wiki/Secretary_problem) where you decide the optimal stopping strategy for one-at-a-time yes-or-no decisions such as hiring a secretary or marrying potential suitors.
+
+### Deranged beams
+
+Let's bring this back to the task at hand. In a matchup ceremony we have a number of men and women. We can make direct analogy with the pub quiz by equating the men with the quiz teams and the women the answer sheets (or vice-versa).
+
+The matchup ceremony proposes a full set of matches from men to women, so any correct pair in the matchup is a fixed point and the probability of a matchup ceremony having no matches is the exact same as the probability of no quiz team getting their own answer sheet back, namely ~37%.
+
+How do we then extend this to where we do get some "beams" from our matchup ceremony, i.e. some of our pair guesses were correct?
+
+Well, for 1 beam this turns out to be quite simple – it's exactly the same as for 0 beams.
+
+TODO: Poisson
+
+This equation holds at the beginning of the game when all of the pairs have equal probability, however this isn't the case once we get going as we have additional information from prior truth booths and match ceremonies that alter our probabilities.
+
+From an entropy perspective, the ideal case here (in direct analogy with the binary entropy case discussed earlier) is to have each k be equally likely. **TODO: Is this true? Can we derive the entropy function for this?** Importantly, we can _alter_ the probabilities in order to get the most information out of our matchup ceremony, as you can see that the matchup ceremony has on average much more surprisal in it than the truth booth and so is key to winning the game.
+
+## Modelling
+
+### Lehmer codes
+
+### Factorial number system
+
+### Season 8
+
+### Double factorials
+
+### Double factorix
+
+## Are You the Wombat?
+
+### About the humble wombat
+
+### The rules of the game
+
+## Conclusion
+
+## Appendix A – derivation of derangements
+
+TODO: I need to standardise the specific example we're talking about (pub quiz sheets vs. letters) and be more clear in this explanation.
 
 It's worth laying out explicitly why this is a problem about ordering, as it's not immediately obvious. The best way to do this is to pretend that all of our puz quiz teams are laid out in a neat line and that we label them all A, B, C, etc. The host doesn't know which answer sheet is for which team but we do, so we can label them with their team letters. Thus, the original situation where each team has their own answer sheet looks like:
 
@@ -258,36 +333,4 @@ $$
 
 [^exercise-for-reader]: Read: this post is already far too long.
 
-Where $e$ is our old friend Euler's number $e \approx 2.718$. In other words, the number of derangements is equal to the closest rounded whole number to $n!/e$. We can see now why this is also called the "subfactorial" – it is very closely related to the normal factorial that we are used to.
-
-Looking at probabilities, the probability of a random permutation being a derangement is n# derangements / total n# permutations. The total number of permutations is $n!$ which means
-
-$$
-P(\text{derangement}) = \frac{!n}{n!} = \frac{\text{round}(n!/e)}{n!}
-$$
-
-For large enough $n$, $\text{round}(n!/e)$ is the same as $n!/e$ and we end up with just $1/e \approx 37\%$. We can see this pattern appear over time:
-
-| $n$ |                   $D_n$ | $P(\text{derangement})$ |
-| --: | ----------------------: | ----------------------: |
-|   0 |                       1 |             100.000000% |
-|   1 |                       0 |               0.000000% |
-|   2 |                       1 |              50.000000% |
-|   3 |                       2 |              33.333333% |
-|   4 |                       9 |              37.500000% |
-|   5 |                      44 |              36.666667% |
-|   6 |                     265 |              36.805556% |
-|   7 |                   1,854 |              36.785714% |
-|   8 |                  14,833 |              36.788194% |
-|   9 |                 133,496 |              36.787919% |
-|  10 |               1,334,961 |              36.787946% |
-|  11 |              14,684,570 |              36.787944% |
-|  12 |             176,214,841 |              36.787944% |
-|  13 |           2,290,792,932 |              36.787944% |
-|  14 |          32,071,101,049 |              36.787944% |
-|  15 |         481,066,515,734 |              36.787944% |
-|  16 |       7,697,064,251,745 |              36.787944% |
-|  17 |     130,850,092,279,664 |              36.787944% |
-|  18 |   2,355,301,661,033,953 |              36.787944% |
-|  19 |  44,750,731,559,645,106 |              36.787944% |
-|  20 | 895,014,631,192,902,121 |              36.787944% |
+As $n!$ becomes large _very quickly_, for any n more than about 9, $n! \gg e$ and the rounding is largely irrelevant.

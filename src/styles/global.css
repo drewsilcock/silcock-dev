@@ -53,6 +53,8 @@ html[data-theme="dark"] {
   --danger-line: #f87171;
   --code-bg: #303446;
   --code-ink: #c6d0f5;
+  --row-alt: rgba(255, 255, 255, 0.035);
+  --row-hover: rgba(245, 166, 35, 0.07);
 }
 html[data-theme="light"] {
   --bg: #fbfaf6;
@@ -77,6 +79,8 @@ html[data-theme="light"] {
   --danger-line: #dc2626;
   --code-bg: #eff1f5;
   --code-ink: #4c4f69;
+  --row-alt: rgba(20, 18, 12, 0.035);
+  --row-hover: rgba(245, 166, 35, 0.12);
 }
 
 /* ---------- base reset (replaces Tailwind Preflight) ---------- */
@@ -809,6 +813,78 @@ a.tag:hover {
   color: var(--dim);
   text-align: center;
 }
+/* ---------- tables ---------- */
+/* Tables shrink-wrap their content and scroll only when that doesn't fit, so a
+   narrow table of numbers stays narrow while a wide table of prose wraps. */
+.article table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 30px auto;
+  border-collapse: separate; /* "collapse" would square off the rounded corners */
+  border-spacing: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  font-size: calc(14.5px * var(--fsm));
+  line-height: 1.55;
+  color: var(--reading);
+  font-variant-numeric: tabular-nums;
+}
+.article thead th {
+  padding: 12px 20px;
+  background: var(--chip-bg);
+  color: var(--ink);
+  font-size: calc(13px * var(--fsm));
+  font-weight: 600;
+  text-align: left;
+  vertical-align: bottom;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--line);
+}
+.article tbody th,
+.article tbody td {
+  padding: 11px 20px;
+  text-align: left;
+  vertical-align: top;
+  border-top: 1px solid var(--line-soft);
+}
+.article tbody tr:first-child > * {
+  border-top: 0;
+}
+/* Column dividers — columns of digits especially need the vertical separation. */
+.article tr > *:not(:last-child) {
+  border-right: 1px solid var(--line-soft);
+}
+/* Row banding, so the eye tracks across a row without drifting a line. */
+.article tbody tr:nth-child(even) {
+  background: var(--row-alt);
+}
+.article tbody tr:hover {
+  background: var(--row-hover);
+}
+/* Right-aligned columns are numeric by convention, so set them in the mono
+   face to line the digits up. Markdown column alignment arrives as an inline
+   `text-align`, which is why these match on the style attribute. */
+.article tbody td[style*="text-align:right"],
+.article tbody td[style*="text-align: right"],
+.article tbody td[align="right"] {
+  font-family: var(--mono);
+  font-size: 0.92em;
+}
+/* The `align` attribute is presentational, so it loses to the rules above —
+   restore it explicitly for any table that uses it instead. */
+.article th[align="center"],
+.article td[align="center"] {
+  text-align: center;
+}
+.article th[align="right"],
+.article td[align="right"] {
+  text-align: right;
+}
+
 .article hr {
   border: 0;
   border-top: 1px solid var(--line);
@@ -1045,6 +1121,15 @@ html[data-theme="light"] img.image-dark {
   }
   .backlink {
     margin-top: 26px;
+  }
+  .article table {
+    font-size: calc(13.5px * var(--fsm));
+  }
+  .article thead th,
+  .article tbody th,
+  .article tbody td {
+    padding-left: 12px;
+    padding-right: 12px;
   }
   .back-to-top {
     right: 16px;
