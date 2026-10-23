@@ -8,7 +8,6 @@ tags:
   - security
   - llms
 socials:
-  - https://lobste.rs/s/oe51th/is_this_new_cyber_normal
   - https://news.ycombinator.com/item?id=50207115
 ---
 
