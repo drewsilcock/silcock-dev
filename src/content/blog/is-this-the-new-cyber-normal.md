@@ -7,7 +7,9 @@ draft: false
 tags:
   - security
   - llms
-socials: []
+socials:
+  - https://lobste.rs/s/oe51th/is_this_new_cyber_normal
+  - https://news.ycombinator.com/item?id=50207115
 ---
 
 The last week has seen a flurry of severe and critical software vulnerabilities affecting thousands of major sites and sending people into a panic. What's going on here, and what can we do about it?
