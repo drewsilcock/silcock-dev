@@ -18,11 +18,11 @@ If we want to understand what's going on in the world of software security at th
 
 ### PHP2Shell – [CVE-2026-109618](https://www.cve.org/CVERecord?id=CVE-2026-109618) and [CVE-2026-109619](https://www.cve.org/CVERecord?id=CVE-2026-109619) (a.k.a. "the big one in the news")
 
-Two different security teams, one from California security company Calif and another from Israeli-U.S. cloud security company Wiz (they're part of Google Cloud, apparently) both found these two Remote Code Execution (RCE) bugs in PHP. They were both using frontier AI models (a.k.a. LLMs, specifically GPT-5.6 Sol and Gemini 4 Argon) to find these vulnerabilities and build the exploits.
+Two different security teams, one from California security company Calif (as part of OpenAI's "Patch the Planet" program) and another from Israeli-U.S. cloud security company Wiz (they're part of Google Cloud, apparently), both found these two Remote Code Execution (RCE) bugs in PHP. They were both using frontier AI models (a.k.a. LLMs, specifically GPT-5.6 Sol/Gemini 4 Argon) to find these vulnerabilities and build the exploits.
 
 Interestingly, one of the bugs (CVE-2026-109618) was [found by a security audit](https://thephp.foundation/blog/2026/10/21/todays-php-security-release-and-how-were-strengthening-php-security/#a-first-external-audit-and-increased-security-focus) the PHP Foundation did in 2024 (funded by the [Sovereign Tech Agency](https://en.wikipedia.org/wiki/Sovereign_Tech_Agency) which is coincidentally one of the most interesting things happening in the open source space at the moment) but they basically ignored it because they had bigger concerns. The reasoning behind it was that no-one could really figure out how to create an actual exploit based on the theoretical issue.
 
-One thing LLMs are very good at is taking a theoretical security vulnerability, even if that vulnerability is a vague description of what the issue could be, and building it into a full exploit. This has become a major issue in recent months as any notice of a security patch will immediately result in people pointing their LLMs at the codebase, whereupon the agents can very quickly read through diffs until they find something that looks like a security patch, then going backwards to the vulnerability it covers, and following this all the way to an exploit.
+One thing LLMs are very good at is taking a theoretical security vulnerability, even if that vulnerability is a vague description of what the issue could be, and building it into a full exploit. This has become a major issue in recent months as any notice of a security patch will immediately result in people pointing their LLMs at the codebase, whereupon the agents can very quickly read through diffs until they find something that looks like a security patch, then go backwards to the vulnerability it covers, and follow this all the way to an exploit.
 
 This happens so fast, in fact, that at this point I think it is a reasonable assumption that the moment you announce a security patch should be taken as a last possible date that the full exploit is *not* being publicly or privately distributed.
 
@@ -30,26 +30,34 @@ This PHP2Shell (as it's being marketed, vulnerabilities seem to come bundled wit
 
 To understand this, let's look at the [original post from the PHP Group](https://www.php.net/archive/2026.php#2026-10-20-1):
 
-(TODO: path to assets/is-this-the-new-cyber-normal/php-notice.png)
+![Screenshot of the PHP announcement "Upcoming Critical PHP Security Release", dated 20 Oct 2026. It says the release is scheduled for Wednesday 21 October 2026 at 14:00 UTC, that it fixes two critical vulnerabilities rated CVSS v4.0 9.2, and that full details will be published with the release.](../../assets/is-this-the-new-cyber-normal/php-notice.png)
 
-The vulnerability was announced, alongside with the severity score (i.e. _bad_), but this was **advance notice** – the patch wasn't available yet. Pretty much immediately, this news spread like wildfire and people started panicking. Even though this was found by _responsible security researchers_ at _respectable companies_, by the time the security patch actually got released, it was [already being exploited in the wild](https://ellio.tech/en/blog/php2shell-what-we-observed-and-what-to-do/). Some reports implicate Chainguard](https://www.theregister.com/security/2026/10/22/php-blames-supply-chain-security-biz-chainguard-for-putting-huge-chunks-of-the-web-at-risk/5304611) – an open source security company – in leaking the details before the patch was released, allowing attackers to beat the systems administers to the punch.
+The vulnerability was announced, alongside the severity score (i.e. _bad_), but this was **advance notice** – the patch wasn't available yet. Pretty much immediately, this news spread like wildfire and people started panicking. Even though this was found by _responsible security researchers_ at _respectable companies_, by the time the security patch actually got released, it was [already being exploited in the wild](https://ellio.tech/en/blog/php2shell-what-we-observed-and-what-to-do/). The PHP Group blamed [blamed Calif and Chainguard](https://thephp.foundation/blog/2026/10/21/todays-php-security-release-and-how-were-strengthening-php-security/#leak-and-disrupted-disclosure), an open source security company, by saying that Calif leaked a video of the exploit in action (with weird background music and a dancing anime girl) while Chainguard published fixes 6 before before the embargo was due to lift, allowing attackers to beat the systems administrators to the punch. Then there's [petecooper](https://news.ycombinator.com/item?id=50193416) on Hacker News who apparently posted about the CVEs before any of this other stuff happened, apparently unaware that there even was an embargo, prompting the statement from the PHP Group in the first place. The timeline is still a bit confusing at the moment, but it seems like multiple entirely independent things have gone wrong here, all within the space of about 12 hours.
 
-The big takeaway from this is that – because of LLMs – the time from "hey I heard there's a bad RCE in this project" to "there are sophisticated, automated, and concerted attacks using an exploit targeting this vulnerability" has gone from weeks/months to hours/minutes.
+There's been lots of [discussion](https://news.ycombinator.com/item?id=50188948) about whether AI really is the game changer that completely revolutionises computer security or not. The big AI companies (and they [are big](https://www.wheresyoured.at/ai-had-better-work-out/)) obviously want you to think that it is. [Some people](https://eliastaylor.com/noexploit/) argue that PHP2Shell is overblown because LLMs tend to be paranoid about vulnerabilities and come up with "exploits" that make bad assumptions (like that the server will run PHP code you upload yourself via some existing file inclusion vulnerability) or cheat in some way. As [LiveOverflow points out](https://www.youtube.com/watch?v=SP7y1h0laN0), LLMs make it very easy to create exploit slop that proves nothing and doesn't work, but that doesn't mean that the vulnerability isn't real and easy to exploit using AI. You can have 10,000 bad slop exploits that don't work but if there's one that does, that's all that matters. Maybe we just need to get used to wading through slop to find the important stuff now.
+
+Others point out that lots of governments ([UK](https://www.ncsc.gov.uk/news/critical-security-issue-affecting-php)[^gov-disclaimer], [EU](https://cert.europa.eu/publications/security-advisories/2026-018), [Japan](https://x.com/takaichi_sanae/status/2112890642590564386), [USA](https://www.cisa.gov/news-events/alerts/2026/10/21/critical-vulnerabilities-php-require-immediate-patching)) got overexcited and released urgent announcements saying everyone had to unplug their computers immediately, so people panicked. I think the reason everyone panicked is that everyone kind of knows that PHP is intensely insecure and they use it anyway, so they're kind of primed for bad news and to overreact. Also, it actually is really quite bad, so maybe panicking is kind of the correct reaction?
+
+[^gov-disclaimer]: Disclaimer: I [kind of](https://en.wikipedia.org/wiki/Quango#United_Kingdom) work for the UK government.
+
+The big takeaway for me from this is that – because of LLMs – the time from "hey I heard there's a bad RCE in this project" to "there are sophisticated, automated, and concerted attacks using an exploit targeting this vulnerability" has gone from weeks/months to hours/minutes. The fact that there's loads of non-working exploit slop just shows how genuine expertise is still required for make these things – if you don't know what you're looking at, you can't tell whether the AI has cheated or made bad assumptions. You can see this by looking at the reports of active exploit attempts for this bug coming out almost immediately after the leak.
 
 **Links:**
 
-- https://www.php2shell.com/ – why does every vulnerability need a name, slogan, and website now?
-- https://www.wiz.io/blog/php2shell-php-rce – these are one of the two people who found the bugs.
-- https://www.php.net/archive/2026.php#2026-10-20-1 – how The PHP Group announced the vulnerability. Note the timelines.
-- https://en.wikipedia.org/wiki/PHP2Shell – not too detailed but at least they're not trying to sell you anything.
-- https://aws.amazon.com/blogs/security/amazon-threat-intelligence-identifies-php2shell-exploitation-prior-to-public-disclosure-in-madpot/ – they are trying to sell you something, but they're still doing some interesting analysis.
+- [PHP2Shell – official website](https://www.php2shell.com/) – why does every vulnerability need a name, slogan, and website now?
+- [Wiz Research: "PHP2Shell: AI uncovers critical RCE vulnerabilities affecting 70% of the Internet"](https://www.wiz.io/blog/php2shell-php-rce) – these are one of the two people who found the bugs.
+- [PHP News Archive: "Upcoming Critical PHP Security Release" (20 Oct 2026)](https://www.php.net/archive/2026.php#2026-10-20-1) – how The PHP Group announced the vulnerability. Note the timelines.
+- [Wikipedia: PHP2Shell](https://en.wikipedia.org/wiki/PHP2Shell) – not too detailed but at least they're not trying to sell you anything.
+- [AWS Security Blog: "Amazon Threat Intelligence identifies PHP2Shell exploitation prior to public disclosure in MadPot"](https://aws.amazon.com/blogs/security/amazon-threat-intelligence-identifies-php2shell-exploitation-prior-to-public-disclosure-in-madpot/) – they are trying to sell you something, but they're still doing some interesting analysis.
 
-### eMudhra ([CVE-2026-111943](https://www.cve.org/CVERecord?id=CVE-2026-111943))
+### eMudhra ([CVE-2026-111943](https://www.cve.org/CVERecord?id=CVE-2026-111943) for Golang response)
 
 On the exact same day (20th October 2026), Mozilla announced that they were blocking all certificates signed by Indian certificate authority eMudhra. This happened after a pseudonymous security researcher known only as "Wayne" reported to several big tech firms (such as Mozilla) that the certificate authority were using laughably poor quality private keys for their intermediate certificates. Where a secure key might be a 100 digit number, eMudhra were using keys like "115", "56", and "4". They must've been following RFC 1149.5:
 
-![XKCD comic: "Random Number"](https://imgs.xkcd.com/comics/random_number.png)
-TODO: caption: *Alt:* RFC 1149.5 specifies 4 as the standard IEEE-vetted random number. Licence: CC-NC-2.5. Link: https://xkcd.com/license.html
+<figure>
+  <img src="https://imgs.xkcd.com/comics/random_number.png" alt='xkcd comic "Random Number": a code listing with the function int getRandomNumber() that simply returns 4, with the comment "chosen by fair dice roll. guaranteed to be random."' />
+  <figcaption><em>Alt:</em> RFC 1149.5 specifies 4 as the standard IEEE-vetted random number. From <a href="https://xkcd.com/221/">xkcd #221</a>, licensed under <a href="https://xkcd.com/license.html">CC BY-NC 2.5</a>.</figcaption>
+</figure>
 
 There are no indications that this was found or exploited using AI or LLMs, although researcher [Scott Helme](https://scotthelme.co.uk/eight-bits-of-trust-emudhras-ca-keys-cracked-in-milliseconds/) notes that given a single prompt, Claude was able to recover the private keys of the intermediate certs.
 
@@ -57,10 +65,10 @@ At the time of writing (22nd Oct), eMudhra has [announced](https://emudhra.com/e
 
 **Links:**
 
-- https://blog.mozilla.org/security/2026/10/20/protecting-firefox-users-following-the-compromise-of-emudhra-intermediate-certificates/
-- https://scotthelme.co.uk/eight-bits-of-trust-emudhras-ca-keys-cracked-in-milliseconds/
-- https://emudhra.com/en/press-release/emudhra-to-exit-global-ssl-tls-certificate-business
-- https://emudhra.we-have-a-problem.com/
+- [Mozilla Security Blog: "Protecting Firefox users following the compromise of eMudhra intermediate certificates"](https://blog.mozilla.org/security/2026/10/20/protecting-firefox-users-following-the-compromise-of-emudhra-intermediate-certificates/)
+- [Scott Helme: "Eight Bits of Trust; eMudhra's CA keys cracked in milliseconds"](https://scotthelme.co.uk/eight-bits-of-trust-emudhras-ca-keys-cracked-in-milliseconds/)
+- [eMudhra press release: "eMudhra to Exit global SSL/TLS Certificate Business"](https://emudhra.com/en/press-release/emudhra-to-exit-global-ssl-tls-certificate-business)
+- [eMudhra Intermediate CA Compromise – research announcement and trust store checker](https://emudhra.we-have-a-problem.com/)
 
 ### Railway bug
 
@@ -70,42 +78,43 @@ What would the end goal be here? At the time of writing (22nd Oct), we have very
 
 **Links:**
 
-- https://blog.railway.com/p/security-disclosure-wednesday-october-21st
-- https://news.ycombinator.com/item?id=50188228
+- [Railway Blog: "Security Disclosure: Wednesday October 21st"](https://blog.railway.com/p/security-disclosure-wednesday-october-21st)
+- [Hacker News discussion of the Railway security disclosure](https://news.ycombinator.com/item?id=50188228)
 
-### GitLab ([CVE-2026-97229](https://www.cve.org/CVERecord?id=CVE-2026-97229))
+### GitLab ([CVE-2026-97229](https://www.cve.org/CVERecord?id=CVE-2026-97229) and [CVE-2026-110264](https://www.cve.org/CVERecord?id=CVE-2026-110264))
 
-On 12th October 2026, [GitLab warned](https://www.bleepingcomputer.com/news/security/gitlab-warns-of-max-severity-rce-flaw-in-regex-compiler-engine/) of a max severity bug in GitLab CI/CD's regular expression parsing that could allow users to execute arbitrary code (another RCE) using a specially crafted regex. This is a CVSS score of 10.0 which is the maximum possible, meaning "this is pretty much as bad as they come". The patch wasn't released until [21st October 2026](https://docs.gitlab.com/releases/patches/patch-release-gitlab-19-5-1-released/), a full 9 days later. Unlike PHP2Shell, people have not been freaking out about this as much even though the forewarning – including details of the vulnerability – came 9 days before the patch. As GitLab Community is [open source](https://gitlab.com/gitlab-org/gitlab), this would give attackers ample opportunity to point their agent at the codebase and say "there's an RCE in the CI/CD regex parsing caused by an integer overflow" and let it go for a few hours until it's got a working exploit.
+On 12th October 2026, [GitLab warned](https://www.bleepingcomputer.com/news/security/gitlab-warns-of-max-severity-rce-flaw-in-regex-compiler-engine/) of a [max severity bug](https://docs.gitlab.com/releases/patches/patch-release-gitlab-19-4-2-released/) in GitLab CI/CD's regular expression parsing that could allow users to execute arbitrary code (another RCE) using a specially crafted regex. This is a CVSS score of 10.0 which is the maximum possible, meaning "this is pretty much as bad as they come"[^cvss-types]. This was followed on 21st October 2026 by [yet another regex integer overflow RCE](https://docs.gitlab.com/releases/patches/patch-release-gitlab-19-5-1-released/), another 10.0.
 
-This follows hot on the heels of yet another 10.0 CVSS CVE from last month ([CVE-2026-85706](https://www.cve.org/CVERecord?id=CVE-2026-85706)), that time related to [path travelsal](https://www.bleepingcomputer.com/news/security/gitlab-urges-users-to-patch-max-severity-path-traversal-flaw/). Both of these bugs were reported through GitLab's HackerOne bug bounty program. When it became clear that LLMs could research vulnerabilities and write exploits, there was a lot of talk about shutting down bug bounty programs because they didn't make sense anymore. I'm sure GitLab are glad they didn't do that.
+[^cvss-types]: GitLab is using CVSS 3.1 while PHP is using CVSS 4.0 here, which means they're following slightly different metrics to calculate the CVSS score, meaning you can't directly compare them.
 
-Although GitLab is used very widely across academia, government, and private companies, this doesn't seem to have got as much attention. Possibly it is because most self-hosted GitLab instances are not generally open to the public, meaning only approved users are allowed onto the system in the first place, which greatly reduces the risk of anyone actively exploiting this. Interestingly, this got 10.0 on the CVSS whereas the two CVEs for PHP2Shell only got 9.2 apiece. [Some people argue](https://eliastaylor.com/noexploit/) that PHP2Shell is overblown because a) LLMs tend to be paranoid about vulnerabilities and come up with "expliots" that make ridiculous assumptions, and b) lots of governments ([UK](https://www.ncsc.gov.uk/news/critical-security-issue-affecting-php)[^gov-disclaimer], [EU](https://cert.europa.eu/publications/security-advisories/2026-018), [Japan](https://x.com/takaichi_sanae/status/2112890642590564386), USA) got overexcited and released urgent announcements saying everyone had to unplug their computers immediately, so people panicked. I think the reason everyone panicked is that everyone kind of knows that PHP is intensely insecure and they use it anyway, so they're kind of primed for bad news and to overreact. Also, it actually is quite bad.
+This follows hot on the heels of yet another 10.0 CVSS CVE from last month ([CVE-2026-85706](https://www.cve.org/CVERecord?id=CVE-2026-85706)), that time related to [path traversal](https://www.bleepingcomputer.com/news/security/gitlab-urges-users-to-patch-max-severity-path-traversal-flaw/). All three of these bugs were reported through GitLab's HackerOne bug bounty program. When it became clear that LLMs could research vulnerabilities and write exploits, there was a lot of talk about shutting down bug bounty programs because they didn't make sense anymore. I'm sure GitLab are glad they didn't do that now.
 
-[^gov-disclaimer]: Disclaimer: I [kind of](https://en.wikipedia.org/wiki/Quango#United_Kingdom) work for the UK government.
+Although GitLab is used very widely across academia, government, and private companies, this doesn't seem to have got as much attention. CVEs in GitLab is obviously very serious, especially for private companies, as a lot of their vitally important intellectual property is stored in there, and having that leak could be disastrous. Often, companies put their GitLab instance behind a VPN/firewall so that they aren't publicly accessible, which greatly reduces the risk associated with this. It's also not entirely clear whether these CVEs require specific conditions like publicly accessible projects, user self-registration, etc.
 
 There's no indication that this was discovered using AI or LLMs. It may have been, but there's no reason at this point to think it was.
 
 **Links:**
 
-- https://docs.gitlab.com/releases/patches/patch-release-gitlab-19-5-1-released/
-- https://news.ycombinator.com/item?id=50185869
-- https://www.bleepingcomputer.com/news/security/gitlab-warns-of-max-severity-rce-flaw-in-regex-compiler-engine/
-- https://lobste.rs/s/tehays/gitlab_warns_max_severity_code_execution
-- https://gitlab.com/gitlab-security-oss/tldr/-/blob/main/Detections/platforms/GitLab/Vulnerability%20Detections/org_mode_render_error_burst.md
-- https://gitlab.com/gitlab-security-oss/tldr/-/blob/main/Detections/platforms/GitLab/Vulnerability%20Detections/onigmo_native_worker_crash.md
+- https://docs.gitlab.com/releases/patches/patch-release-gitlab-19-4-2-released/
+- [GitLab Docs: "GitLab Critical Patch Release: 19.5.1, 19.4.3, 19.3.6, 19.2.9, 19.1.9, 19.0.10, 18.11.13"](https://docs.gitlab.com/releases/patches/patch-release-gitlab-19-5-1-released/)
+- [Hacker News discussion: "GitLab critical patch release"](https://news.ycombinator.com/item?id=50185869)
+- [BleepingComputer: "GitLab warns of max severity code execution vulnerability"](https://www.bleepingcomputer.com/news/security/gitlab-warns-of-max-severity-rce-flaw-in-regex-compiler-engine/)
+- [Lobsters discussion: "GitLab warns of max severity code execution vulnerability"](https://lobste.rs/s/tehays/gitlab_warns_max_severity_code_execution)
+- [GitLab Security detection rule: Org-mode render error burst](https://gitlab.com/gitlab-security-oss/tldr/-/blob/main/Detections/platforms/GitLab/Vulnerability%20Detections/org_mode_render_error_burst.md)
+- [GitLab Security detection rule: Onigmo native worker crash](https://gitlab.com/gitlab-security-oss/tldr/-/blob/main/Detections/platforms/GitLab/Vulnerability%20Detections/onigmo_native_worker_crash.md)
 
 ### musl libc bug
 
-On 21st October, a bug in musl's implementation of libc related to regex (libc has regex? Apparently...) was announced that leads to denial of service at least, if not code execution. As far as I can tell, this is entirely coincidental in timing and not related to the GitLab bug, which also seems to be an integer overflow when parsing untrusted regular expression reported on the exact same day. Who knew a regex engine was such a security issue – is regex the new font rendering? The GitLab bug was found by a Swede called [Johan Carlsson (joaxcar)](https://hackerone.com/joaxcar?type=user) while the musl bug was reporting by [Julien Voisin](https://dustri.org/), a self-proclaimed "open sourcerer".
+On 21st October, a bug in musl's implementation of libc related to regex (libc has regex? Apparently...) was announced that leads to denial of service at least, if not code execution. As far as I can tell, this is entirely coincidental in timing and not related to the GitLab bug, which also seems to be an integer overflow when parsing untrusted regular expressions reported on the exact same day. Who knew a regex engine was such a security issue – is regex the new font rendering? The GitLab bug was found by a Swede called [Johan Carlsson (joaxcar)](https://hackerone.com/joaxcar?type=user) while the musl bug was reported by [Julien Voisin](https://dustri.org/), a self-proclaimed "open sourcerer".
 
 **Links:**
 
-- https://www.openwall.com/lists/oss-security/2026/10/21/18
-- https://lobste.rs/s/dldfel/cve_2026_107891_musl_libc_multiple
+- [oss-security: "CVE-2026-107891: musl libc: multiple integer overflow in regcomp"](https://www.openwall.com/lists/oss-security/2026/10/21/18)
+- [Lobsters discussion of the musl regcomp CVE](https://lobste.rs/s/dldfel/cve_2026_107891_musl_libc_multiple)
 
 ### LiteLLM
 
-Ah, hello my old friend LiteLLM. Proving that, when you're made of metal and 200 feet tall, lighting can in fact strike twice. It's not a good sign that when someone asks whether you've heard of the big 2026 LiteLLM compromise, you have to ask "which one?" In a piece of good fortune, the whole PHP2Shell and all the others have cannibalised much of the attention, meaning this isn't getting quite the same traction as last time in March, despite being similarly bad.
+Ah, hello my old friend LiteLLM. Proving that, when you're made of metal and 200 feet tall, lightning can in fact strike twice. It's not a good sign that when someone asks whether you've heard of the big 2026 LiteLLM compromise, you have to ask "which one?" In a piece of good fortune, the whole PHP2Shell and all the others have cannibalised much of the attention, meaning this isn't getting quite the same traction as last time in March, despite being similarly bad.
 
 This time, it's a malicious package on the Python Package Index (PyPI). For those who don't remember, LiteLLM had a [very similar thing](https://snyk.io/blog/poisoned-security-scanner-backdooring-litellm/) happen back in March, where a malicious package was uploaded to the litellm package on PyPI that used the [`.pth` files](https://www.trendmicro.com/en_gb/research/26/c/inside-litellm-supply-chain-compromise.html) to autoload malicious code whenever anyone installed the package, even without actually running the code (yeah, it was bad).
 
@@ -113,29 +122,29 @@ This compromise again took advantage of `.pth` files for autoloading malicious p
 
 [^not-claudisms]: Ok, maybe not this last point.
 
-Accordingly to LiteLLM, the incident occurred because the attacker had access to credentials for GitHub CLI which allowed them to run CI jobs. LiteLLM note that Claude Code will apparently sometimes embed a user's GitHub CLI Oauth token into response bodies which could cause them to appear in LiteLLM logs. They provide no evidence that this is what caused the tokens to leak or not – they seem to be speculating. Maybe we'll find out more details down the line.
+According to LiteLLM, the incident occurred because the attacker had access to credentials for GitHub CLI which allowed them to run CI jobs. LiteLLM note that Claude Code will apparently sometimes embed a user's GitHub CLI OAuth token into response bodies which could cause them to appear in LiteLLM logs. They provide no evidence that this is what caused the tokens to leak or not – they seem to be speculating. Maybe we'll find out more details down the line.
 
 **Links:**
 
-- https://www.wiz.io/blog/litellm-compromised-steals-credentials
-- https://docs.litellm.ai/blog/security-incident-oct-21-2026
-- https://news.ycombinator.com/item?id=50181114
+- [Wiz Blog: "LiteLLM Compromised, Steals Credentials"](https://www.wiz.io/blog/litellm-compromised-steals-credentials)
+- [LiteLLM: "Contained: Oct 21, 2026 LiteLLM release v1.107.0 Compromised"](https://docs.litellm.ai/blog/security-incident-oct-21-2026)
+- [Hacker News discussion: "Compromised LiteLLM 1.107.0 on PyPI Installs a Credential Stealer and Backdoor"](https://news.ycombinator.com/item?id=50181114)
 
-### PingCap
+### PingCAP
 
-On October 19th 2026, an enterprise software company called "PingCAP" that develops a database called "TiDB" revealed "unauthorised access to PingCAP" with "no evidence that data stored in TiDB was impacted". At the same time, a cyber extortion group called "Fulcrum Security" (a.k.a. the "Threatspians"[^crime-against-wordplay]) publicly released a torrent with 10.6 TB of data exfiltrated from TiDB Cloud, along with full details of how they gained access and some of the excellent security practices of PingCAP, including _putting client AWS secret access keys inside Jira tickets_ and _attaching massive unredacted logs to Jira tickets including OpenAPI, Anthropic, Gemini, xAI API keys_. Yikes. If you're willing to visit the cyber extortion group's website, they do a pretty interesting write-up of it. Gone are the days of shoddy broken English back when the Russians had to write these things up without LLMs to do it for them and remind them of definite and indefinite articles.[^clarify-russians]
+On October 19th 2026, an enterprise software company called "PingCAP" that develops a database called "TiDB" revealed "unauthorised access to PingCAP" with "no evidence that data stored in TiDB was impacted". At the same time, a cyber extortion group called "Fulcrum Security" (a.k.a. the "Threatspians"[^crime-against-wordplay]) publicly released a torrent with 10.6 TB of data exfiltrated from TiDB Cloud, along with full details of how they gained access and some of the excellent security practices of PingCAP, including _putting client AWS secret access keys inside Jira tickets_ and _attaching massive unredacted logs to Jira tickets including OpenAI, Anthropic, Gemini, xAI API keys_. Yikes. If you're willing to visit the cyber extortion group's website, they do a pretty interesting write-up of it. Gone are the days of shoddy broken English back when the Russians had to write these things up without LLMs to do it for them and remind them of definite and indefinite articles.[^clarify-russians]
 
 The good news for PingCAP is that not finding evidence of data extraction is actually incredibly easy. In fact, I'm doing it for thousands of companies right now, for free. I'm sure there's a business proposal in there somewhere. All you have to do is not look (see also: U+1F648).
 
-[^crime-against-wordplay]: If these reprehensible criminals are every brought to justice, I propose their longest sentence be for crimes against wordplay. Truly atrocious.
+[^crime-against-wordplay]: If these reprehensible criminals are ever brought to justice, I propose their longest sentence be for crimes against wordplay. Truly atrocious.
 
-[^clarify-russians]: To clarify, there's no evidence that this group are Russian hackers. They seem to be primarily financially motivated, so they could be from anywhere and everywhere. You get my point though – back in the day, you could tell the Russian phishing campaigns from their grammatical pecularities. Nowadays it's lost all of its charm, all because of AI. 
+[^clarify-russians]: To clarify, there's no evidence that this group are Russian hackers. They seem to be primarily financially motivated, so they could be from anywhere and everywhere. You get my point though – back in the day, you could tell the Russian phishing campaigns from their grammatical peculiarities. Nowadays it's lost all of its charm, all because of AI.
 
 **Links:**
 
-- https://news.ycombinator.com/item?id=50173716
-- https://www.pingcap.com/trust-hub/security/security-update-october-2026/ – PingCAP's detailed and highly reliable analysis of the incident, concluding that nothing was taken and everything is just hunky dory.
-- https://fulcrumsec.vg/pingcap/ – heads up, this is the website of a known cyber extortion group. Don't say I didn't warn you. It is pretty interesting, though.
+- [Hacker News discussion: "PingCap TiDB Leaks"](https://news.ycombinator.com/item?id=50173716)
+- [PingCAP: "October 2026 Security Incident Report: Unauthorized Access to PingCAP Cloud Resources"](https://www.pingcap.com/trust-hub/security/security-update-october-2026/) – PingCAP's detailed and highly reliable analysis of the incident, concluding that nothing was taken and everything is just hunky dory.
+- [FulcrumSec: "The PingCAP TiDB Cloud Leaks"](https://fulcrumsec.vg/pingcap/) – heads up, this is the website of a known cyber extortion group. Don't say I didn't warn you. It is pretty interesting, though.
 
 ### Linux vulnerabilities accidentally posted in wrong group chat
 
@@ -145,11 +154,11 @@ Linux kernel development all happens through mailing lists. Naturally, some of t
 
 **Links:**
 
-- https://www.phoronix.com/news/LKML-New-Trend-Vulnerabilities
+- [Phoronix: "Several Linux Kernel Vulnerabilities Accidentally Posted To Public Kernel Mailing List"](https://www.phoronix.com/news/LKML-New-Trend-Vulnerabilities)
 
 ## Is this the new normal?
 
-I think it's fair to say this these last few days have been abnormally active in terms of all of these cyber incidents and security disclosures. There are many on the Hacker News discussions for these incidents that say that this is nothing and it's only going to get worse. Honestly, I've not decided yet. To be honest, if you'd asked me 4 years ago how far LLMs would go, I'd never have guessed they'd get as good as they are right now. Even so, people do tend to get overexcited by these announcements and suggest that we are going to live in a world where no software is secure and everyone is vulnerable.
+I think it's fair to say these last few days have been abnormally active in terms of all of these cyber incidents and security disclosures. There are many on the Hacker News discussions for these incidents that say that this is nothing and it's only going to get worse. Honestly, I've not decided yet. To be honest, if you'd asked me 4 years ago how far LLMs would go, I'd never have guessed they'd get as good as they are right now. Even so, people do tend to get overexcited by these announcements and suggest that we are going to live in a world where no software is secure and everyone is vulnerable.
 
 It's worth noting that while a lot of the online discussion around this focusses on AI and LLMs, only some of these disclosures were researched or created with LLMs. We don't know about some of them like the PingCAP one, but there's clear evidence that many criminal and state-sponsored groups are using AI to do more hacking and faster. Why wouldn't they? It seems to be pretty good at it. Many of these vulnerabilities were good old fashioned software vulnerabilities written using human meat fingers, but the online conversation focusses on the exciting, scary new thing. Why wouldn't it?
 
@@ -157,7 +166,7 @@ You can see why organisations like NHS England decided to [take all of their ope
 
 ## What can we do about it?
 
-The NHS approach: **close source everything**. (A.k.a. the [madagascar approach](https://knowyourmeme.com/memes/shut-down-everything))
+The NHS approach: **close source everything**. (A.k.a. the [Madagascar approach](https://knowyourmeme.com/memes/shut-down-everything))
 
 **Pros:**
 
@@ -166,7 +175,7 @@ The NHS approach: **close source everything**. (A.k.a. the [madagascar approach]
 **Cons:**
 
 - The open source community and the future of computing are slightly worse off for every open source repository taken offline.
-- You can't close source every codebase in the world – some things like programming languages (which are often the source of critical bugs) rely on open source to function. Making Python a closed source project would be catastrophic to be world of computing.
+- You can't close source every codebase in the world – some things like programming languages (which are often the source of critical bugs) rely on open source to function. Making Python a closed source project would be catastrophic to the world of computing.
 - It's only closed source until someone leaks it. And they probably will eventually. And when they do, you won't have had the years of public scrutiny on the codebase that keeps it clean and secure in the first place.
 - Sometimes you use a programming language where this doesn't really matter, like Python and Java where you can recover source code from bytecode.
 - If the code used to be online, that old version still is. You have to assume that someone will have it somewhere. [Shellshock](https://en.wikipedia.org/wiki/Shellshock_(software_bug)) was in GNU Bash from 1989 until 2014 before it was fixed, and that's one of the most widely used programs on the planet.
@@ -176,7 +185,7 @@ The AI-embracer approach: **if you can't beat 'em, join 'em**. In other words, t
 
 **Pros:**
 
-- Makes a few very wealthy tech CEOs very happy
+- Makes a few very wealthy tech CEOs very happy.
 - Will find tons of bugs.
 
 **Cons:**
@@ -186,7 +195,7 @@ The AI-embracer approach: **if you can't beat 'em, join 'em**. In other words, t
 - Costs loads of money.
 - Even though AI makes it easier, it still requires expertise and deep technical knowledge to do this stuff.
 
-The optimist approach: **universally better, standardised approaches to reporting, handling, and mitigating security vulnerabilities followed by all companies having top-notch security postures, well-understood risks, well-document processes, and so on**.
+The optimist approach: **universally better, standardised approaches to reporting, handling, and mitigating security vulnerabilities followed by all companies having top-notch security postures, well-understood risks, well-documented processes, and so on**.
 
 **Pros:**
 
@@ -200,17 +209,19 @@ The optimist approach: **universally better, standardised approaches to reportin
 - Did I mention this is actually quite hard? And possibly impossible?
 - Expensive.
 
-There are some easy wins we could get from this moving forwards, like "never announce details of a critical vulnerability before the patch is ready to install". Maybe even that's asking too much. Even something like minimum release age which gained popularity after the first big LiteLLM incident has it's issues, as it means big updates that fix widely exploited vulnerabilities don't get patched for a few days, giving attackers ample time to hack you to pieces. At the very least, we could maybe do with some better client management to avoid everything panicking and taking all their servers offline.
+There are some easy wins we could get from this moving forwards, like "never announce details of a critical vulnerability before the patch is ready to install". Maybe even that's asking too much. In this case, it was a series of mistakes from multiple people and companies that caused the exploit to be in active use the day before the patch was available, hence everyone taking their servers offline.
+
+Even something like minimum release age which gained popularity after the first big LiteLLM incident has its issues, as it means big updates that fix widely exploited vulnerabilities don't get patched for a few days, giving attackers ample time to hack you to pieces. At the very least, we could maybe do with some better client management to avoid everything panicking and taking all their servers offline.
 
 Maybe we just need to accept that if you expose something to the wider internet, it will get hacked, and plan accordingly. Maybe it's our expectations that are at fault.
 
 ## Conclusion
 
-There's definitely a story about AI and security here. It's changing the world of software, and it's not yet clear whether that's for the better or the worse. Money has a way of warping truth like matter warps gravity, and there's enough money in AI to cause whatever the truth equivalent of a medum-sized black hole is. There's an incredible amount of money being spent on AI and it all wants you to think that it's going to change everything about your life, including software and security. That doesn't mean it's not true, of course.
+There's definitely a story about AI and security here. It's changing the world of software, and it's not yet clear whether that's for the better or the worse. Money has a way of warping truth like matter warps gravity, and there's enough money in AI to cause whatever the truth equivalent of a medium-sized black hole is. There's an incredible amount of money being spent on AI and it all wants you to think that it's going to change everything about your life, including software and security. That doesn't mean it's not true, of course.
 
 Some people say automated analysis tools led to loads of new bugs being found back in the 10s, and now the same thing is happening again. It feels categorically different to me, but perhaps there will be an initial period of escalating bug reports before it all settles down and goes back to how it was. I suspect not. Some people say this is only happening because humans wrote all the dodgy code in the first place – once AI is writing all of the code to start with, there'll be no vulnerabilities because LLMs are better at writing secure code than humans. I am not convinced by this argument.
 
-While I'm not making many predictions about the future (because I don't want to look like an idiot in 12 months time when I'm inevitably proven wrong), I will say that the software industry is going to change, and open source is going to change, and it is our collective responsibility as members of the software community to make sure that this change is for the benefit of all of us, not special interests and private corporations.
+While I'm not making many predictions about the future (because I don't want to look like an idiot in 12 months' time when I'm inevitably proven wrong), I will say that the software industry is going to change, and open source is going to change, and it is our collective responsibility as members of the software community to make sure that this change is for the benefit of all of us, not special interests and private corporations.
 
 ## Updates
 
